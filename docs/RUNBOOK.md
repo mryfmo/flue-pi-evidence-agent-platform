@@ -8,6 +8,8 @@ npm ci
 npm run validate-release
 ```
 
+OPA resolves from the platform-matching optional npm package by default. If the bundled binary is unavailable, set `EAP_OPA_BINARY=/path/to/opa` and rerun the failed gate.
+
 ## Run E2E only
 
 ```bash

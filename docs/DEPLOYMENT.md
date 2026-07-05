@@ -11,6 +11,7 @@ This package is a single-host OSS-integrated release. It uses Flue runtime, OPA 
 - Network/package registry access during dependency installation only.
 
 The project depends on the npm `node` package pinned in `package-lock.json`, so scripts use `./node_modules/node/bin/node` instead of assuming the host Node version.
+OPA is installed through per-platform optional npm packages for linux-x64 and darwin arm64/x64. `src/lib/opa.ts` picks the package matching `process.platform` and `process.arch`; set `EAP_OPA_BINARY` only when overriding that bundled binary.
 
 ## Fresh checkout procedure
 

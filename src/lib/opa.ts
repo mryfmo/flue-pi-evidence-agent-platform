@@ -1,5 +1,6 @@
 /** OPA-backed policy decision adapter using a real bundled OPA binary. */
 import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -7,12 +8,28 @@ import { promisify } from 'node:util';
 import type { PolicyDecision, PolicyInput } from './types.ts';
 
 const execFileAsync = promisify(execFile);
+const opaPackages: Record<string, string> = {
+  'darwin-arm64': 'agent-control-specification-opa-darwin-arm64',
+  'darwin-x64': 'agent-control-specification-opa-darwin-x64',
+  'linux-x64': 'agent-control-specification-opa-linux-x64',
+};
 
 export function opaBinary(): string {
-  return (
-    process.env.EAP_OPA_BINARY ??
-    resolve('node_modules/agent-control-specification-opa-linux-x64/bin/opa')
-  );
+  if (process.env.EAP_OPA_BINARY) return process.env.EAP_OPA_BINARY;
+  const platformKey = `${process.platform}-${process.arch}`;
+  const packageName = opaPackages[platformKey];
+  if (!packageName) {
+    throw new Error(
+      `No bundled OPA binary for ${platformKey}; supported: ${Object.keys(opaPackages).join(', ')}. Set EAP_OPA_BINARY to override.`,
+    );
+  }
+  const binary = resolve('node_modules', packageName, 'bin', 'opa');
+  if (!existsSync(binary)) {
+    throw new Error(
+      `Bundled OPA binary is not installed at ${binary}. Run npm ci without omitting optional dependencies, or set EAP_OPA_BINARY.`,
+    );
+  }
+  return binary;
 }
 
 export async function evaluatePolicy(
