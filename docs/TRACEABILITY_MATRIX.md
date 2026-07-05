@@ -1,13 +1,23 @@
 # Traceability Matrix
 
-| Requirement | Design | Implementation | Validation evidence |
-| --- | --- | --- | --- |
-| PR-001 / FR-012 | Agent loop and runtime flow | `src/agents/remediator.ts`, `src/lib/localGateway.ts` | `tests/system/flue_pi.test.ts`, E2E |
-| PR-002 / FR-003 | Hypothesis ledger spec for three deterministic remediation defect classes | `src/lib/ledger.ts`, `src/lib/code.ts` | `tests/unit/ledger.test.ts`, `tests/component/code.test.ts` |
-| PR-003 / FR-008 | Policy model | `src/lib/opa.ts`, `policy/agent.rego` | `tests/component/opa.test.ts` |
-| PR-004 / FR-007 | Closure gate | `src/lib/ledger.ts` | `tests/regression/regression_closure.test.ts` |
-| PR-005 / FR-010 | Data governance | `scripts/data_guard.py`, `src/lib/dataProxy.ts` | `tests/component/data_proxy.test.ts`, `tests_py/test_data_guard.py` |
-| PR-006 | Data governance | `scripts/data_guard.py` | Python and TS data proxy tests |
-| PR-007 / FR-011 | Observability | `src/lib/telemetry.ts`, `src/lib/audit.ts` | E2E artifact logs |
-| PR-008 | Validation plan | `scripts/validate-release.mjs` | final verification report |
-| P4-T01 | Skill optimization governance | `src/agents/remediator.ts`, `scripts/skill-cycle.mjs`, `docs/SKILL_OPTIMIZATION.md` | `tests/component/remediator_skill.test.ts`, cycle verdict |
+| Requirement | Design | Implementation | Tests | Validation evidence |
+| --- | --- | --- | --- | --- |
+| PR-001 / FR-012 | `docs/AGENT_LOOP_SPEC.md` | `src/agents/remediator.ts`, `src/lib/localGateway.ts` | `tests/system/flue_pi.test.ts`, `tests/e2e/remediate_e2e.test.ts` | `vitest_all`, E2E artifacts |
+| PR-002 / FR-003 | `docs/HYPOTHESIS_LEDGER_SPEC.md`, `docs/EVIDENCE_GRAPH_SPEC.md` | `src/lib/ledger.ts`, `src/lib/code.ts` | `tests/unit/ledger.test.ts`, `tests/component/code.test.ts` | `vitest_all` |
+| PR-003 / FR-008 | `docs/POLICY_MODEL.md` | `src/lib/opa.ts`, `policy/agent.rego` | `tests/component/opa.test.ts`, `policy/tests/agent_test.rego` | `opa`, `opa_test` |
+| PR-004 / FR-007 | `docs/HYPOTHESIS_LEDGER_SPEC.md` | `src/lib/ledger.ts` | `tests/regression/regression_closure.test.ts` | `vitest_all` |
+| PR-005 / FR-010 | `docs/DATA_GOVERNANCE.md` | `scripts/data_guard.py`, `src/lib/dataProxy.ts` | `tests/component/data_proxy.test.ts`, `tests_py/test_data_guard.py` | `python_tests`, `vitest_all` |
+| PR-006 | `docs/DATA_GOVERNANCE.md`, `docs/SECURITY_MODEL.md` | `scripts/data_guard.py`, `policy/agent.rego` | `tests/failure/failure_security.test.ts`, `tests/security/policy_security.test.ts`, `tests_py/test_data_guard.py` | `python_tests`, `vitest_all` |
+| PR-007 / FR-011 | `docs/SYSTEM_ARCHITECTURE.md` | `src/lib/telemetry.ts`, `src/lib/audit.ts` | `tests/e2e/remediate_e2e.test.ts`, `tests/component/telemetry.test.ts` | `vitest_all`, `e2e_artifacts` |
+| PR-008 | `docs/VALIDATION_PLAN.md` | `scripts/validate-release.mjs` | `scripts/spec-check.mjs` | `spec_traceability`, `artifacts/validation/final_verification_report.json` |
+| P4-T01 | `docs/SKILL_OPTIMIZATION.md` | `src/agents/remediator.ts`, `scripts/skill-cycle.mjs`, `.orchestration/skills/promoted/remediator/best_skill.md` | `tests/component/remediator_skill.test.ts`, `.orchestration/skills/candidates/remediator/cycle-1.verdict.json` | `vitest_all`, SkillOpt cycle verdict |
+| REQ-GATEWAY-001 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/productionGateway.ts`, `src/lib/localGateway.ts` | `tests/contract/llm_contract.test.ts` | `llm_contract`, `.orchestration/acceptance/P1-T03b.acceptance.md` |
+| REQ-ROUTING-001 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/router.ts`, `policy/routing.json`, `policy/routing.rego` | `tests/component/routing.test.ts`, `tests/contract/llm_contract.test.ts`, `policy/tests/routing_test.rego` | `llm_contract`, `opa_test` |
+| REQ-REDACTION-002 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/productionGateway.ts`, `src/lib/dataProxy.ts`, `scripts/data_guard.py` | `tests/contract/llm_contract.test.ts`, `tests/component/data_proxy.test.ts`, `tests_py/test_data_guard.py` | `llm_contract`, `python_tests`, `vitest_all` |
+| REQ-AUDIT-002 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/productionGateway.ts`, `src/lib/audit.ts`, `src/lib/telemetry.ts` | `tests/contract/llm_contract.test.ts` | `llm_contract` |
+| REQ-FAILCLOSED-002 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/productionGateway.ts`, `src/lib/router.ts`, `src/lib/opa.ts`, `policy/routing.rego` | `tests/contract/llm_contract.test.ts`, `tests/component/routing.test.ts`, `tests/component/opa.test.ts`, `tests/failure/failure_security.test.ts` | `llm_contract`, `opa`, `vitest_all` |
+| REQ-MEASURE-001 | `docs/PRODUCTION_GATEWAY_DESIGN.md` | `src/lib/productionGateway.ts`, `src/lib/telemetry.ts` | `tests/contract/llm_contract.test.ts`, `tests/component/telemetry.test.ts` | `llm_contract`, `vitest_all` |
+| REQ-SANDBOX-001 | `docs/SANDBOX_INTEGRATION_DESIGN.md` | `src/lib/sandbox.ts`, `src/lib/sandboxOpenSandbox.ts`, `.github/workflows/validate-release.yml` | `tests/component/sandbox_executor.test.ts`, `tests/integration/opensandbox.test.ts` | `opensandbox-integration`, `.orchestration/acceptance/P2-T06c.acceptance.md` |
+| REQ-SANDBOX-002 | `docs/SANDBOX_INTEGRATION_DESIGN.md` | `src/lib/sandbox.ts`, `src/lib/sandboxOpenSandbox.ts`, `policy/sandbox.rego` | `tests/component/sandbox_executor.test.ts`, `tests/component/sandbox_policy.test.ts` | `vitest_all`, `opa_test`, `opensandbox-integration` |
+| REQ-SANDBOX-003 | `docs/SANDBOX_INTEGRATION_DESIGN.md` | `src/lib/sandboxOpenSandbox.ts`, `policy/sandbox.rego`, `.github/workflows/validate-release.yml` | `tests/component/sandbox_policy.test.ts`, `tests/integration/opensandbox.test.ts`, `policy/tests/sandbox_test.rego` | `opa_test`, `opensandbox-integration` |
+| REQ-SANDBOX-004 | `docs/SANDBOX_INTEGRATION_DESIGN.md` | `src/lib/sandbox.ts`, `src/lib/sandboxOpenSandbox.ts`, `src/lib/audit.ts` | `tests/component/sandbox_executor.test.ts`, `tests/integration/opensandbox.test.ts` | `vitest_all`, `opensandbox-integration`, `.orchestration/acceptance/P2-T06b.acceptance.md` |

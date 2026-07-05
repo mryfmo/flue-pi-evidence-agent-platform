@@ -12,7 +12,8 @@ import { promisify } from "node:util";
 import { tmpdir } from "node:os";
 import { ConnectionConfig, Sandbox } from "@alibaba-group/opensandbox";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { BatchSpanProcessor, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { createOpenTelemetryObserver } from "@flue/opentelemetry";
 import { flue } from "@flue/runtime/routing";
@@ -2021,10 +2022,51 @@ var JsonlSpanExporter = class {
 		return Promise.resolve();
 	}
 };
+var WarningSpanExporter = class {
+	exporter;
+	warned = false;
+	constructor(exporter) {
+		this.exporter = exporter;
+	}
+	export(spans, resultCallback) {
+		let completed = false;
+		let timer;
+		const finish = (failed) => {
+			if (completed) return;
+			completed = true;
+			clearTimeout(timer);
+			if (failed) this.warnOnce();
+			resultCallback({ code: 0 });
+		};
+		timer = setTimeout(() => finish(true), 1e3);
+		timer.unref();
+		try {
+			this.exporter.export(spans, (result) => finish(result.code !== 0));
+		} catch {
+			finish(true);
+		}
+	}
+	shutdown() {
+		return this.exporter.shutdown();
+	}
+	warnOnce() {
+		if (!this.warned) {
+			this.warned = true;
+			console.warn("OTLP trace export failed; dropping spans.");
+		}
+	}
+};
 var registered = false;
 function configureTelemetry(tracePath) {
 	if (!registered) {
-		new NodeTracerProvider({ spanProcessors: [new SimpleSpanProcessor(new JsonlSpanExporter(tracePath))] }).register();
+		const spanProcessors = [new SimpleSpanProcessor(new JsonlSpanExporter(tracePath))];
+		const otlpEndpoint = process.env.EAP_OTLP_ENDPOINT?.trim();
+		if (otlpEndpoint) spanProcessors.push(new BatchSpanProcessor(new WarningSpanExporter(new OTLPTraceExporter({ url: otlpEndpoint })), {
+			maxExportBatchSize: 1,
+			maxQueueSize: 64,
+			scheduledDelayMillis: 10
+		}));
+		new NodeTracerProvider({ spanProcessors }).register();
 		registered = true;
 	}
 	return tracePath;

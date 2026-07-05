@@ -1,24 +1,24 @@
 policy/tests/agent_test.rego:
-data.eap.agent_test.test_allow_happy_path: PASS (1.149125ms)
-data.eap.agent_test.test_guest_denied: PASS (108.708µs)
-data.eap.agent_test.test_tenant_mismatch_denied: PASS (116.542µs)
-data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (346µs)
-data.eap.agent_test.test_shell_denied: PASS (207.875µs)
-data.eap.agent_test.test_raw_sql_denied: PASS (94.584µs)
-data.eap.agent_test.test_unknown_tool_denied: PASS (102.083µs)
-data.eap.agent_test.test_high_risk_requires_approval: PASS (180.834µs)
+data.eap.agent_test.test_allow_happy_path: PASS (928.833µs)
+data.eap.agent_test.test_guest_denied: PASS (141.375µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (132.209µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (142.917µs)
+data.eap.agent_test.test_shell_denied: PASS (90.334µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (91.875µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (106.709µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (599.708µs)
 
 policy/tests/routing_test.rego:
-data.eap.routing_test.test_allow_happy_path: PASS (166.458µs)
-data.eap.routing_test.test_tenant_mismatch_denied: PASS (116.209µs)
-data.eap.routing_test.test_empty_tenant_allowlist_denied: PASS (158.084µs)
-data.eap.routing_test.test_restricted_external_denied: PASS (486.375µs)
+data.eap.routing_test.test_allow_happy_path: PASS (167.625µs)
+data.eap.routing_test.test_tenant_mismatch_denied: PASS (119.25µs)
+data.eap.routing_test.test_empty_tenant_allowlist_denied: PASS (168.917µs)
+data.eap.routing_test.test_restricted_external_denied: PASS (139.708µs)
 
 policy/tests/sandbox_test.rego:
-data.eap.sandbox_test.test_allow_happy_path: PASS (113.667µs)
-data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (94.583µs)
-data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (124.583µs)
-data.eap.sandbox_test.test_egress_denied: PASS (586.416µs)
-data.eap.sandbox_test.test_env_denied: PASS (122.791µs)
+data.eap.sandbox_test.test_allow_happy_path: PASS (101.541µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (92.25µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (118.708µs)
+data.eap.sandbox_test.test_egress_denied: PASS (98.375µs)
+data.eap.sandbox_test.test_env_denied: PASS (92.667µs)
 --------------------------------------------------------------------------------
 PASS: 17/17
