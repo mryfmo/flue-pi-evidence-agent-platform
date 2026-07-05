@@ -1,6 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
 
 const validationDir = 'artifacts/validation';
 rmSync(validationDir, { recursive: true, force: true });
@@ -66,6 +65,11 @@ const commands = [
     'vitest_all',
     'bash',
     ['-lc', 'timeout 180 ./node_modules/.bin/vitest run --pool=forks'],
+  ],
+  [
+    'llm_contract',
+    'bash',
+    ['-lc', 'timeout 120 npx vitest run tests/contract --pool=forks'],
   ],
   [
     'flue_build',

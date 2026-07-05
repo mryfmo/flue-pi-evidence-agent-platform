@@ -1,43 +1,109 @@
 {
-  "status": "failed",
-  "generatedAt": "2026-07-05T06:27:35.115Z",
+  "status": "passed",
+  "generatedAt": "2026-07-05T07:45:35.111Z",
   "node": "v22.19.0",
   "results": [
     {
       "name": "setup_python",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 10164
+      "durationMs": 1983
     },
     {
       "name": "spec_traceability",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 55
+      "durationMs": 39
     },
     {
       "name": "format",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 810
+      "durationMs": 760
     },
     {
       "name": "lint",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 59
+      "durationMs": 57
     },
     {
       "name": "typecheck",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 3412
+      "durationMs": 1555
     },
     {
       "name": "opa",
-      "status": "failed",
-      "returnCode": 1,
-      "durationMs": 76
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 213
+    },
+    {
+      "name": "python_compile",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 30
+    },
+    {
+      "name": "python_ruff",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 278
+    },
+    {
+      "name": "python_mypy",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 367
+    },
+    {
+      "name": "python_bandit",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 134
+    },
+    {
+      "name": "python_tests",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 2177
+    },
+    {
+      "name": "vitest_all",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 6585
+    },
+    {
+      "name": "llm_contract",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 6211
+    },
+    {
+      "name": "flue_build",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 981
+    },
+    {
+      "name": "e2e_artifacts",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 33
+    },
+    {
+      "name": "npm_audit_prod",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 566
+    },
+    {
+      "name": "npm_sbom_prod",
+      "status": "passed",
+      "returnCode": 0,
+      "durationMs": 226
     }
   ]
 }

@@ -128,11 +128,23 @@ def metric_query() -> GuardResult:
     )
 
 
+def redact_text(text: str) -> dict[str, object]:
+    """Redact deterministic PII findings from free text."""
+    findings = offline_findings(text)
+    anonymizer = AnonymizerEngine()  # type: ignore[no-untyped-call]
+    redacted = anonymizer.anonymize(text=text, analyzer_results=findings).text
+    return {"redacted_text": redacted, "entities_found": len(findings)}
+
+
 def main() -> int:
     """Execute the requested bounded data command."""
     command = sys.argv[1] if len(sys.argv) > 1 else "metric"
     if command == "metric":
         print(json.dumps(metric_query().__dict__, sort_keys=True))
+        return 0
+    if command == "redact_text":
+        payload = json.loads(sys.stdin.read() or "{}")
+        print(json.dumps(redact_text(str(payload.get("text", ""))), sort_keys=True))
         return 0
     if command == "unsafe":
         reject_unsafe_sql("select name, email from customers")

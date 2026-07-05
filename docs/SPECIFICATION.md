@@ -26,3 +26,21 @@ The release shall include executable gates for documentation traceability, forma
 
 ## REQ-RELEASE-001
 No artifact may be labeled releasable unless `npm run validate-release` passes and writes a passing `artifacts/validation/final_verification_report.json`.
+
+## REQ-GATEWAY-001
+The system shall support a production LLM gateway as an additional provider behind the existing typed provider boundary.
+
+## REQ-ROUTING-001
+Model routing shall be a deterministic policy function over tenant, data classification, task kind, cost budget, and latency target.
+
+## REQ-REDACTION-002
+The gateway shall redact outbound prompts before any external provider call.
+
+## REQ-AUDIT-002
+Every gateway call shall record audit ID, trace ID, provider, model ID, routing decision, token counts, latency, content digests, and estimated cost.
+
+## REQ-FAILCLOSED-002
+Routing policy, redaction, secret, or OPA failures shall prevent external provider calls.
+
+## REQ-MEASURE-001
+Gateway calls shall emit latency, token, and cost telemetry for G12 measurement.
