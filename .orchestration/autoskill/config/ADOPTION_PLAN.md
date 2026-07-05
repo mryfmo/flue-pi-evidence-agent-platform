@@ -40,3 +40,7 @@ observed -> autoskill_generated | hermes_subset_candidate | manual_candidate
 - [ ] pip-audit / SBOM を artifacts に保存(既存 G11 拡張と同じ形式)
 - [ ] sandbox 内 dry-run(P0/P1 の実タスクレポートを redacted input として candidate を 1 件以上生成)
 - [ ] 生成物が promotion されないこと(promotion_allowed=false)をレビューで確認
+
+## Dual-auth dry-run
+
+AutoSkill dry-run は `run_autoskill.sh --auth openai|codex --run-id <id>` で起動する。`openai` は OpenAI-compatible base URL と API key を明示注入し、`codex` は `codex_auth_proxy.mjs` の bearer token 付き local shim を OpenAI-compatible endpoint として使う。コンテナから host shim へは `EAP_SHIM_URL` を明示し、Docker では `host.docker.internal`、Apple `container` では検出済み VM gateway IP または `EAP_SHIM_HOST` override を使う。生成 Skill は引き続き candidates 保存のみで promotion 禁止。

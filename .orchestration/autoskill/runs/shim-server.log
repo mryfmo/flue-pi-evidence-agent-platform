@@ -1,0 +1,16 @@
+codex auth proxy listening on 0.0.0.0:8787
+node:internal/fs/promises:640
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open '/var/folders/r2/_gkywj713g54lbxkc_hv7j400000gn/T/autoskill-codex-17186-1783261715753.txt'
+[90m    at async open (node:internal/fs/promises:640:25)[39m
+[90m    at async readFile (node:internal/fs/promises:1290:14)[39m
+    at async ChildProcess.<anonymous> [90m(file:///Users/mryfmo/Workspace/flue_pi_ai_agent/[39m.orchestration/autoskill/config/codex_auth_proxy.mjs:88:17[90m)[39m {
+  errno: [33m-2[39m,
+  code: [32m'ENOENT'[39m,
+  syscall: [32m'open'[39m,
+  path: [32m'/var/folders/r2/_gkywj713g54lbxkc_hv7j400000gn/T/autoskill-codex-17186-1783261715753.txt'[39m
+}
+
+Node.js v24.18.0

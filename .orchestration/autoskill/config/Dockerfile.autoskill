@@ -10,6 +10,22 @@ RUN apt-get update \
 WORKDIR /opt/autoskill
 RUN git clone "${AUTOSKILL_REPO}" . \
   && git checkout "${AUTOSKILL_SHA}" \
+  && mkdir -p autoskill/offline/conversation/utils \
+  && printf '%s\n' '"""Build-time workaround for pinned upstream missing utils package."""' > autoskill/offline/conversation/utils/__init__.py \
+  && printf '%s\n' \
+    '"""Fail-closed mock-provider guards for offline conversation extraction."""' \
+    '' \
+    'def ensure_not_mock(value, *, where=""):' \
+    '    if str(value or "").strip().lower() == "mock":' \
+    '        raise RuntimeError(f"mock provider is disabled: {where}")' \
+    '' \
+    '' \
+    'def ensure_llm_config_not_mock(config, *, where=""):' \
+    '    provider = ""' \
+    '    if isinstance(config, dict):' \
+    '        provider = str(config.get("provider") or "").strip().lower()' \
+    '    ensure_not_mock(provider, where=where)' \
+    > autoskill/offline/conversation/utils/ban_mock.py \
   && pip install --no-cache-dir .
 
 RUN useradd --create-home --shell /usr/sbin/nologin autoskill

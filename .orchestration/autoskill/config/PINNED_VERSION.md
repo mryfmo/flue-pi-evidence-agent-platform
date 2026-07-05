@@ -39,6 +39,7 @@
   - Matching embedding options: `--embeddings-base-url`, `--embeddings-api-key`, `OPENAI_BASE_URL`, `AUTOSKILL_GENERIC_EMBED_URL`.
 - Concerning permissions: LLM and embedding clients perform outbound network calls when extraction runs. The P2-T07a container CMD performs only `python -m autoskill --help` and bakes in no API keys.
 - Concerning code paths for later T07b: optional offline conversation self-evolution modules can invoke `codex exec`; do not enable those paths in the AutoSkill dry-run container.
+- Upstream deviation for P2-T07b: pinned commit `94c47ca488d4ba4117d20272e66d49b9877e68cf` imports `autoskill.offline.conversation.utils.ban_mock` but the reviewed checkout has no `autoskill/offline/conversation/utils/` package. `Dockerfile.autoskill` creates the missing package at build time with only the imported fail-closed guard functions. This should become an upstream issue if the pin remains.
 
 ## Reproduction
 

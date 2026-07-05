@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "user_id": "eap-dry-run",
+  "skills": {
+    "ea1ea8a1-d8bb-4742-9a1b-485cbff40dc1": {
+      "skill_id": "ea1ea8a1-d8bb-4742-9a1b-485cbff40dc1",
+      "name": "secret_management_acceptance_review",
+      "current_version": "0.1.1",
+      "lineage_key": "lineage-5a0292d9-08de-5eef-9a3f-6b9c1f0717c5",
+      "updated_at": "2026-07-05T14:08:34.821510+00:00",
+      "updated_at_ms": 1783260514821,
+      "source_count": 2,
+      "history_count": 2,
+      "sources": [
+        {
+          "conversation_key": "57c6771640ba5b10b1c11d4184e7f5d2af867542",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 11,
+          "import_index": 11,
+          "title": "openai_conversations.jsonl#conv_12",
+          "locator": "openai_conversations.jsonl#conv_12",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T05.acceptance.md # P2-T05 Acceptance - task_id: P2-T05 / reviewer: orchestrator-fable5 / date: 2026-07-05 - status: **accepted** / next_action: proceed...",
+          "first_seen_at": "2026-07-05T14:08:34.821510+00:00",
+          "first_seen_at_ms": 1783260514821,
+          "last_seen_at": "2026-07-05T14:08:34.821510+00:00",
+          "last_seen_at_ms": 1783260514821,
+          "seen_count": 1
+        },
+        {
+          "conversation_key": "924968de3f730484a902cbb9223a6364905ac2d5",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 0,
+          "import_index": 0,
+          "title": "openai_conversations.jsonl#conv_1",
+          "locator": "openai_conversations.jsonl#conv_1",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T01.acceptance.md # P0-T01 Acceptance - task_id: P0-T01 - reviewer: orchestrator-fable5 (Claude Code / Fable 5 / high) - date: 2026-07-05 - status: **ac...",
+          "first_seen_at": "2026-07-05T13:58:47.993604+00:00",
+          "first_seen_at_ms": 1783259927993,
+          "last_seen_at": "2026-07-05T13:58:47.993604+00:00",
+          "last_seen_at_ms": 1783259927993,
+          "seen_count": 1
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-07-05T13:58:47.993604+00:00",
+          "timestamp_ms": 1783259927993,
+          "version": "0.1.0",
+          "name": "§13受入判定レビュー",
+          "lineage_key": "lineage-e7ca13de-79cb-5501-ad13-ff29995f17cd",
+          "conversation_key": "924968de3f730484a902cbb9223a6364905ac2d5",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 0,
+          "import_index": 0,
+          "title": "openai_conversations.jsonl#conv_1",
+          "locator": "openai_conversations.jsonl#conv_1",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T01.acceptance.md # P0-T01 Acceptance - task_id: P0-T01 - reviewer: orchestrator-fable5 (Claude Code / Fable 5 / high) - date: 2026-07-05 - status: **ac...",
+          "repeat_count": 1
+        },
+        {
+          "timestamp": "2026-07-05T14:08:34.821510+00:00",
+          "timestamp_ms": 1783260514821,
+          "version": "0.1.1",
+          "name": "secret_management_acceptance_review",
+          "lineage_key": "lineage-5a0292d9-08de-5eef-9a3f-6b9c1f0717c5",
+          "conversation_key": "57c6771640ba5b10b1c11d4184e7f5d2af867542",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 11,
+          "import_index": 11,
+          "title": "openai_conversations.jsonl#conv_12",
+          "locator": "openai_conversations.jsonl#conv_12",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T05.acceptance.md # P2-T05 Acceptance - task_id: P2-T05 / reviewer: orchestrator-fable5 / date: 2026-07-05 - status: **accepted** / next_action: proceed...",
+          "repeat_count": 1
+        }
+      ]
+    },
+    "4ce91584-ce95-4bbf-8555-2bffda8cc000": {
+      "skill_id": "4ce91584-ce95-4bbf-8555-2bffda8cc000",
+      "name": "AGMSGタスク実行プロトコル",
+      "current_version": "0.1.0",
+      "lineage_key": "lineage-8cf41abb-a3a6-57f4-8e09-e2f43bcedcf0",
+      "updated_at": "2026-07-05T14:13:21.203299+00:00",
+      "updated_at_ms": 1783260801203,
+      "source_count": 1,
+      "history_count": 1,
+      "sources": [
+        {
+          "conversation_key": "bab38018c9a825ee82f34df11755e213bbafedfc",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 12,
+          "import_index": 12,
+          "title": "openai_conversations.jsonl#conv_13",
+          "locator": "openai_conversations.jsonl#conv_13",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/agmsg/history.jsonl {\"from\": \"orchestrator-fable5\", \"to\": \"codex-gpt55-high-p0-t01\", \"body\": \"AGMSG-TASK v1 task_id=P0-T01 repo=/Users/mryfmo/Workspace/flue_pi_ai_age...",
+          "first_seen_at": "2026-07-05T14:13:21.203299+00:00",
+          "first_seen_at_ms": 1783260801203,
+          "last_seen_at": "2026-07-05T14:13:21.203299+00:00",
+          "last_seen_at_ms": 1783260801203,
+          "seen_count": 1
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-07-05T14:13:21.203299+00:00",
+          "timestamp_ms": 1783260801203,
+          "version": "0.1.0",
+          "name": "AGMSGタスク実行プロトコル",
+          "lineage_key": "lineage-8cf41abb-a3a6-57f4-8e09-e2f43bcedcf0",
+          "conversation_key": "bab38018c9a825ee82f34df11755e213bbafedfc",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 12,
+          "import_index": 12,
+          "title": "openai_conversations.jsonl#conv_13",
+          "locator": "openai_conversations.jsonl#conv_13",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/agmsg/history.jsonl {\"from\": \"orchestrator-fable5\", \"to\": \"codex-gpt55-high-p0-t01\", \"body\": \"AGMSG-TASK v1 task_id=P0-T01 repo=/Users/mryfmo/Workspace/flue_pi_ai_age...",
+          "repeat_count": 1
+        }
+      ]
+    },
+    "71de0fe7-8667-4327-8b74-24badd5cfd18": {
+      "skill_id": "71de0fe7-8667-4327-8b74-24badd5cfd18",
+      "name": "Secure summarization LLM gateway implementation",
+      "current_version": "0.1.0",
+      "lineage_key": "lineage-0778fc39-e3fc-5954-b9c1-149415c42c48",
+      "updated_at": "2026-07-05T14:20:04.593864+00:00",
+      "updated_at_ms": 1783261204593,
+      "source_count": 1,
+      "history_count": 1,
+      "sources": [
+        {
+          "conversation_key": "9a416ad2b78aebd3013c69538fbd771ae6689c58",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 18,
+          "import_index": 18,
+          "title": "openai_conversations.jsonl#conv_19",
+          "locator": "openai_conversations.jsonl#conv_19",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03b.report.md # P1-T03b Report ## Changed Files - `src/lib/productionGateway.ts` - `src/lib/dataProxy.ts` - `scripts/data_guard.py` - `tests_py/test_data_...",
+          "first_seen_at": "2026-07-05T14:20:04.593864+00:00",
+          "first_seen_at_ms": 1783261204593,
+          "last_seen_at": "2026-07-05T14:20:04.593864+00:00",
+          "last_seen_at_ms": 1783261204593,
+          "seen_count": 1
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-07-05T14:20:04.593864+00:00",
+          "timestamp_ms": 1783261204593,
+          "version": "0.1.0",
+          "name": "Secure summarization LLM gateway implementation",
+          "lineage_key": "lineage-0778fc39-e3fc-5954-b9c1-149415c42c48",
+          "conversation_key": "9a416ad2b78aebd3013c69538fbd771ae6689c58",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 18,
+          "import_index": 18,
+          "title": "openai_conversations.jsonl#conv_19",
+          "locator": "openai_conversations.jsonl#conv_19",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03b.report.md # P1-T03b Report ## Changed Files - `src/lib/productionGateway.ts` - `src/lib/dataProxy.ts` - `scripts/data_guard.py` - `tests_py/test_data_...",
+          "repeat_count": 1
+        }
+      ]
+    },
+    "67933a46-c5c1-4847-b78c-9666d1c898b1": {
+      "skill_id": "67933a46-c5c1-4847-b78c-9666d1c898b1",
+      "name": "release validation security gates",
+      "current_version": "0.1.0",
+      "lineage_key": "lineage-dec6387d-f20e-59ee-ab0a-5abc5a87a0a6",
+      "updated_at": "2026-07-05T14:26:54.457760+00:00",
+      "updated_at_ms": 1783261614457,
+      "source_count": 1,
+      "history_count": 1,
+      "sources": [
+        {
+          "conversation_key": "504eac2e944c3159b723cccfe7d5c715dcae7612",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 23,
+          "import_index": 23,
+          "title": "openai_conversations.jsonl#conv_24",
+          "locator": "openai_conversations.jsonl#conv_24",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T04.report.md # P2-T04 Report ## Status ready_for_review ## Changed Files - `scripts/validate-release.mjs` - `scripts/check-lockfile-registry.mjs` - `requi...",
+          "first_seen_at": "2026-07-05T14:26:54.457760+00:00",
+          "first_seen_at_ms": 1783261614457,
+          "last_seen_at": "2026-07-05T14:26:54.457760+00:00",
+          "last_seen_at_ms": 1783261614457,
+          "seen_count": 1
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-07-05T14:26:54.457760+00:00",
+          "timestamp_ms": 1783261614457,
+          "version": "0.1.0",
+          "name": "release validation security gates",
+          "lineage_key": "lineage-dec6387d-f20e-59ee-ab0a-5abc5a87a0a6",
+          "conversation_key": "504eac2e944c3159b723cccfe7d5c715dcae7612",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 23,
+          "import_index": 23,
+          "title": "openai_conversations.jsonl#conv_24",
+          "locator": "openai_conversations.jsonl#conv_24",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T04.report.md # P2-T04 Report ## Status ready_for_review ## Changed Files - `scripts/validate-release.mjs` - `scripts/check-lockfile-registry.mjs` - `requi...",
+          "repeat_count": 1
+        }
+      ]
+    },
+    "60e0ab61-0e98-4d31-83e6-e9da0173825a": {
+      "skill_id": "60e0ab61-0e98-4d31-83e6-e9da0173825a",
+      "name": "secrets management documentation scaffold",
+      "current_version": "0.1.0",
+      "lineage_key": "lineage-2164040d-fee5-5a93-81cf-50201a52f7ee",
+      "updated_at": "2026-07-05T14:33:32.935205+00:00",
+      "updated_at_ms": 1783262012935,
+      "source_count": 1,
+      "history_count": 1,
+      "sources": [
+        {
+          "conversation_key": "bb8c4a904ee017fffc2109c5376561b95bf8d488",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 24,
+          "import_index": 24,
+          "title": "openai_conversations.jsonl#conv_25",
+          "locator": "openai_conversations.jsonl#conv_25",
+          "message_count": 1,
+          "user_turn_count": 1,
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T05.report.md # P2-T05 Report ## Changed Files - `docs/SECRETS_MANAGEMENT.md`: added zero-secret current state, credential inventory, injection paths, rota...",
+          "first_seen_at": "2026-07-05T14:33:32.935205+00:00",
+          "first_seen_at_ms": 1783262012935,
+          "last_seen_at": "2026-07-05T14:33:32.935205+00:00",
+          "last_seen_at_ms": 1783262012935,
+          "seen_count": 1
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-07-05T14:33:32.935205+00:00",
+          "timestamp_ms": 1783262012935,
+          "version": "0.1.0",
+          "name": "secrets management documentation scaffold",
+          "lineage_key": "lineage-2164040d-fee5-5a93-81cf-50201a52f7ee",
+          "conversation_key": "bb8c4a904ee017fffc2109c5376561b95bf8d488",
+          "source_file": "/work/inputs/openai_conversations.jsonl",
+          "conversation_index": 24,
+          "import_index": 24,
+          "title": "openai_conversations.jsonl#conv_25",
+          "locator": "openai_conversations.jsonl#conv_25",
+          "primary_user_questions_preview": "Source: .orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T05.report.md # P2-T05 Report ## Changed Files - `docs/SECRETS_MANAGEMENT.md`: added zero-secret current state, credential inventory, injection paths, rota...",
+          "repeat_count": 1
+        }
+      ]
+    }
+  },
+  "lineages": {
+    "lineage-e7ca13de-79cb-5501-ad13-ff29995f17cd": "ea1ea8a1-d8bb-4742-9a1b-485cbff40dc1",
+    "lineage-5a0292d9-08de-5eef-9a3f-6b9c1f0717c5": "ea1ea8a1-d8bb-4742-9a1b-485cbff40dc1",
+    "lineage-8cf41abb-a3a6-57f4-8e09-e2f43bcedcf0": "4ce91584-ce95-4bbf-8555-2bffda8cc000",
+    "lineage-0778fc39-e3fc-5954-b9c1-149415c42c48": "71de0fe7-8667-4327-8b74-24badd5cfd18",
+    "lineage-dec6387d-f20e-59ee-ab0a-5abc5a87a0a6": "67933a46-c5c1-4847-b78c-9666d1c898b1",
+    "lineage-2164040d-fee5-5a93-81cf-50201a52f7ee": "60e0ab61-0e98-4d31-83e6-e9da0173825a"
+  }
+}

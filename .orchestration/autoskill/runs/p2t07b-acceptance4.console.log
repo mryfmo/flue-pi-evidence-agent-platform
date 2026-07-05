@@ -1,0 +1,44 @@
+[0/6] [0s]
+[1/6] Fetching image [0s]
+[2/6] Unpacking image [0s]
+[3/6] Fetching kernel [0s]
+[4/6] Fetching init image [0s]
+[5/6] Unpacking init image [0s]
+[6/6] Starting container [0s]
+[6/6] Starting container [1s]
+[6/6] Starting container [1s]
+[config] llm_provider=openai llm_model=gpt-4o-mini extract_mode=common max_workers=1 strict_llm_errors=True
+[1/25] openai_conversations.jsonl -> skills: §13受入判定レビュー
+[2/25] openai_conversations.jsonl -> no candidate extracted
+[3/25] openai_conversations.jsonl -> no candidate extracted
+[4/25] openai_conversations.jsonl -> no candidate extracted
+[5/25] openai_conversations.jsonl -> no candidate extracted
+[6/25] openai_conversations.jsonl -> no candidate extracted
+[7/25] openai_conversations.jsonl -> no candidate extracted
+[8/25] openai_conversations.jsonl -> no candidate extracted
+[9/25] openai_conversations.jsonl -> no candidate extracted
+[10/25] openai_conversations.jsonl -> no candidate extracted
+[11/25] openai_conversations.jsonl -> no candidate extracted
+[12/25] openai_conversations.jsonl -> skills: secret_management_acceptance_review
+[13/25] openai_conversations.jsonl -> skills: AGMSGタスク実行プロトコル
+[14/25] openai_conversations.jsonl -> no candidate extracted
+[15/25] openai_conversations.jsonl -> no candidate extracted
+[16/25] openai_conversations.jsonl -> no candidate extracted
+[17/25] openai_conversations.jsonl -> no candidate extracted
+[18/25] openai_conversations.jsonl -> no candidate extracted
+[19/25] openai_conversations.jsonl -> skills: Secure summarization LLM gateway implementation
+[20/25] openai_conversations.jsonl -> no candidate extracted
+[21/25] openai_conversations.jsonl -> no candidate extracted
+[22/25] openai_conversations.jsonl -> no candidate extracted
+[23/25] openai_conversations.jsonl -> no candidate extracted
+[24/25] openai_conversations.jsonl -> skills: release validation security gates
+[25/25] openai_conversations.jsonl -> skills: secrets management documentation scaffold
+Offline conversation extraction completed.
+conversations=25 processed=25 failed=0 upserted=5
+1. secret_management_acceptance_review (0.1.1)
+2. AGMSGタスク実行プロトコル (0.1.0)
+3. Secure summarization LLM gateway implementation (0.1.0)
+4. release validation security gates (0.1.0)
+5. secrets management documentation scaffold (0.1.0)
+requirement_stats: lineages=6 path=/work/outputs/SkillBank/index/offline_requirement_stats_eap-dry-run.json
+conversation_provenance: skills=5 path=/work/outputs/SkillBank/index/offline_conversation_provenance_eap-dry-run.json

@@ -1,0 +1,15 @@
+[0/6] [0s]
+[1/6] Fetching image [0s]
+[2/6] Unpacking image [0s]
+[3/6] Fetching kernel [0s]
+[4/6] Fetching init image [0s]
+[5/6] Unpacking init image [0s]
+[6/6] Starting container [0s]
+[6/6] Starting container [1s]
+[6/6] Starting container [1s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/autoskill/autoskill/offline/conversation/extract.py", line 35, in <module>
+    from .utils.ban_mock import ensure_llm_config_not_mock, ensure_not_mock
+ModuleNotFoundError: No module named 'autoskill.offline.conversation.utils'

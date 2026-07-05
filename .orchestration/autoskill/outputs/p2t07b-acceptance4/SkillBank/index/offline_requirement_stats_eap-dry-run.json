@@ -1,0 +1,656 @@
+{
+  "version": 1,
+  "user_id": "eap-dry-run",
+  "lineages": {
+    "lineage-e7ca13de-79cb-5501-ad13-ff29995f17cd": {
+      "total_updates": 1,
+      "requirements": {
+        "r-5eea93c6-6c1c-5fba-956e-d08b1ec62ec4": {
+          "canonical": "Keep changes within the specified task scope.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-4e702234-7bbe-5302-9a29-ed7974a36022": {
+          "canonical": "Verify all completion criteria before acceptance.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-a0cb83ed-72ee-5b43-b360-81281d074fd3": {
+          "canonical": "Save validation command results in logs or reports.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-329e6f32-e99b-5759-9cf6-288ecc0949b9": {
+          "canonical": "Record reasons for any unverifiable validation items.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-6365777a-cea3-5fd7-b6f2-596a4a04fd6e": {
+          "canonical": "Preserve existing gates and avoid breaking unrelated areas.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-bb1934ae-da6a-5487-98f4-1c2ac255ad32": {
+          "canonical": "Record derived artifacts and their status.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-9e7bc5b1-d72d-5a0b-850d-7fab25320b3a": {
+          "canonical": "Confirm receipt of required result messages before acceptance.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c5653dec-1528-5cc1-9677-4841fba4be64": {
+          "canonical": "Record fallback reasons and residual risks when sandboxing is unavailable.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-07cbd9ce-e2b3-5974-8302-d23991510e3c": {
+          "canonical": "Record when an optional automation path is skipped and why.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-173f6d6e-3136-5483-b7d1-09fefd714075": {
+          "canonical": "Document decisions and reasons when adopting only a subset and intentionally deferring full adoption.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    },
+    "lineage-5a0292d9-08de-5eef-9a3f-6b9c1f0717c5": {
+      "total_updates": 1,
+      "requirements": {
+        "r-04fc372a-0485-5f54-b629-e1fef80623d2": {
+          "canonical": "Keep example environment files to variable names only, without secret values.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-29521a6d-967e-5c69-a0b4-8a68c59f9962": {
+          "canonical": "Exclude real environment files from version control.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-0460c43a-6783-53e9-9387-2362b82e6507": {
+          "canonical": "Allow example environment files to remain version-controlled.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-35e71e50-46c4-516c-a770-36870ef481f7": {
+          "canonical": "Inventory all environment variable names referenced by routing configuration.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-466b3809-8b64-5010-8154-008fbfce96ff": {
+          "canonical": "Include required external binary configuration in the environment inventory.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-ac409418-30cd-564f-9d6e-95dbdbfb75b0": {
+          "canonical": "Document secrets management policy without implementing secret storage.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-a4dc9377-fc3c-56ce-9ad0-fcf707897053": {
+          "canonical": "Cross-reference related documentation.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    },
+    "lineage-8cf41abb-a3a6-57f4-8e09-e2f43bcedcf0": {
+      "total_updates": 1,
+      "requirements": {
+        "r-b1e5aded-0821-51cc-b05d-cccbf4e11560": {
+          "canonical": "When receiving an AGMSG task, read and follow the referenced task file.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-ebff3cb7-df7e-5610-826b-c4f022c52a88": {
+          "canonical": "Restrict work to explicitly allowed files or file categories.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-4601a1e0-93ac-5329-9bc7-d9a3b10134bf": {
+          "canonical": "Do not perform explicitly forbidden actions.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-8d6a3ca4-4178-5199-9938-9215e8b98e28": {
+          "canonical": "Write the required result report to the specified report path.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-7e0fdb70-2793-5762-942f-d4d6e9fdf087": {
+          "canonical": "Write validation output to the specified validation log path when requested.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-16e1da8d-ba7a-5e28-aab5-53660f584540": {
+          "canonical": "Write sandbox notes to the specified sandbox path when requested.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-02db35f1-d06a-5d46-ba79-703acdc4f119": {
+          "canonical": "Write learning notes to the requested learning path when asked.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-e18f83cc-9267-550a-b250-6361acfaf2b7": {
+          "canonical": "Write run notes to the specified path when requested.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-9e257314-1673-5768-83eb-df1d149d4405": {
+          "canonical": "Send the specified result signal when the task is ready for review.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-cd587ef8-b4aa-5034-aacf-63bc544020c1": {
+          "canonical": "Respect the task's maximum turn limit.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-3a94ced1-b89b-547b-b892-72f53d03df4e": {
+          "canonical": "Reply to ping messages with the requested pong body using the messaging script.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-cd6c20a3-480b-521e-bccf-a594d7810b73": {
+          "canonical": "Revise the same task when acceptance requests revision, using the provided revision note.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    },
+    "lineage-0778fc39-e3fc-5954-b9c1-149415c42c48": {
+      "total_updates": 1,
+      "requirements": {
+        "r-adb1f2bb-b13d-5da9-b2dd-bb5ceacab7c2": {
+          "canonical": "Redact outbound prompts before external provider calls.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-85596400-b5a6-593c-aafb-060c258cfafb": {
+          "canonical": "Propagate required identifiers through gateway calls.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c81a8182-4de6-5e8d-898c-5965716575a8": {
+          "canonical": "Record request and response digests instead of raw content.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-f968c6f0-ca44-5074-98c7-30963cb3ceaf": {
+          "canonical": "Fail closed before dispatch when required routing configuration is missing.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-961b6706-744d-51e2-8e8c-10513a94229c": {
+          "canonical": "Fail closed before dispatch when policy authorization denies the request.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-e5930455-2fca-5e78-8425-48ed0a306e5d": {
+          "canonical": "Fail closed before dispatch when redaction fails.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-34563237-9528-5f88-a3bd-140e1cd2c0ab": {
+          "canonical": "Load credentials from environment variables only.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-45c29c7a-4fd1-50c3-bae1-2e2d6c9512cd": {
+          "canonical": "Keep model dispatch summarization-only and exclude tool dispatch payloads.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-dd2876ee-3de5-5783-9f8a-f6a0c24f04da": {
+          "canonical": "Use a generic OpenAI-compatible adapter without vendor SDKs.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-d7293fda-d521-5fda-8708-cf7248217480": {
+          "canonical": "Include deterministic local fallback behavior in the fallback chain.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    },
+    "lineage-dec6387d-f20e-59ee-ab0a-5abc5a87a0a6": {
+      "total_updates": 1,
+      "requirements": {
+        "r-001eaf09-ccea-5a02-a4ef-396d3cf4655d": {
+          "canonical": "Emit a Python CycloneDX SBOM from installed virtual environment package metadata.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-1a0bd07d-f316-5eca-be13-29c458826d42": {
+          "canonical": "Run the Python vulnerability audit against the local installed environment.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-658c014e-10cf-568e-b465-4f18a8404912": {
+          "canonical": "Fail audits on any known vulnerability when severity filtering is unavailable.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-51d755b6-0641-5653-b1e7-b8583109a2cb": {
+          "canonical": "Require all lockfile resolved URLs to use an approved package registry prefix.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-51aa7d84-77ae-580c-9004-5b009b968d38": {
+          "canonical": "Print an explicit success marker when the registry check passes.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-9592e4d7-ca10-57e3-b53e-7ee2cc3e506a": {
+          "canonical": "Produce the SBOM as valid JSON.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c06135b9-9aa3-5391-9576-895a4e50be3f": {
+          "canonical": "Document newly added validation gates in the validation plan.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-31de430e-4244-5cc4-8472-70e99411eb78": {
+          "canonical": "Ensure release validation passes all required gates.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-2648a4bf-f0dd-522f-a797-52dea3df54d4": {
+          "canonical": "Do not add new dependencies for explicitly deferred non-goals.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-74feebc2-a5f8-54cd-a57c-9d358a9ac4a5": {
+          "canonical": "Remove or restore generated validation artifacts outside the allowed file list after logging.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-4f5352cd-31bb-5da2-a9c1-e3e4a047fe00": {
+          "canonical": "Verify changed files with a whitespace diff check.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-a72835e1-8124-588a-a2f9-e8422c5e0e57": {
+          "canonical": "Attempt required review gates before completion when repository instructions require them.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    },
+    "lineage-2164040d-fee5-5a93-81cf-50201a52f7ee": {
+      "total_updates": 1,
+      "requirements": {
+        "r-d18c4a4a-9a37-5d06-929c-a350a1f7f9a9": {
+          "canonical": "Update or create all requested documentation and scaffolding files.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-7f5bf4c6-e74b-5d8f-b298-6dd56d45b7c2": {
+          "canonical": "Example environment files must contain only variable names, comments, and empty values.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-4631bdef-8fb7-5b42-8c1f-3f67e6d9c559": {
+          "canonical": "Secrets inventory must cover every environment variable referenced by policy.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-d83ac079-9740-56f1-830d-73e64374bbaa": {
+          "canonical": "Secrets documentation should include current secret state.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c57ae7af-464b-52e1-b820-6edde153408b": {
+          "canonical": "Secrets documentation should include credential inventory.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-96d3c281-bd6e-54b0-ac3e-c5f551cbda69": {
+          "canonical": "Secrets documentation should include injection paths.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-21fc6059-c28a-5447-91de-4741ee6c36fc": {
+          "canonical": "Secrets documentation should include rotation procedure.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-09ccaf5b-ba4b-5691-9284-a94128a3ed7c": {
+          "canonical": "Secrets documentation should include prohibited secret locations.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-80a2896b-87d6-57b9-8874-f183f20a4f90": {
+          "canonical": "Secrets documentation should include secret-manager adoption criteria.",
+          "mentions": 1,
+          "hard_mentions": 0,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c49f23a9-1917-52bc-8349-b24e3301a3a0": {
+          "canonical": "Run available specification checks and record the result.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        },
+        "r-c7a8beeb-7c47-5eaf-adcf-65c4ad0d9f99": {
+          "canonical": "Leave unrelated untracked orchestration state untouched.",
+          "mentions": 1,
+          "hard_mentions": 1,
+          "first_seen_update": 1,
+          "last_seen_update": 1,
+          "seen_updates": [
+            1
+          ]
+        }
+      }
+    }
+  }
+}

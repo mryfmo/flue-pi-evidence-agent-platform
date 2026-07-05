@@ -1,0 +1,73 @@
+$ node --check .orchestration/autoskill/config/codex_auth_proxy.mjs
+
+$ bash -n .orchestration/autoskill/config/run_autoskill.sh
+
+$ python3 -m py_compile .orchestration/autoskill/config/build_inputs.py
+
+$ test ! -d /private/tmp/p2t07a-autoskill-review/autoskill/offline/conversation/utils && echo pinned-utils-missing-confirmed
+pinned-utils-missing-confirmed
+
+$ rg -n "mkdir -p autoskill/offline/conversation/utils|utils/__init__\.py|utils/ban_mock\.py|ensure_not_mock|ensure_llm_config_not_mock|conversation\.utils\.ban_mock" .orchestration/autoskill/config/Dockerfile.autoskill .orchestration/autoskill/config/PINNED_VERSION.md
+.orchestration/autoskill/config/PINNED_VERSION.md:42:- Upstream deviation for P2-T07b: pinned commit `94c47ca488d4ba4117d20272e66d49b9877e68cf` imports `autoskill.offline.conversation.utils.ban_mock` but the reviewed checkout has no `autoskill/offline/conversation/utils/` package. `Dockerfile.autoskill` creates the missing package at build time with only the imported fail-closed guard functions. This should become an upstream issue if the pin remains.
+.orchestration/autoskill/config/Dockerfile.autoskill:13:  && mkdir -p autoskill/offline/conversation/utils \
+.orchestration/autoskill/config/Dockerfile.autoskill:14:  && printf '%s\n' '"""Build-time workaround for pinned upstream missing utils package."""' > autoskill/offline/conversation/utils/__init__.py \
+.orchestration/autoskill/config/Dockerfile.autoskill:18:    'def ensure_not_mock(value, *, where=""):' \
+.orchestration/autoskill/config/Dockerfile.autoskill:23:    'def ensure_llm_config_not_mock(config, *, where=""):' \
+.orchestration/autoskill/config/Dockerfile.autoskill:27:    '    ensure_not_mock(provider, where=where)' \
+.orchestration/autoskill/config/Dockerfile.autoskill:28:    > autoskill/offline/conversation/utils/ban_mock.py \
+
+$ python3 - <<BAN_MOCK_CHECK
+ban-mock-shim-ok
+BAN_MOCK_CHECK
+
+$ rg -n "autoskill\.offline\.conversation\.extract|openai_conversations\.jsonl" .orchestration/autoskill/config/run_autoskill.sh .orchestration/autoskill/config/build_inputs.py .orchestration/autoskill/config/INPUT_CONTRACT.md
+.orchestration/autoskill/config/build_inputs.py:62:    openai_jsonl_path = run_dir / "openai_conversations.jsonl"
+.orchestration/autoskill/config/run_autoskill.sh:54:dataset_path="$input_dir/openai_conversations.jsonl"
+.orchestration/autoskill/config/run_autoskill.sh:94:  python -m autoskill.offline.conversation.extract
+.orchestration/autoskill/config/run_autoskill.sh:95:  --file /work/inputs/openai_conversations.jsonl
+.orchestration/autoskill/config/INPUT_CONTRACT.md:27:- `.orchestration/autoskill/inputs/<run-id>/openai_conversations.jsonl`
+.orchestration/autoskill/config/INPUT_CONTRACT.md:29:`openai_conversations.jsonl` is the AutoSkill offline CLI input. Each JSONL row contains `messages: [{role: "user", content: "..."}]` plus source metadata, so `python -m autoskill.offline.conversation.extract --file ...` can load the redacted evidence directly.
+.orchestration/autoskill/config/INPUT_CONTRACT.md:37:  "openai_dataset_path": ".orchestration/autoskill/inputs/<run-id>/openai_conversations.jsonl",
+
+$ ! rg -n "python -m autoskill( |$)|--llm-api-key" .orchestration/autoskill/config/run_autoskill.sh
+
+$ python3 - <<JSONL_CHECK
+openai-jsonl-ok rows=25
+JSONL_CHECK
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+
+$ /opt/homebrew/bin/git status --short
+ M .orchestration/autoskill/config/ADOPTION_PLAN.md
+ M .orchestration/autoskill/config/Dockerfile.autoskill
+ M .orchestration/autoskill/config/INPUT_CONTRACT.md
+ M .orchestration/autoskill/config/PINNED_VERSION.md
+ M .orchestration/autoskill/config/build_inputs.py
+ M .orchestration/autoskill/inputs/p2t07a-dryinput.manifest.json
+?? .agents/worklog/codex/plan/20260705_132300_plan.md
+?? .agents/worklog/codex/plan/20260705_133353_plan.md
+?? .agents/worklog/codex/plan/20260705_135000_plan.md
+?? .agents/worklog/codex/todo/20260705_133900_done.md
+?? .agents/worklog/codex/todo/20260705_134800_done.md
+?? .agents/worklog/codex/todo/20260705_135600_done.md
+?? .orchestration/autoskill/config/codex_auth_proxy.mjs
+?? .orchestration/autoskill/config/run_autoskill.sh
+?? .orchestration/autoskill/inputs/p2t07a-dryinput/openai_conversations.jsonl
+?? .orchestration/autoskill/runs/P2-T07b.autoskill.md
+?? .orchestration/autoskill/runs/p2t07b-acceptance.console.log
+?? .orchestration/autoskill/runs/p2t07b-acceptance2.console.log
+?? .orchestration/autoskill/runs/shim-server.log
+?? .orchestration/autoskill/runs/shim.log
+?? .orchestration/learning/P2-T07b.learning.md
+?? .orchestration/reports/P2-T07b.report.md
+?? .orchestration/sandboxes/P2-T07b.sandbox.md
+?? .orchestration/tasks/P2-T07b.md
+?? .orchestration/tasks/P4-T02.md
+?? .orchestration/validation/P2-T07b.validation.log
+
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+$ /Users/mryfmo/.agents/skills/agmsg/scripts/send.sh flue-pi-productionization codex-gpt55-high orchestrator-fable5 "AGMSG-RESULT v1 task_id=P2-T07b status=ready_for_review report=.orchestration/reports/P2-T07b.report.md validation=.orchestration/validation/P2-T07b.validation.log sandbox=.orchestration/sandboxes/P2-T07b.sandbox.md learning=.orchestration/learning/P2-T07b.learning.md autoskill=.orchestration/autoskill/runs/P2-T07b.autoskill.md"
+Sent to orchestrator-fable5 in team flue-pi-productionization

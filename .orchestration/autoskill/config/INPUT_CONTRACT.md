@@ -24,6 +24,9 @@ For `--run-id <run-id>`, outputs are:
 
 - `.orchestration/autoskill/inputs/<run-id>.manifest.json`
 - redacted file copies under `.orchestration/autoskill/inputs/<run-id>/`
+- `.orchestration/autoskill/inputs/<run-id>/openai_conversations.jsonl`
+
+`openai_conversations.jsonl` is the AutoSkill offline CLI input. Each JSONL row contains `messages: [{role: "user", content: "..."}]` plus source metadata, so `python -m autoskill.offline.conversation.extract --file ...` can load the redacted evidence directly.
 
 ## Manifest Schema
 
@@ -31,6 +34,7 @@ For `--run-id <run-id>`, outputs are:
 {
   "run_id": "string",
   "source_groups": ["agmsg_history", "reports", "acceptance"],
+  "openai_dataset_path": ".orchestration/autoskill/inputs/<run-id>/openai_conversations.jsonl",
   "inputs": [
     {
       "source_path": "repo-relative source path",

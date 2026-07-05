@@ -19,6 +19,19 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def conversation_record(source: Path, redacted: str) -> dict[str, object]:
+    relative = source.relative_to(REPO_ROOT)
+    return {
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Source: {relative}\n\n{redacted}",
+            }
+        ],
+        "metadata": {"source_path": str(relative)},
+    }
+
+
 def source_paths() -> list[Path]:
     sources = [REPO_ROOT / ".orchestration" / "agmsg" / "history.jsonl"]
     for folder in ("reports", "acceptance"):
@@ -46,11 +59,13 @@ def build(run_id: str) -> dict[str, object]:
         raise SystemExit("--run-id is required")
     run_dir = INPUT_ROOT / run_id
     manifest_path = INPUT_ROOT / f"{run_id}.manifest.json"
+    openai_jsonl_path = run_dir / "openai_conversations.jsonl"
     if run_dir.exists():
         shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
 
     inputs = []
+    conversations = []
     for source in source_paths():
         relative = source.relative_to(REPO_ROOT)
         original = source.read_text(encoding="utf-8")
@@ -59,6 +74,7 @@ def build(run_id: str) -> dict[str, object]:
         output = run_dir / relative
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(redacted, encoding="utf-8")
+        conversations.append(conversation_record(source, redacted))
         inputs.append(
             {
                 "source_path": str(relative),
@@ -70,9 +86,14 @@ def build(run_id: str) -> dict[str, object]:
             }
         )
 
+    with openai_jsonl_path.open("w", encoding="utf-8") as handle:
+        for record in conversations:
+            handle.write(json.dumps(record, sort_keys=True) + "\n")
+
     manifest = {
         "run_id": run_id,
         "source_groups": ["agmsg_history", "reports", "acceptance"],
+        "openai_dataset_path": str(openai_jsonl_path.relative_to(REPO_ROOT)),
         "inputs": inputs,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")

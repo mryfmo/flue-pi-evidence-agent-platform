@@ -1,0 +1,80 @@
+#1 [resolver] fetching image...docker.io/library/python:3.11-slim
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 27B 9.3s
+#2 transferring dockerfile: 608B 9.4s done
+#2 DONE 9.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 30B 8.6s
+#3 transferring context: 160B 8.7s done
+#3 DONE 8.7s
+
+#4 oci-layout://docker.io/library/python:3.11-slim@sha256:b27df5841f3355e9473f9a516d38a6783b6c8dfeacaf2d14a240f443b368ddb6
+#4 resolve docker.io/library/python:3.11-slim@sha256:b27df5841f3355e9473f9a516d38a6783b6c8dfeacaf2d14a240f443b368ddb6 0.0s done
+#4 DONE 0.0s
+
+#5 [linux/arm64 1/5] RUN apt-get update   && apt-get install -y --no-install-recommends git ca-certificates   && rm -rf /var/lib/apt/lists/*
+#5 CACHED
+
+#6 [linux/arm64/v8 2/5] WORKDIR /opt/autoskill
+#6 CACHED
+
+#7 [linux/arm64 3/5] RUN git clone "https://github.com/ECNU-ICALK/AutoSkill.git" .   && git checkout "94c47ca488d4ba4117d20272e66d49b9877e68cf"   && mkdir -p autoskill/offline/conversation/utils   && printf '%s\n' '"""Build-time workaround for pinned upstream missing utils package."""' > autoskill/offline/conversation/utils/__init__.py   && printf '%s\n'     '"""Fail-closed mock-provider guards for offline conversation extraction."""'     ''     'def ensure_not_mock(value, *, where=""):'     '    if str(value or "").strip().lower() == "mock":'     '        raise RuntimeError(f"mock provider is disabled: {where}")'     ''     ''     'def ensure_llm_config_not_mock(config, *, where=""):'     '    provider = ""'     '    if isinstance(config, dict):'     '        provider = str(config.get("provider") or "").strip().lower()'     '    ensure_not_mock(provider, where=where)'     > autoskill/offline/conversation/utils/ban_mock.py   && pip install --no-cache-dir .
+#7 0.618 Cloning into '.'...
+#7 16.24 Updating files:  23% (2407/10048)Updating files:  24% (2412/10048)Updating files:  25% (2512/10048)Updating files:  26% (2613/10048)Updating files:  27% (2713/10048)Updating files:  28% (2814/10048)Updating files:  29% (2914/10048)Updating files:  30% (3015/10048)Updating files:  31% (3115/10048)Updating files:  32% (3216/10048)Updating files:  33% (3316/10048)Updating files:  34% (3417/10048)Updating files:  35% (3517/10048)Updating files:  36% (3618/10048)Updating files:  37% (3718/10048)Updating files:  38% (3819/10048)Updating files:  39% (3919/10048)Updating files:  40% (4020/10048)Updating files:  41% (4120/10048)Updating files:  42% (4221/10048)Updating files:  43% (4321/10048)Updating files:  44% (4422/10048)Updating files:  45% (4522/10048)Updating files:  46% (4623/10048)Updating files:  47% (4723/10048)Updating files:  48% (4824/10048)Updating files:  49% (4924/10048)Updating files:  50% (5024/10048)Updating files:  51% (5125/10048)Updating files:  52% (5225/10048)Updating files:  53% (5326/10048)Updating files:  54% (5426/10048)Updating files:  55% (5527/10048)Updating files:  56% (5627/10048)Updating files:  57% (5728/10048)Updating files:  58% (5828/10048)Updating files:  59% (5929/10048)Updating files:  59% (5998/10048)Updating files:  60% (6029/10048)Updating files:  61% (6130/10048)Updating files:  62% (6230/10048)Updating files:  63% (6331/10048)Updating files:  64% (6431/10048)Updating files:  65% (6532/10048)Updating files:  66% (6632/10048)Updating files:  67% (6733/10048)Updating files:  68% (6833/10048)Updating files:  69% (6934/10048)Updating files:  70% (7034/10048)Updating files:  71% (7135/10048)Updating files:  72% (7235/10048)Updating files:  73% (7336/10048)Updating files:  74% (7436/10048)Updating files:  75% (7536/10048)Updating files:  76% (7637/10048)Updating files:  77% (7737/10048)Updating files:  78% (7838/10048)Updating files:  79% (7938/10048)Updating files:  80% (8039/10048)Updating files:  81% (8139/10048)Updating files:  82% (8240/10048)Updating files:  83% (8340/10048)Updating files:  84% (8441/10048)Updating files:  85% (8541/10048)Updating files:  86% (8642/10048)Updating files:  87% (8742/10048)Updating files:  88% (8843/10048)Updating files:  89% (8943/10048)Updating files:  90% (9044/10048)Updating files:  91% (9144/10048)Updating files:  92% (9245/10048)Updating files:  93% (9345/10048)Updating files:  94% (9446/10048)Updating files:  95% (9546/10048)Updating files:  96% (9647/10048)Updating files:  97% (9747/10048)Updating files:  98% (9848/10048)Updating files:  99% (9948/10048)Updating files: 100% (10048/10048)Updating files: 100% (10048/10048), done.
+#7 18.38 Note: switching to '94c47ca488d4ba4117d20272e66d49b9877e68cf'.
+#7 18.38 
+#7 18.38 You are in 'detached HEAD' state. You can look around, make experimental
+#7 18.38 changes and commit them, and you can discard any commits you make in this
+#7 18.38 state without impacting any branches by switching back to a branch.
+#7 18.38 
+#7 18.38 If you want to create a new branch to retain commits you create, you may
+#7 18.38 do so (now or later) by using -c with the switch command. Example:
+#7 18.38 
+#7 18.38   git switch -c <new-branch-name>
+#7 18.38 
+#7 18.38 Or undo this operation with:
+#7 18.38 
+#7 18.38   git switch -
+#7 18.38 
+#7 18.38 Turn off this advice by setting config variable advice.detachedHead to false
+#7 18.38 
+#7 18.38 HEAD is now at 94c47ca4 Emphasize personal skill reuse
+#7 20.57 Processing /opt/autoskill
+#7 20.57   Installing build dependencies: started
+#7 21.87   Installing build dependencies: finished with status 'done'
+#7 21.87   Getting requirements to build wheel: started
+#7 22.02   Getting requirements to build wheel: finished with status 'done'
+#7 22.02   Preparing metadata (pyproject.toml): started
+#7 22.15   Preparing metadata (pyproject.toml): finished with status 'done'
+#7 22.15 Building wheels for collected packages: autoskill
+#7 22.15   Building wheel for autoskill (pyproject.toml): started
+#7 22.34   Building wheel for autoskill (pyproject.toml): finished with status 'done'
+#7 22.35   Created wheel for autoskill: filename=autoskill-0.1.0-py3-none-any.whl size=524037 sha256=a5c824e823e0022bbff27fc8fd6712b88cfe44052788fef8337ad6c5c4dee4c3
+#7 22.35   Stored in directory: /tmp/pip-ephem-wheel-cache-8ytjxpix/wheels/f2/73/d8/752d0be13c8a50610f4f4637cdda2138c97ea7c09af77826b3
+#7 22.35 Successfully built autoskill
+#7 22.36 Installing collected packages: autoskill
+#7 22.57 Successfully installed autoskill-0.1.0
+#7 22.57 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#7 22.66 
+#7 22.66 [notice] A new release of pip is available: 24.0 -> 26.1.2
+#7 22.66 [notice] To update, run: pip install --upgrade pip
+#7 DONE 22.8s
+
+#8 [linux/arm64 4/5] RUN useradd --create-home --shell /usr/sbin/nologin autoskill
+#8 DONE 0.2s
+
+#9 exporting to oci image format
+#9 exporting layers
+#9 exporting layers 8.2s done
+#9 exporting manifest sha256:3bbab86bfc79b9d800f628b687854c84f9e67188e91112b9c40ec18791df660e done
+#9 exporting config sha256:4b6c75ea6111bca2adedf13631ed421f82abe17d6ee7527022f4b0943f07e6a8 done
+#9 exporting manifest list sha256:2985534b418f835a2dfa8edb74dad00b761a5137b2c7ae85afdb2f3909c02ac4 done
+#9 sending tarball
+#9 sending tarball 4.3s done
+#9 DONE 12.5s
+autoskill-sandbox:p2t07a

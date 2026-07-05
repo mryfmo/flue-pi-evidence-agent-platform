@@ -206,5 +206,6 @@
     "agmsg_history",
     "reports",
     "acceptance"
-  ]
+  ],
+  "openai_dataset_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/openai_conversations.jsonl"
 }
