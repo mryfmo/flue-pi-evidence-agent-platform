@@ -10,6 +10,12 @@ npm run validate-release
 
 The command clears `artifacts/validation/`, executes all quality and runtime gates, and writes the final report. A release is valid only if `artifacts/validation/final_verification_report.json` contains `"status": "passed"`.
 
+## CI
+
+GitHub Actions runs on pushes to `main` and on pull requests. The workflow has two independent jobs: native `npm run validate-release` and container validation through `scripts/container-validate.sh`.
+Native validation uploads `artifacts/validation/` and `artifacts/sbom/` for 30 days. Container validation uploads `artifacts/container-validation/` for 30 days.
+Any failed job is a release-blocking red check; inspect the uploaded logs before rerunning locally.
+
 ## Evidence inspection
 
 - Ledger: `artifacts/demo/hypothesis-ledger.json`

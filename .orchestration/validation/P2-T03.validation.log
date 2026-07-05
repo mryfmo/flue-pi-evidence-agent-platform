@@ -1,0 +1,31 @@
+## ./node_modules/node/bin/node -e "const fs=require('fs');const yaml=fs.readFileSync('.github/workflows/validate-release.yml','utf8');console.log('yaml bytes:',yaml.length);"
+yaml bytes: 1129
+exit=0
+
+## ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+exit=0
+
+## rg -n "secrets\." .github/workflows/validate-release.yml
+exit=1 (1 means no matches)
+
+## /opt/homebrew/bin/git status --short
+ M docs/OPERATIONS.md
+?? .github/
+?? .orchestration/validation/P2-T03.validation.log
+exit=0
+
+## ruby -e "require 'yaml'; YAML.load_file('.github/workflows/validate-release.yml'); puts 'yaml:ok'"
+yaml:ok
+exit=0
+
+## /opt/homebrew/bin/git status --short (final after reports)
+ M docs/OPERATIONS.md
+?? .github/
+?? .orchestration/autoskill/runs/P2-T03.autoskill.md
+?? .orchestration/learning/P2-T03.learning.md
+?? .orchestration/reports/P2-T03.report.md
+?? .orchestration/sandboxes/P2-T03.sandbox.md
+?? .orchestration/validation/P2-T03.validation.log
+exit=0
+
