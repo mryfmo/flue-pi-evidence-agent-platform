@@ -9,8 +9,9 @@
 | ID     | 内容                                                                  | Gap        | 担当         | 状態         |
 | ------ | --------------------------------------------------------------------- | ---------- | ------------ | ------------ |
 | P0-T01 | orchestration workspace scaffold + hermes_subset_policy               | G14,G17    | codex        | **accepted** |
-| P0-T02 | darwin 環境での 16 ゲート再現ベースライン計測(レポート専用、修正禁止) | G4,G11,G15 | codex        | todo         |
-| P0-O   | git 化 / agmsg チーム / 読了メモ / gap 分析 / 方針文書 / 受入・履歴   | G14        | orchestrator | 進行中       |
+| P0-T02 | darwin 環境での 16 ゲート再現ベースライン計測(レポート専用、修正禁止) | G4,G11,G15 | codex        | **accepted** |
+| P0-T03 | package-lock.json を社内ミラーから公開レジストリへ再指向(緊急追加)    | G11        | codex        | **accepted** |
+| P0-O   | git 化 / agmsg チーム / 読了メモ / gap 分析 / 方針文書 / 受入・履歴   | G14        | orchestrator | 完了         |
 
 ## Phase 1: 本番 LLM ゲートウェイ / モデルルーティング(G1, G9, G12, G14, G15)
 

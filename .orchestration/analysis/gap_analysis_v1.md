@@ -37,3 +37,9 @@
 - darwin 開発機では `npm ci` が素で失敗する(G11)。`npm ci --force` + `EAP_OPA_BINARY`(darwin OPA バイナリ)+ GNU coreutils `timeout` が暫定要件 → P0-T02 の実測レポート参照。
 - git は /opt/homebrew/bin/git(2.55)を使用(PATH 先頭の 2.31.1 は ssh 署名 config 非対応)。
 - Codex sandbox の writable_roots に agmsg db/teams/run を追加済み(~/.codex/config.toml。chezmoi ソースへの反映が必要)。
+
+## v1 追記(P0-T02/P0-T03 実測後、2026-07-05)
+
+- **G11 重大発見(解消済み)**: リリース ZIP の package-lock.json は全 resolved URL が OpenAI 社内 Artifactory(到達不能)を指しており、外部環境では `npm ci` が復元不能だった。P0-T03 で公開レジストリへ再指向(同一バージョン・同一 integrity で tarball ハッシュ一致)し解消。教訓として「lockfile の resolved URL 検証」を P2-T04 サプライチェーンゲートに追加する。
+- **G11 追加発見**: `npm_sbom_prod` ゲートがホスト npm の `sbom` コマンド能力に依存(npm 11.16 で失敗)。bundled toolchain への固定が必要 → P2-T04。
+- **darwin ベースライン確定**(P0-T02): 16 ゲート中 11〜12 pass。fail は opa(linux バイナリ ENOEXEC)、vitest_all(OPA 連鎖 + Codex sandbox の listen EPERM)、npm_sbom_prod(上記)、npm_audit_prod は未計測(ネットワーク禁止)。製品欠陥ゼロ。fail-closed 動作(policy_unavailable → allow=false)は実機で確認された。
