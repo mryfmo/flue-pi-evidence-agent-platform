@@ -1,103 +1,43 @@
 {
-  "status": "passed",
-  "generatedAt": "2026-06-29T08:53:19.138Z",
+  "status": "failed",
+  "generatedAt": "2026-07-05T06:27:35.115Z",
   "node": "v22.19.0",
   "results": [
     {
       "name": "setup_python",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 1438
+      "durationMs": 10164
     },
     {
       "name": "spec_traceability",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 190
+      "durationMs": 55
     },
     {
       "name": "format",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 264
+      "durationMs": 810
     },
     {
       "name": "lint",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 329
+      "durationMs": 59
     },
     {
       "name": "typecheck",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 2369
+      "durationMs": 3412
     },
     {
       "name": "opa",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 682
-    },
-    {
-      "name": "python_compile",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 59
-    },
-    {
-      "name": "python_ruff",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 65
-    },
-    {
-      "name": "python_mypy",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 502
-    },
-    {
-      "name": "python_bandit",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 198
-    },
-    {
-      "name": "python_tests",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 5167
-    },
-    {
-      "name": "vitest_all",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 15800
-    },
-    {
-      "name": "flue_build",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 2423
-    },
-    {
-      "name": "e2e_artifacts",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 180
-    },
-    {
-      "name": "npm_audit_prod",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 725
-    },
-    {
-      "name": "npm_sbom_prod",
-      "status": "passed",
-      "returnCode": 0,
-      "durationMs": 801
+      "status": "failed",
+      "returnCode": 1,
+      "durationMs": 76
     }
   ]
 }

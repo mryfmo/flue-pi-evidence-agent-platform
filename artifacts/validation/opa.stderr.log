@@ -1,0 +1,8 @@
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/opa-check.mjs:48
+    throw new Error(
+          ^
+
+Error: unexpected OPA decision for {"user":"engineer","tenant":"acme","tool":"apply_patch","risk":"medium","resource":"repo"}: {"allow":false,"requires_approval":true,"reasons":["policy_unavailable:Error: spawn ENOEXEC"]}
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/opa-check.mjs:48:11
+
+Node.js v22.19.0
