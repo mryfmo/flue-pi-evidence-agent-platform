@@ -1743,7 +1743,7 @@ function remotePath(requested) {
 	return `${remoteRoot}/${requested}`;
 }
 function shellCommand(argv) {
-	return argv.map(shellQuote).join(" ");
+	return `/bin/sh -lc ${shellQuote(argv.map(shellQuote).join(" "))}`;
 }
 function shellQuote(value) {
 	return `'${value.replaceAll("'", "'\\''")}'`;

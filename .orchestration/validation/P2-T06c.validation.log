@@ -142,3 +142,89 @@ sed -n '48,100p' .github/workflows/validate-release.yml
 ```
 
 Result: verified workflow content includes Docker-mode config generation, config mount, Docker socket mount, pinned sandbox image pre-pull, `OPENSANDBOX_INSECURE_SERVER=YES`, and `/health` readiness.
+
+## Revision 2
+
+Date: 2026-07-05T19:40:24+09:00
+
+Revision request: CI run 28737829189 reached Docker-mode server startup and sandbox creation, then failed integration exec calls with exit code 127 at `tests/integration/opensandbox.test.ts`.
+
+Contract checked:
+
+- Official OpenSandbox `specs/execd-api.yaml` says `/command` executes a shell command.
+- `RunCommandRequest.command` is a string described as `Shell command to execute`.
+- `RunCommandRequest.cwd` is the working directory.
+- Installed SDK `@alibaba-group/opensandbox@0.1.9` maps `sandbox.commands.run(command, opts)` to `{ command, cwd, background, timeout }`.
+
+Changes:
+
+- Updated `OpenSandboxExecutor.exec()` command payload construction to send `/bin/sh -lc <quoted argv command>`, preserving the existing `SandboxExecutor` argv contract while matching the server's shell-command API.
+- Updated OpenSandbox integration tests from `python` to `python3`.
+- Added stdout/stderr assertion messages for exec result checks so CI failures include command output.
+- Kept all pins unchanged.
+
+Local verification:
+
+Command:
+
+```sh
+npx tsc --noEmit
+```
+
+Result: passed.
+
+Command:
+
+```sh
+npm run format:check && npm run lint
+```
+
+Result: passed.
+
+Command:
+
+```sh
+npx vitest run tests/integration/opensandbox.test.ts --pool=forks
+```
+
+Result: passed with explicit skip because `EAP_OPENSANDBOX_URL` is unset.
+
+- Test files: 1 skipped.
+- Tests: 4 skipped.
+
+Command:
+
+```sh
+npx vitest run tests/component --pool=forks
+```
+
+Result: passed.
+
+- Test files: 6 passed.
+- Tests: 22 passed.
+
+Command:
+
+```sh
+npm run validate-release
+```
+
+Result: passed.
+
+```text
+validate-release:passed
+```
+
+Command:
+
+```sh
+/opt/homebrew/bin/git status --short
+```
+
+Result after cleaning generated validation artifacts:
+
+```text
+ M .orchestration/tasks/P2-T06c.md
+ M src/lib/sandboxOpenSandbox.ts
+ M tests/integration/opensandbox.test.ts
+```

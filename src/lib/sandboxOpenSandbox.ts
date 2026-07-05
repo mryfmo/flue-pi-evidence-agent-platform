@@ -259,7 +259,7 @@ function remotePath(requested: string): string {
 }
 
 function shellCommand(argv: string[]): string {
-  return argv.map(shellQuote).join(' ');
+  return `/bin/sh -lc ${shellQuote(argv.map(shellQuote).join(' '))}`;
 }
 
 function shellQuote(value: string): string {

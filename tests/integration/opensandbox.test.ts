@@ -62,7 +62,7 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
     const result = await executor.exec(
       handle,
       [
-        'python',
+        'python3',
         '-c',
         "from pathlib import Path; Path('out.txt').write_text(Path('input.txt').read_text().upper())",
       ],
@@ -73,7 +73,7 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
       },
     );
 
-    expect(result.exitCode).toBe(0);
+    expect(result.exitCode, commandOutput(result)).toBe(0);
     const artifacts = await executor.collectArtifacts(handle, ['out.txt'], {
       maxBytes: 1024,
       audit_id: spec.audit_id,
@@ -120,7 +120,7 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
     const result = await executor.exec(
       handle,
       [
-        'python',
+        'python3',
         '-c',
         "import os; print(os.getenv('OPEN_SANDBOX_HOST_SECRET'))",
       ],
@@ -131,7 +131,7 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
       },
     );
 
-    expect(result.exitCode).toBe(0);
+    expect(result.exitCode, commandOutput(result)).toBe(0);
     expect(result.stdout.trim()).toBe('None');
   });
 
@@ -141,7 +141,7 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
     const result = await executor.exec(
       handle,
       [
-        'python',
+        'python3',
         '-c',
         "import urllib.request; urllib.request.urlopen('https://example.com', timeout=5)",
       ],
@@ -152,6 +152,10 @@ describe.skipIf(!opensandboxUrl)('OpenSandboxExecutor integration', () => {
       },
     );
 
-    expect(result.exitCode).not.toBe(0);
+    expect(result.exitCode, commandOutput(result)).not.toBe(0);
   });
 });
+
+function commandOutput(result: { stdout: string; stderr: string }): string {
+  return `stdout:\n${result.stdout}\nstderr:\n${result.stderr}`;
+}
