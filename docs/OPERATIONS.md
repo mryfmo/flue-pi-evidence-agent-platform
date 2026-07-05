@@ -16,6 +16,17 @@ GitHub Actions runs on pushes to `main` and on pull requests. The workflow has t
 Native validation uploads `artifacts/validation/` and `artifacts/sbom/` for 30 days. Container validation uploads `artifacts/container-validation/` for 30 days.
 Any failed job is a release-blocking red check; inspect the uploaded logs before rerunning locally.
 
+## Operational check
+
+Run:
+
+```bash
+./node_modules/node/bin/node scripts/ops-check.mjs
+```
+
+This is an operations preflight, not a release gate. It checks that `origin` is configured, the latest final verification report passed, the OPA bundle manifest has a revision, and the promoted remediator skill has provenance.
+If the git remote cannot be reached from an offline host, the check prints `warn` and continues.
+
 ## Evidence inspection
 
 - Ledger: `artifacts/demo/hypothesis-ledger.json`
@@ -29,6 +40,21 @@ Any failed job is a release-blocking red check; inspect the uploaded logs before
 Set `EAP_OTLP_ENDPOINT` to an OTLP HTTP traces endpoint, for example `http://collector:4318/v1/traces`, to mirror spans to a collector.
 The JSONL trace artifact is still written unconditionally for deterministic release evidence.
 Collector outages emit one warning and do not fail workflows.
+
+## SLOs and alerts
+
+Operational SLOs and monitor-readable alert conditions are in `docs/SLO.md`.
+Alerts are definitions only; this repository does not provision collectors, dashboards, or paging infrastructure.
+
+## Backup, restore, and rollback
+
+Back up the git remote plus evidence snapshots from `artifacts/`: `audit/`, `demo/hypothesis-ledger.json`, `telemetry/traces.jsonl`, `validation/final_verification_report.*`, `policy/bundle.tar.gz`, and `sbom/`.
+Generated workspaces under `artifacts/demo/workspace/`, validation stdout/stderr logs, and `dist/` are regenerable from a clean checkout.
+
+Restore from a clean checkout with `npm ci`, `./node_modules/node/bin/node scripts/setup-python.mjs`, evidence snapshot copy-back, then `npm run validate-release` and `scripts/ops-check.mjs`.
+Rollback code, policy, and docs with `git revert`; keep release tags such as the `baseline-v1.1.0` precedent immutable and create a new rollback tag after validation.
+Rollback policy bundles by reverting the policy commit and rebuilding `artifacts/policy/bundle.tar.gz`; the bundle manifest `revision` must match the reverted code or policy hash.
+Rollback promoted skills by reverting `.orchestration/skills/promoted/remediator/best_skill.md` and its linked provenance chain; see `docs/SKILL_OPTIMIZATION.md`.
 
 ## Common commands
 

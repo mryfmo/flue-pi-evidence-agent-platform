@@ -1,0 +1,35 @@
+$ ./node_modules/node/bin/node scripts/ops-check.mjs
+| status       | check                    | details |
+| ------------ | ------------------------ | ---------------------------------------------------------------------- |
+| warn         | git remote               | origin configured but reachability offline: git@github.com:mryfmo/flue-pi-evidence-agent-platform.git |
+| ok           | final report             | status=passed generatedAt=2026-07-05T16:10:13.264Z |
+| ok           | opa bundle               | revision=97333e9 |
+| ok           | promoted skill           | version=1.1.0 evidence=.orchestration/skills/candidates/remediator/cycle-1.verdict.json |
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+
+$ /opt/homebrew/bin/git status --short
+ M docs/OPERATIONS.md
+ M docs/RUNBOOK.md
+?? .agents/worklog/codex/plan/20260705_162833_plan.md
+?? .agents/worklog/codex/todo/20260705_162833_todo.md
+?? .orchestration/validation/P5-T02.validation.log
+?? docs/SLO.md
+?? scripts/ops-check.mjs
+
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+$ /opt/homebrew/bin/git status --short (final P5-T02 artifacts)
+ M docs/OPERATIONS.md
+ M docs/RUNBOOK.md
+?? .agents/worklog/codex/plan/20260705_162833_plan.md
+?? .agents/worklog/codex/todo/20260705_162833_done.md
+?? .orchestration/autoskill/runs/P5-T02.autoskill.md
+?? .orchestration/learning/P5-T02.learning.md
+?? .orchestration/reports/P5-T02.report.md
+?? .orchestration/sandboxes/P5-T02.sandbox.md
+?? .orchestration/validation/P5-T02.validation.log
+?? docs/SLO.md
+?? scripts/ops-check.mjs
