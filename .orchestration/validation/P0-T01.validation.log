@@ -1,0 +1,30 @@
+$ find .orchestration -maxdepth 4 -type f | sort
+.orchestration/README.md
+.orchestration/acceptance/.gitkeep
+.orchestration/agmsg/.gitkeep
+.orchestration/analysis/gap_analysis_v1.md
+.orchestration/analysis/step0_reading_notes.md
+.orchestration/autoskill/config/.gitkeep
+.orchestration/autoskill/inputs/.gitkeep
+.orchestration/autoskill/outputs/.gitkeep
+.orchestration/autoskill/runs/.gitkeep
+.orchestration/autoskill/runs/P0-T01.autoskill.md
+.orchestration/learning/.gitkeep
+.orchestration/learning/P0-T01.learning.md
+.orchestration/learning/rule_candidates/.gitkeep
+.orchestration/reports/.gitkeep
+.orchestration/reports/P0-T01.report.md
+.orchestration/sandboxes/.gitkeep
+.orchestration/sandboxes/P0-T01.sandbox.md
+.orchestration/skills/candidates/.gitkeep
+.orchestration/skills/hermes_subset_policy.md
+.orchestration/skills/merged/.gitkeep
+.orchestration/skills/promoted/.gitkeep
+.orchestration/skills/rejected/.gitkeep
+.orchestration/tasks/.gitkeep
+.orchestration/tasks/P0-T01.md
+.orchestration/validation/.gitkeep
+.orchestration/validation/P0-T01.validation.log
+
+$ git status --short
+?? .orchestration/
