@@ -34,9 +34,9 @@ npm run flue:e2e
 
 1. Starts a local OpenAI-compatible gateway.
 2. Runs Flue with Pi's provider path through `local-gateway/fixbot`.
-3. Localizes a divide-by-zero defect in `sample_repos/buggy_calc`.
+3. Localizes two independent defects in `sample_repos/buggy_multi`.
 4. Evaluates the patch operation through OPA/Rego.
-5. Applies the safe divide patch.
+5. Applies the patches.
 6. Runs pytest verification.
 7. Runs a governed data query through SQLGlot + DuckDB + Presidio.
 8. Writes audit evidence under `artifacts/audit/`.

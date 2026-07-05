@@ -1,0 +1,8 @@
+spec-check:passed
+OK-no-buggy_calc
+exists: tests/component/opa.test.ts
+exists: tests/component/code.test.ts
+exists: tests/component/data_proxy.test.ts
+ README.md            | 4 ++--
+ docs/TRACEABILITY.md | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
