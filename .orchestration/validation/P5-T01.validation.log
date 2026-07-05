@@ -1,0 +1,94 @@
+$ npx tsc --noEmit && npm run format:check && npm run lint
+
+> flue-pi-evidence-agent-platform@1.1.0 format:check
+> biome format --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 44 files in 21ms. No fixes applied.
+
+> flue-pi-evidence-agent-platform@1.1.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 44 files in 32ms. No fixes applied.
+
+$ npx vitest run tests/component --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  8 passed (8)
+      Tests  31 passed (31)
+   Start at  01:20:48
+   Duration  11.83s (transform 302ms, setup 0ms, import 449ms, tests 19.19s, environment 0ms)
+
+
+$ ./node_modules/node/bin/node scripts/check-lockfile-registry.mjs
+lockfile-registry:ok
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+
+$ /opt/homebrew/bin/git status --short
+ M artifacts/audit/remediation.jsonl
+ M docs/OPERATIONS.md
+ M package-lock.json
+ M package.json
+ M src/lib/telemetry.ts
+?? .agents/worklog/codex/plan/20260705_161229_plan.md
+?? .agents/worklog/codex/todo/20260705_161229_todo.md
+?? .orchestration/tasks/P5-T02.md
+?? .orchestration/tasks/P6-T01.md
+?? .orchestration/validation/P5-T01.validation.log
+?? artifacts/demo/workspace/buggy_heldout-99864-1427ea5f-d670-495e-bd0a-58bd6c6c54a6/
+?? artifacts/demo/workspace/buggy_heldout-99864-89bcae0f-4d2c-4c71-8a27-2bd4d540bd75/
+?? artifacts/demo/workspace/buggy_multi-99864-4b9400e1-912a-44af-af13-2ca758325a8b/
+?? artifacts/demo/workspace/buggy_multi-99864-bed78f00-d3d3-481b-8a90-74912c87316d/
+?? artifacts/demo/workspace/local-99876-42fc7381-4c06-4234-b3a6-ee6750e29b74/
+?? artifacts/demo/workspace/local-99876-84207313-f38f-4fe2-8fee-66bd5a6b356a/
+?? tests/component/telemetry.test.ts
+
+$ /opt/homebrew/bin/git status --short (after generated-artifact cleanup)
+ M docs/OPERATIONS.md
+ M package-lock.json
+ M package.json
+ M src/lib/telemetry.ts
+?? .agents/worklog/codex/plan/20260705_161229_plan.md
+?? .agents/worklog/codex/todo/20260705_161229_todo.md
+?? .orchestration/tasks/P5-T02.md
+?? .orchestration/tasks/P6-T01.md
+?? .orchestration/validation/P5-T01.validation.log
+?? tests/component/telemetry.test.ts
+
+$ /opt/homebrew/bin/git status --short (final P5-T01 artifacts)
+ M docs/OPERATIONS.md
+ M package-lock.json
+ M package.json
+ M src/lib/telemetry.ts
+?? .agents/worklog/codex/plan/20260705_161229_plan.md
+?? .agents/worklog/codex/todo/20260705_161229_todo.md
+?? .orchestration/autoskill/runs/P5-T01.autoskill.md
+?? .orchestration/learning/P5-T01.learning.md
+?? .orchestration/reports/P5-T01.report.md
+?? .orchestration/sandboxes/P5-T01.sandbox.md
+?? .orchestration/tasks/P5-T02.md
+?? .orchestration/tasks/P6-T01.md
+?? .orchestration/validation/P5-T01.validation.log
+?? tests/component/telemetry.test.ts
+
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+$ /opt/homebrew/bin/git status --short (final after worklog done rename)
+ M docs/OPERATIONS.md
+ M package-lock.json
+ M package.json
+ M src/lib/telemetry.ts
+?? .agents/worklog/codex/plan/20260705_161229_plan.md
+?? .agents/worklog/codex/todo/20260705_161229_done.md
+?? .orchestration/autoskill/runs/P5-T01.autoskill.md
+?? .orchestration/learning/P5-T01.learning.md
+?? .orchestration/reports/P5-T01.report.md
+?? .orchestration/sandboxes/P5-T01.sandbox.md
+?? .orchestration/tasks/P5-T02.md
+?? .orchestration/tasks/P6-T01.md
+?? .orchestration/validation/P5-T01.validation.log
+?? tests/component/telemetry.test.ts

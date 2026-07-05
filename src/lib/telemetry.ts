@@ -1,7 +1,15 @@
 /** OpenTelemetry file exporter used by release-gated local validation. */
 import { trace, SpanStatusCode } from '@opentelemetry/api';
-import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
-import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import type {
+  ReadableSpan,
+  SpanExporter,
+  SpanProcessor,
+} from '@opentelemetry/sdk-trace-base';
+import {
+  BatchSpanProcessor,
+  SimpleSpanProcessor,
+} from '@opentelemetry/sdk-trace-base';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -36,14 +44,69 @@ class JsonlSpanExporter implements SpanExporter {
   }
 }
 
+class WarningSpanExporter implements SpanExporter {
+  private warned = false;
+
+  constructor(private readonly exporter: SpanExporter) {}
+
+  export(
+    spans: ReadableSpan[],
+    resultCallback: (result: { code: number }) => void,
+  ): void {
+    let completed = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const finish = (failed: boolean) => {
+      if (completed) {
+        return;
+      }
+      completed = true;
+      clearTimeout(timer);
+      if (failed) {
+        this.warnOnce();
+      }
+      resultCallback({ code: 0 });
+    };
+    timer = setTimeout(() => finish(true), 1_000);
+    timer.unref();
+    try {
+      this.exporter.export(spans, (result) => finish(result.code !== 0));
+    } catch {
+      finish(true);
+    }
+  }
+
+  shutdown(): Promise<void> {
+    return this.exporter.shutdown();
+  }
+
+  private warnOnce(): void {
+    if (!this.warned) {
+      this.warned = true;
+      console.warn('OTLP trace export failed; dropping spans.');
+    }
+  }
+}
+
 let registered = false;
 
 export function configureTelemetry(tracePath: string): string {
   if (!registered) {
+    const spanProcessors: SpanProcessor[] = [
+      new SimpleSpanProcessor(new JsonlSpanExporter(tracePath)),
+    ];
+    const otlpEndpoint = process.env.EAP_OTLP_ENDPOINT?.trim();
+    if (otlpEndpoint) {
+      spanProcessors.push(
+        new BatchSpanProcessor(
+          new WarningSpanExporter(
+            new OTLPTraceExporter({ url: otlpEndpoint }) as SpanExporter,
+          ),
+          { maxExportBatchSize: 1, maxQueueSize: 64, scheduledDelayMillis: 10 },
+        ),
+      );
+    }
     const provider = new NodeTracerProvider({
-      spanProcessors: [
-        new SimpleSpanProcessor(new JsonlSpanExporter(tracePath)),
-      ],
+      spanProcessors,
     });
     provider.register();
     registered = true;

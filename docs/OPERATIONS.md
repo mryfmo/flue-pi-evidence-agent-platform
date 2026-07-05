@@ -24,6 +24,12 @@ Any failed job is a release-blocking red check; inspect the uploaded logs before
 - Validation report: `artifacts/validation/final_verification_report.json`
 - Node SBOM: `artifacts/sbom/npm-cyclonedx.json`
 
+## OTLP trace export
+
+Set `EAP_OTLP_ENDPOINT` to an OTLP HTTP traces endpoint, for example `http://collector:4318/v1/traces`, to mirror spans to a collector.
+The JSONL trace artifact is still written unconditionally for deterministic release evidence.
+Collector outages emit one warning and do not fail workflows.
+
 ## Common commands
 
 ```bash
