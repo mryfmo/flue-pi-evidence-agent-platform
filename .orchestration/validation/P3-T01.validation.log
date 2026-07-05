@@ -1,0 +1,102 @@
+$ grep -rn '"acme"' policy/ src/ | grep -v tenants.json || echo "no-hardcoded-tenant"
+policy/routing.json:20:        "tenant": "acme",
+policy/routing.json:43:        "tenant": "acme",
+
+$ ./node_modules/node/bin/node scripts/opa-check.mjs
+opa:ok
+
+$ npx vitest run tests/component tests/security --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  7 passed (7)
+      Tests  26 passed (26)
+   Start at  20:47:31
+   Duration  14.63s (transform 244ms, setup 0ms, import 371ms, tests 15.74s, environment 0ms)
+
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why
+
+$ /opt/homebrew/bin/git status --short
+ M artifacts/audit/remediation.jsonl
+ D artifacts/validation/e2e_artifacts.stderr.log
+ D artifacts/validation/e2e_artifacts.stdout.log
+ M artifacts/validation/final_verification_report.json
+ M artifacts/validation/final_verification_report.md
+ D artifacts/validation/flue_build.stderr.log
+ D artifacts/validation/flue_build.stdout.log
+ M artifacts/validation/format.stdout.log
+ M artifacts/validation/lint.stdout.log
+ D artifacts/validation/llm_contract.stderr.log
+ D artifacts/validation/llm_contract.stdout.log
+ D artifacts/validation/lockfile_registry.stderr.log
+ D artifacts/validation/lockfile_registry.stdout.log
+ D artifacts/validation/npm_audit_prod.stderr.log
+ D artifacts/validation/npm_audit_prod.stdout.log
+ D artifacts/validation/npm_sbom_prod.stderr.log
+ D artifacts/validation/npm_sbom_prod.stdout.log
+ D artifacts/validation/python_audit.stderr.log
+ D artifacts/validation/python_audit.stdout.log
+ M artifacts/validation/python_mypy.stdout.log
+ M artifacts/validation/python_ruff.stdout.log
+ D artifacts/validation/python_sbom.stderr.log
+ D artifacts/validation/python_sbom.stdout.log
+ M artifacts/validation/python_tests.stdout.log
+ M artifacts/validation/setup_python.stderr.log
+ M artifacts/validation/vitest_all.stderr.log
+ M artifacts/validation/vitest_all.stdout.log
+ M dist/server.mjs
+ M dist/server.mjs.map
+ M docs/POLICY_MODEL.md
+ M policy/agent.rego
+ M policy/routing.rego
+ M policy/sandbox.rego
+ M src/lib/opa.ts
+ M tests/component/opa.test.ts
+ M tests/component/routing.test.ts
+ M tests/component/sandbox_policy.test.ts
+?? .agents/
+?? .orchestration/tasks/P3-T01.md
+?? .orchestration/validation/P3-T01.validation.log
+?? artifacts/demo/workspace/buggy_multi-81559-1dc266c0-f763-4287-bb0e-3d67aea8686e/
+?? artifacts/demo/workspace/buggy_multi-81559-b3cc2a05-3522-42c6-87ca-a5ffb85556b0/
+?? artifacts/demo/workspace/buggy_multi-81734-947740bd-9d5e-43a0-99e0-e61405a9967f/
+?? artifacts/demo/workspace/buggy_multi-81734-cf3a1b29-f078-471c-891e-bc0a1be7062d/
+?? artifacts/demo/workspace/buggy_multi-81776-09595483-04ac-4330-8cae-c2b6fc659865/
+?? artifacts/demo/workspace/local-81563-6cc61ca6-ab21-4db9-9a7f-a500b0b74266/
+?? artifacts/demo/workspace/local-81563-fb2f722c-10ee-4d8b-b43b-9d2bbe4586ca/
+?? artifacts/demo/workspace/local-81773-10f51e83-378a-4f51-ba19-1cac17d26bb2/
+?? artifacts/demo/workspace/local-81773-e86da61f-362d-4beb-9f27-d2acfa2973d9/
+?? policy/tenants.json
+
+$ npm run validate-release > .orchestration/validation/P3-T01.validate-release.escalated.log 2>&1 # escalated after sandbox EPERM
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+
+$ /opt/homebrew/bin/git status --short # final post-cleanup
+ M docs/POLICY_MODEL.md
+ M policy/agent.rego
+ M policy/routing.rego
+ M policy/sandbox.rego
+ M src/lib/opa.ts
+ M tests/component/opa.test.ts
+ M tests/component/routing.test.ts
+ M tests/component/sandbox_policy.test.ts
+?? .agents/
+?? .orchestration/autoskill/runs/P3-T01.autoskill.md
+?? .orchestration/learning/P3-T01.learning.md
+?? .orchestration/reports/P3-T01.report.md
+?? .orchestration/sandboxes/P3-T01.sandbox.md
+?? .orchestration/tasks/P3-T01.md
+?? .orchestration/validation/P3-T01.validate-release.escalated.log
+?? .orchestration/validation/P3-T01.validation.log
+?? policy/tenants.json

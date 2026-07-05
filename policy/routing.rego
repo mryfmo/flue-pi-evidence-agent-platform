@@ -18,7 +18,11 @@ external_provider {
   provider_type != "local_gateway"
 }
 
-deny_reason["tenant_mismatch"] { input.decision.tenant != "acme" }
+allowed_tenant {
+  data.eap.tenants.allowed[_] == input.decision.tenant
+}
+
+deny_reason["tenant_mismatch"] { not allowed_tenant }
 deny_reason["unknown_route"] { not known_route }
 deny_reason["unknown_provider"] { not input.policy.providers[input.decision.provider] }
 deny_reason["restricted_external_provider"] {
@@ -27,7 +31,7 @@ deny_reason["restricted_external_provider"] {
 }
 
 allow {
-  input.decision.tenant == "acme"
+  allowed_tenant
   known_route
   input.policy.providers[input.decision.provider]
   not deny_reason["restricted_external_provider"]

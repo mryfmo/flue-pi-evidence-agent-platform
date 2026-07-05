@@ -1,3 +1,6 @@
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { evaluatePolicy } from '../../src/lib/opa.ts';
 
@@ -49,6 +52,36 @@ describe('eap.sandbox policy', () => {
 
     expect(decision.allow).toBe(false);
     expect(decision.requires_approval).toBe(false);
+    expect(decision.reasons).toContain('tenant_mismatch');
+  });
+
+  it('denies acme when the tenant allowlist is empty', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'eap-tenants-'));
+    const tenantsPath = join(dir, 'tenants.json');
+    await writeFile(
+      tenantsPath,
+      JSON.stringify({ eap: { tenants: { allowed: [] } } }),
+      'utf8',
+    );
+
+    const decision = await evaluatePolicy(
+      {
+        tenant: 'acme',
+        image: {
+          name: 'opensandbox/code-interpreter',
+          tag: 'v1.1.0',
+          digest: 'sha256:test',
+        },
+        egress: 'deny',
+        policy_id: '',
+        env_keys: [],
+      },
+      policyPath,
+      query,
+      tenantsPath,
+    );
+
+    expect(decision.allow).toBe(false);
     expect(decision.reasons).toContain('tenant_mismatch');
   });
 

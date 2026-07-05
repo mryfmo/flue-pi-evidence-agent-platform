@@ -37,6 +37,7 @@ export async function evaluatePolicy(
   input: PolicyInput | unknown,
   policyPath = 'policy/agent.rego',
   query = 'data.eap.agent',
+  dataPath = 'policy/tenants.json',
 ): Promise<PolicyDecision> {
   const tmp = await mkdtemp(join(tmpdir(), 'eap-opa-'));
   const inputPath = join(tmp, 'input.json');
@@ -47,6 +48,8 @@ export async function evaluatePolicy(
     'json',
     '--data',
     policyPath,
+    '--data',
+    dataPath,
     '--input',
     inputPath,
     query,

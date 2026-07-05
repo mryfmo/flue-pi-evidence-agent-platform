@@ -1540,7 +1540,7 @@ function opaBinary() {
 	if (!existsSync(binary)) throw new Error(`Bundled OPA binary is not installed at ${binary}. Run npm ci without omitting optional dependencies, or set EAP_OPA_BINARY.`);
 	return binary;
 }
-async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "data.eap.agent") {
+async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "data.eap.agent", dataPath = "policy/tenants.json") {
 	const inputPath = join(await mkdtemp(join(tmpdir(), "eap-opa-")), "input.json");
 	await writeFile(inputPath, JSON.stringify(input), "utf8");
 	const args = [
@@ -1549,6 +1549,8 @@ async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "
 		"json",
 		"--data",
 		policyPath,
+		"--data",
+		dataPath,
 		"--input",
 		inputPath,
 		query

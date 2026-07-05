@@ -9,6 +9,11 @@ Inputs:
 - risk
 - resource
 
+Data:
+- `policy/tenants.json` is loaded into OPA as `data.eap.tenants.allowed`.
+- Agent, routing, and sandbox policies allow only tenants present in that list.
+- Missing or empty tenant data does not satisfy the allow rules, so tenant authorization fails closed.
+
 Outputs:
 - allow
 - requires_approval

@@ -1,3 +1,6 @@
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { evaluatePolicy } from '../../src/lib/opa.ts';
 
@@ -32,6 +35,32 @@ describe('OPA Rego policy gate', () => {
         resource: 'warehouse',
       }),
     ).resolves.toMatchObject({ allow: false });
+  });
+
+  it('denies acme when the tenant allowlist is empty', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'eap-tenants-'));
+    const tenantsPath = join(dir, 'tenants.json');
+    await writeFile(
+      tenantsPath,
+      JSON.stringify({ eap: { tenants: { allowed: [] } } }),
+      'utf8',
+    );
+
+    const decision = await evaluatePolicy(
+      {
+        user: 'engineer',
+        tenant: 'acme',
+        tool: 'apply_patch',
+        risk: 'medium',
+        resource: 'repo',
+      },
+      'policy/agent.rego',
+      'data.eap.agent',
+      tenantsPath,
+    );
+
+    expect(decision.allow).toBe(false);
+    expect(decision.reasons).toContain('tenant_mismatch');
   });
 
   it('fails closed when the OPA binary is unavailable', async () => {

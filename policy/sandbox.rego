@@ -6,8 +6,12 @@ default requires_approval = false
 allowlisted_egress_policy["__none__"] { false }
 allowlisted_env_key["__none__"] { false }
 
+allowed_tenant {
+  data.eap.tenants.allowed[_] == input.tenant
+}
+
 deny_reason["tenant_mismatch"] {
-  input.tenant != "acme"
+  not allowed_tenant
 }
 
 deny_reason["egress_not_denied"] {
@@ -21,7 +25,7 @@ deny_reason["env_key_not_allowed"] {
 }
 
 allow {
-  input.tenant == "acme"
+  allowed_tenant
   input.egress == "deny"
   not deny_reason["env_key_not_allowed"]
 }

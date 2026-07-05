@@ -1,5 +1,9 @@
 import { readFileSync } from 'node:fs';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
+import { evaluatePolicy } from '../../src/lib/opa.ts';
 import {
   authorizeRoute,
   type RoutingInput,
@@ -60,7 +64,30 @@ describe('routing OPA authorization', () => {
         selectRoute({ ...internalFast, tenant: 'other' }, policyDoc),
         policyDoc,
       ),
-    ).resolves.toMatchObject({ allow: false });
+    ).resolves.toMatchObject({
+      allow: false,
+      reasons: expect.arrayContaining(['tenant_mismatch']),
+    });
+  });
+
+  it('denies acme routes when the tenant allowlist is empty', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'eap-tenants-'));
+    const tenantsPath = join(dir, 'tenants.json');
+    await writeFile(
+      tenantsPath,
+      JSON.stringify({ eap: { tenants: { allowed: [] } } }),
+      'utf8',
+    );
+
+    const decision = await evaluatePolicy(
+      { decision: selectRoute(internalFast, policyDoc), policy: policyDoc },
+      'policy/routing.rego',
+      'data.eap.routing',
+      tenantsPath,
+    );
+
+    expect(decision.allow).toBe(false);
+    expect(decision.reasons).toContain('tenant_mismatch');
   });
 
   it('denies restricted data routed to an external provider', async () => {
