@@ -1,9 +1,57 @@
+## ./node_modules/node/bin/node scripts/check-lockfile-registry.mjs
+lockfile-registry:ok
+exit=0
+
+## ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+exit=0
+
+## npm run validate-release
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+exit=1
+
+## validate python SBOM JSON
+    8855 artifacts/sbom/python-cyclonedx.json
+python-sbom:ok components=87
+exit=0
+
+## /opt/homebrew/bin/git status --short
+ M docs/VALIDATION_PLAN.md
+ M scripts/validate-release.mjs
+?? .orchestration/tasks/P2-T04.md
+?? .orchestration/validation/P2-T04.validation.log
+?? scripts/check-lockfile-registry.mjs
+exit=0
+
+## git diff --check
+exit=0
+
+## /opt/homebrew/bin/git status --short (final after reports)
+ M docs/VALIDATION_PLAN.md
+ M scripts/validate-release.mjs
+?? .orchestration/autoskill/runs/P2-T04.autoskill.md
+?? .orchestration/learning/P2-T04.learning.md
+?? .orchestration/reports/P2-T04.report.md
+?? .orchestration/sandboxes/P2-T04.sandbox.md
+?? .orchestration/tasks/P2-T04.md
+?? .orchestration/validation/P2-T04.validation.log
+?? scripts/check-lockfile-registry.mjs
+exit=0
+
+
+## Revision 1
+
+## ./node_modules/node/bin/node scripts/setup-python.mjs
 Requirement already satisfied: pip in ./.venv/lib/python3.11/site-packages (26.1.2)
 Requirement already satisfied: duckdb in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (1.5.4)
 Requirement already satisfied: sqlglot in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (30.12.0)
 Requirement already satisfied: presidio-analyzer in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.2.363)
-Requirement already satisfied: presidio-anonymizer in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.2.362)
-Requirement already satisfied: cryptography>=48.0.1 in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (49.0.0)
+Requirement already satisfied: presidio-anonymizer in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.2.363)
+Collecting cryptography>=48.0.1 (from -r requirements.txt (line 6))
+  Downloading cryptography-49.0.0-cp311-abi3-macosx_11_0_arm64.whl.metadata (4.3 kB)
 Requirement already satisfied: pytest in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 7)) (9.1.1)
 Requirement already satisfied: pytest-cov in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 8)) (7.1.0)
 Requirement already satisfied: ruff in ./.venv/lib/python3.11/site-packages (from -r requirements.txt (line 9)) (0.15.20)
@@ -52,6 +100,9 @@ Requirement already satisfied: annotated-doc>=0.0.2 in ./.venv/lib/python3.11/si
 Requirement already satisfied: cloudpathlib>=0.7.0 in ./.venv/lib/python3.11/site-packages (from weasel<2.0.0,>=1.0.0->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (0.24.0)
 Requirement already satisfied: smart-open>=5.2.1 in ./.venv/lib/python3.11/site-packages (from weasel<2.0.0,>=1.0.0->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (8.0.0)
 Requirement already satisfied: httpx>=0.24.0 in ./.venv/lib/python3.11/site-packages (from weasel<2.0.0,>=1.0.0->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (0.28.1)
+INFO: pip is looking at multiple versions of presidio-anonymizer to determine which version is compatible with other requirements. This could take a while.
+Collecting presidio-anonymizer (from -r requirements.txt (line 4))
+  Downloading presidio_anonymizer-2.2.362-py3-none-any.whl.metadata (9.1 kB)
 Requirement already satisfied: cffi>=2.0.0 in ./.venv/lib/python3.11/site-packages (from cryptography>=48.0.1->-r requirements.txt (line 6)) (2.0.0)
 Requirement already satisfied: iniconfig>=1.0.1 in ./.venv/lib/python3.11/site-packages (from pytest->-r requirements.txt (line 7)) (2.3.0)
 Requirement already satisfied: pluggy<2,>=1.5 in ./.venv/lib/python3.11/site-packages (from pytest->-r requirements.txt (line 7)) (1.6.0)
@@ -86,4 +137,88 @@ Requirement already satisfied: markdown-it-py>=2.2.0 in ./.venv/lib/python3.11/s
 Requirement already satisfied: mdurl~=0.1 in ./.venv/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich>=13.8.0->typer<1.0.0,>=0.3.0->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (0.1.2)
 Requirement already satisfied: wrapt in ./.venv/lib/python3.11/site-packages (from smart-open>=5.2.1->weasel<2.0.0,>=1.0.0->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (2.2.2)
 Requirement already satisfied: MarkupSafe>=2.0 in ./.venv/lib/python3.11/site-packages (from jinja2->spacy!=3.7.0,!=3.8.14,<4.0.0,>=3.4.4->presidio-analyzer->-r requirements.txt (line 3)) (3.0.3)
+Downloading presidio_anonymizer-2.2.362-py3-none-any.whl (36 kB)
+Downloading cryptography-49.0.0-cp311-abi3-macosx_11_0_arm64.whl (4.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.0/4.0 MB 33.2 MB/s  0:00:00
+Installing collected packages: cryptography, presidio-anonymizer
+  Attempting uninstall: cryptography
+    Found existing installation: cryptography 46.0.7
+    Uninstalling cryptography-46.0.7:
+      Successfully uninstalled cryptography-46.0.7
+  Attempting uninstall: presidio-anonymizer
+    Found existing installation: presidio_anonymizer 2.2.363
+    Uninstalling presidio_anonymizer-2.2.363:
+      Successfully uninstalled presidio_anonymizer-2.2.363
+
+Successfully installed cryptography-49.0.0 presidio-anonymizer-2.2.362
 .venv/bin/python
+exit=0
+
+## .venv/bin/python -c import checks
+cryptography=49.0.0
+presidio_anonymizer:ok
+exit=0
+
+## .venv/bin/python -m pytest -q tests_py --cov=scripts --cov-report=term-missing --cov-fail-under=85
+.......                                                                  [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+scripts/__init__.py         0      0   100%
+scripts/data_guard.py      85     10    88%   44, 49, 83, 150-151, 153-154, 156-157, 162
+-----------------------------------------------------
+TOTAL                      85     10    88%
+Required test coverage of 85% reached. Total coverage: 88.24%
+exit=0
+
+## npm run validate-release
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+exit=0
+
+## final verification report summary
+status=passed
+gates=20
+setup_python:passed
+spec_traceability:passed
+format:passed
+lint:passed
+typecheck:passed
+opa:passed
+python_compile:passed
+python_ruff:passed
+python_mypy:passed
+python_bandit:passed
+python_tests:passed
+vitest_all:passed
+llm_contract:passed
+flue_build:passed
+e2e_artifacts:passed
+npm_audit_prod:passed
+npm_sbom_prod:passed
+python_sbom:passed
+python_audit:passed
+lockfile_registry:passed
+exit=0
+
+## /opt/homebrew/bin/git status --short (Revision 1 final after cleanup)
+ M docs/VALIDATION_PLAN.md
+ M requirements.txt
+ M scripts/validate-release.mjs
+?? .orchestration/autoskill/runs/P2-T04.autoskill.md
+?? .orchestration/learning/P2-T04.learning.md
+?? .orchestration/reports/P2-T04.report.md
+?? .orchestration/sandboxes/P2-T04.sandbox.md
+?? .orchestration/tasks/P2-T04.md
+?? .orchestration/validation/P2-T04.validation.log
+?? scripts/check-lockfile-registry.mjs
+exit=0
+
+## git diff --check (Revision 1)
+exit=0
+

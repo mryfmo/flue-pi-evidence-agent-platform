@@ -87,6 +87,20 @@ const commands = [
     'bash',
     ['-lc', 'timeout 60 npm sbom --omit=dev --sbom-format=cyclonedx --json'],
   ],
+  [
+    'python_sbom',
+    '.venv/bin/python',
+    [
+      '-c',
+      "import importlib.metadata as m, json, uuid, datetime; print(json.dumps({'bomFormat':'CycloneDX','specVersion':'1.4','serialNumber':'urn:uuid:'+str(uuid.uuid4()),'version':1,'metadata':{'timestamp':datetime.datetime.now(datetime.UTC).isoformat()},'components':[{'type':'library','name':d.metadata['Name'],'version':d.version,'purl':'pkg:pypi/'+d.metadata['Name'].lower().replace('_','-')+'@'+d.version} for d in sorted(m.distributions(), key=lambda d: d.metadata['Name'].lower())]}))",
+    ],
+  ],
+  [
+    'python_audit',
+    '.venv/bin/pip-audit',
+    ['--local', '--progress-spinner', 'off'],
+  ],
+  ['lockfile_registry', node, ['scripts/check-lockfile-registry.mjs']],
 ];
 
 const results = [];
@@ -102,6 +116,11 @@ for (const [name, cmd, args] of commands) {
     mkdirSync('artifacts/sbom', { recursive: true });
     writeFileSync('artifacts/sbom/npm-cyclonedx.json', stdout, 'utf8');
     stdout = `wrote artifacts/sbom/npm-cyclonedx.json\n${stdout.slice(0, 500)}`;
+  }
+  if (name === 'python_sbom') {
+    mkdirSync('artifacts/sbom', { recursive: true });
+    writeFileSync('artifacts/sbom/python-cyclonedx.json', stdout, 'utf8');
+    stdout = `wrote artifacts/sbom/python-cyclonedx.json\n${stdout.slice(0, 500)}`;
   }
   writeFileSync(`${validationDir}/${name}.stdout.log`, stdout, 'utf8');
   writeFileSync(

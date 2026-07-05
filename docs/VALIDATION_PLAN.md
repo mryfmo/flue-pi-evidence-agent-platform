@@ -24,6 +24,9 @@
 | `e2e_artifacts` | assert ledger, evidence, audit, and OpenTelemetry artifacts from E2E | `artifacts/validation/e2e_artifacts.*.log` |
 | `npm_audit_prod` | check production Node dependencies for high-severity advisories | `artifacts/validation/npm_audit_prod.*.log` |
 | `npm_sbom_prod` | emit CycloneDX SBOM for production Node dependencies | `artifacts/sbom/npm-cyclonedx.json` |
+| `python_sbom` | emit CycloneDX SBOM for Python virtualenv dependencies | `artifacts/sbom/python-cyclonedx.json` |
+| `python_audit` | check Python virtualenv dependencies for known advisories | `artifacts/validation/python_audit.*.log` |
+| `lockfile_registry` | assert npm lockfile resolved URLs use the public registry origin | `artifacts/validation/lockfile_registry.*.log` |
 
 ## Test taxonomy
 

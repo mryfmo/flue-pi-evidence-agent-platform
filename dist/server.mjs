@@ -1531,6 +1531,7 @@ var execFileAsync = promisify(execFile);
 var opaPackages = {
 	"darwin-arm64": "agent-control-specification-opa-darwin-arm64",
 	"darwin-x64": "agent-control-specification-opa-darwin-x64",
+	"linux-arm64": "agent-control-specification-opa-linux-arm64",
 	"linux-x64": "agent-control-specification-opa-linux-x64"
 };
 function opaBinary() {

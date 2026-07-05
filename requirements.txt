@@ -2,6 +2,8 @@ duckdb
 sqlglot
 presidio-analyzer
 presidio-anonymizer
+# Transitive security pin for presidio-anonymizer: GHSA-537c-gmf6-5ccf.
+cryptography>=48.0.1
 pytest
 pytest-cov
 ruff

@@ -1,10 +1,10 @@
 {
-  "runId": "run-1783238710903",
+  "runId": "run-1783242294169",
   "hypotheses": [
     {
       "id": "HYP-DIVIDE-ZERO-001",
       "title": "divide() does not reject zero divisor before division",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "affectedSymbol": "divide",
       "evidence": [
         "app.py contains `return a / b` without a zero-divisor guard"
@@ -19,7 +19,7 @@
     {
       "id": "HYP-DISCOUNT-VALIDATION-001",
       "title": "parse_discount() accepts invalid integer strings through raw int()",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "affectedSymbol": "parse_discount",
       "evidence": [
         "app.py contains `return int(value)` without explicit input validation"
@@ -37,7 +37,7 @@
       "id": "EV-CODE-SCAN-001",
       "kind": "source",
       "summary": "Code scan localized 2 hypotheses.",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c",
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd",
       "linkedHypotheses": [
         "HYP-DIVIDE-ZERO-001",
         "HYP-DISCOUNT-VALIDATION-001"
@@ -61,13 +61,13 @@
       "id": "EV-VERIFY-001",
       "kind": "verification",
       "summary": "Verifier python -m pytest -q passed=true",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd"
     },
     {
       "id": "EV-RESCAN-001",
       "kind": "impact",
       "summary": "Rescan remaining hypotheses=0",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd"
     },
     {
       "id": "EV-DATA-PROXY-001",
@@ -79,7 +79,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-MINIMAL",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -87,7 +87,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-VALIDATION",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
@@ -95,7 +95,7 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-MINIMAL",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -103,7 +103,7 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-VALIDATION",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-4576-c563b3d8-512d-4332-a6b9-c438763d1b5c/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/buggy_multi-26176-e7afb89e-e9a1-4b86-a2ed-07f235e070cd/app.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
