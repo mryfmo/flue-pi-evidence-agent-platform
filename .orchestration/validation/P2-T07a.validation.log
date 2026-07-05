@@ -1,0 +1,493 @@
+# P2-T07a Validation Log
+
+## .venv/bin/python .orchestration/autoskill/config/build_inputs.py --run-id p2t07a-dryinput
+
+{
+  "inputs": [
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/agmsg/history.jsonl",
+      "redaction_passed": true,
+      "sha256_after": "90fcde7b982a4e2fb97f7e1abd27b0bf26b2600a5b84b6dd6e19dcaec04bd07d",
+      "sha256_before": "90fcde7b982a4e2fb97f7e1abd27b0bf26b2600a5b84b6dd6e19dcaec04bd07d",
+      "source_path": ".orchestration/agmsg/history.jsonl"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "740d0ecfa37d00357963b1e4cd63e6b30337391e990ff8a3e05a37534572555d",
+      "sha256_before": "740d0ecfa37d00357963b1e4cd63e6b30337391e990ff8a3e05a37534572555d",
+      "source_path": ".orchestration/reports/P0-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T02.report.md",
+      "redaction_passed": true,
+      "sha256_after": "b76f5f9235d0b9cf2226cbf3121e84b3620c164cdca59014716a49718a9b20d0",
+      "sha256_before": "b76f5f9235d0b9cf2226cbf3121e84b3620c164cdca59014716a49718a9b20d0",
+      "source_path": ".orchestration/reports/P0-T02.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T03.report.md",
+      "redaction_passed": true,
+      "sha256_after": "c049fccbc7747a0a44827ad51c4ebf02b13a6139abc7fd50810abb4f1dc351dc",
+      "sha256_before": "c049fccbc7747a0a44827ad51c4ebf02b13a6139abc7fd50810abb4f1dc351dc",
+      "source_path": ".orchestration/reports/P0-T03.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "92c69ce89d041f04498b4bc205bb1c6c4600da090827eec3796b776fec6d30e7",
+      "sha256_before": "92c69ce89d041f04498b4bc205bb1c6c4600da090827eec3796b776fec6d30e7",
+      "source_path": ".orchestration/reports/P1-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03a.report.md",
+      "redaction_passed": true,
+      "sha256_after": "49104c86178ca80a9ac745ef625016c9ad101b61288ac1f5692eebb88aa81712",
+      "sha256_before": "49104c86178ca80a9ac745ef625016c9ad101b61288ac1f5692eebb88aa81712",
+      "source_path": ".orchestration/reports/P1-T03a.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03b.report.md",
+      "redaction_passed": true,
+      "sha256_after": "702bfd95b992b10b60bb577f524cb0aea7cf652ea3abe542092bb8b543579cf7",
+      "sha256_before": "702bfd95b992b10b60bb577f524cb0aea7cf652ea3abe542092bb8b543579cf7",
+      "source_path": ".orchestration/reports/P1-T03b.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T04.report.md",
+      "redaction_passed": true,
+      "sha256_after": "27d9a97259597d204473b34a7e26e07f75d1e70143eec804262c9a81b7f13453",
+      "sha256_before": "27d9a97259597d204473b34a7e26e07f75d1e70143eec804262c9a81b7f13453",
+      "source_path": ".orchestration/reports/P1-T04.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "ef992b53aa45a7ab8d197ad40962cb932f68a87d4793fbb0bf02a35140a9dff1",
+      "sha256_before": "ef992b53aa45a7ab8d197ad40962cb932f68a87d4793fbb0bf02a35140a9dff1",
+      "source_path": ".orchestration/reports/P2-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T02.report.md",
+      "redaction_passed": true,
+      "sha256_after": "4e50c178c76a7582c1545176557c7ebee365fa44da5282bbe5d6fedec98bcaf4",
+      "sha256_before": "4e50c178c76a7582c1545176557c7ebee365fa44da5282bbe5d6fedec98bcaf4",
+      "source_path": ".orchestration/reports/P2-T02.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T03.report.md",
+      "redaction_passed": true,
+      "sha256_after": "28d8c22ff1168986cda4f08cd085a9bb8157c2adf7c8b56492e5be55520834a0",
+      "sha256_before": "28d8c22ff1168986cda4f08cd085a9bb8157c2adf7c8b56492e5be55520834a0",
+      "source_path": ".orchestration/reports/P2-T03.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T04.report.md",
+      "redaction_passed": true,
+      "sha256_after": "6b95b8b6672ea515570d0f33d894a305c9a3bd290a26eede9bcb14016275c495",
+      "sha256_before": "6b95b8b6672ea515570d0f33d894a305c9a3bd290a26eede9bcb14016275c495",
+      "source_path": ".orchestration/reports/P2-T04.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T05.report.md",
+      "redaction_passed": true,
+      "sha256_after": "ad52e7a149f59c5722a8af552256cbcf0363f13de813c60919d7db399b93f02a",
+      "sha256_before": "ad52e7a149f59c5722a8af552256cbcf0363f13de813c60919d7db399b93f02a",
+      "source_path": ".orchestration/reports/P2-T05.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "84f3bdd8ede5f993aa1c94b989b90fc0729b7f6492139ca18c2bf972dbd7ca57",
+      "sha256_before": "84f3bdd8ede5f993aa1c94b989b90fc0729b7f6492139ca18c2bf972dbd7ca57",
+      "source_path": ".orchestration/acceptance/P0-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T02.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "fdd9bcac70e745aaa06146dbf9c9f546af1f7831294d975b6cada7ea09749252",
+      "sha256_before": "fdd9bcac70e745aaa06146dbf9c9f546af1f7831294d975b6cada7ea09749252",
+      "source_path": ".orchestration/acceptance/P0-T02.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T03.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "7997fa7f857f27f783fa30b5ea6beb94d6bfc72b046ccf8493e19c1f7dca4b18",
+      "sha256_before": "7997fa7f857f27f783fa30b5ea6beb94d6bfc72b046ccf8493e19c1f7dca4b18",
+      "source_path": ".orchestration/acceptance/P0-T03.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "558e3407a05c72bbb5dd552649adc104c67dfb6be626ebc4422e7165bb9b7688",
+      "sha256_before": "558e3407a05c72bbb5dd552649adc104c67dfb6be626ebc4422e7165bb9b7688",
+      "source_path": ".orchestration/acceptance/P1-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T03a.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "210f5937f1b929e4c04c5a5e7f62cd2059184e2f4635ab66a53bd8f9646af470",
+      "sha256_before": "210f5937f1b929e4c04c5a5e7f62cd2059184e2f4635ab66a53bd8f9646af470",
+      "source_path": ".orchestration/acceptance/P1-T03a.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T03b.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "0056a6a3d33889d729f27d58aace027422677562fa0935be4b31db24945a09a5",
+      "sha256_before": "0056a6a3d33889d729f27d58aace027422677562fa0935be4b31db24945a09a5",
+      "source_path": ".orchestration/acceptance/P1-T03b.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T04.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "931a2de14dc9fdc9aba5eaa8cebe47047092216be81c4f5702a1902baba87b9e",
+      "sha256_before": "931a2de14dc9fdc9aba5eaa8cebe47047092216be81c4f5702a1902baba87b9e",
+      "source_path": ".orchestration/acceptance/P1-T04.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "05b60af5f6219b14634600964a94e012e6d72c10971f288001875589191638c0",
+      "sha256_before": "05b60af5f6219b14634600964a94e012e6d72c10971f288001875589191638c0",
+      "source_path": ".orchestration/acceptance/P2-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T02.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "ea0a88f41d32f4436e9f7cf019f5efcc8c2245d7229938fd8053b36edf44b4f7",
+      "sha256_before": "ea0a88f41d32f4436e9f7cf019f5efcc8c2245d7229938fd8053b36edf44b4f7",
+      "source_path": ".orchestration/acceptance/P2-T02.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T03.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "7d6bd6a441cd6bd88516b1401dd2cbcb9e0030497b2217525c4517b7adff5a51",
+      "sha256_before": "7d6bd6a441cd6bd88516b1401dd2cbcb9e0030497b2217525c4517b7adff5a51",
+      "source_path": ".orchestration/acceptance/P2-T03.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T04.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "c6c93899ba61f7ef45dbe689c0a99d7fdb4380166a7d6b80fc90b16bb58f8662",
+      "sha256_before": "c6c93899ba61f7ef45dbe689c0a99d7fdb4380166a7d6b80fc90b16bb58f8662",
+      "source_path": ".orchestration/acceptance/P2-T04.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T05.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "006405cafe75d2209879fdb5dfece597fa326ec99d9ece0fe1cbd8e28d0bc5cd",
+      "sha256_before": "006405cafe75d2209879fdb5dfece597fa326ec99d9ece0fe1cbd8e28d0bc5cd",
+      "source_path": ".orchestration/acceptance/P2-T05.acceptance.md"
+    }
+  ],
+  "run_id": "p2t07a-dryinput",
+  "source_groups": [
+    "agmsg_history",
+    "reports",
+    "acceptance"
+  ]
+}
+
+## cat .orchestration/autoskill/inputs/p2t07a-dryinput.manifest.json
+
+{
+  "inputs": [
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/agmsg/history.jsonl",
+      "redaction_passed": true,
+      "sha256_after": "90fcde7b982a4e2fb97f7e1abd27b0bf26b2600a5b84b6dd6e19dcaec04bd07d",
+      "sha256_before": "90fcde7b982a4e2fb97f7e1abd27b0bf26b2600a5b84b6dd6e19dcaec04bd07d",
+      "source_path": ".orchestration/agmsg/history.jsonl"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "740d0ecfa37d00357963b1e4cd63e6b30337391e990ff8a3e05a37534572555d",
+      "sha256_before": "740d0ecfa37d00357963b1e4cd63e6b30337391e990ff8a3e05a37534572555d",
+      "source_path": ".orchestration/reports/P0-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T02.report.md",
+      "redaction_passed": true,
+      "sha256_after": "b76f5f9235d0b9cf2226cbf3121e84b3620c164cdca59014716a49718a9b20d0",
+      "sha256_before": "b76f5f9235d0b9cf2226cbf3121e84b3620c164cdca59014716a49718a9b20d0",
+      "source_path": ".orchestration/reports/P0-T02.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P0-T03.report.md",
+      "redaction_passed": true,
+      "sha256_after": "c049fccbc7747a0a44827ad51c4ebf02b13a6139abc7fd50810abb4f1dc351dc",
+      "sha256_before": "c049fccbc7747a0a44827ad51c4ebf02b13a6139abc7fd50810abb4f1dc351dc",
+      "source_path": ".orchestration/reports/P0-T03.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "92c69ce89d041f04498b4bc205bb1c6c4600da090827eec3796b776fec6d30e7",
+      "sha256_before": "92c69ce89d041f04498b4bc205bb1c6c4600da090827eec3796b776fec6d30e7",
+      "source_path": ".orchestration/reports/P1-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03a.report.md",
+      "redaction_passed": true,
+      "sha256_after": "49104c86178ca80a9ac745ef625016c9ad101b61288ac1f5692eebb88aa81712",
+      "sha256_before": "49104c86178ca80a9ac745ef625016c9ad101b61288ac1f5692eebb88aa81712",
+      "source_path": ".orchestration/reports/P1-T03a.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T03b.report.md",
+      "redaction_passed": true,
+      "sha256_after": "702bfd95b992b10b60bb577f524cb0aea7cf652ea3abe542092bb8b543579cf7",
+      "sha256_before": "702bfd95b992b10b60bb577f524cb0aea7cf652ea3abe542092bb8b543579cf7",
+      "source_path": ".orchestration/reports/P1-T03b.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P1-T04.report.md",
+      "redaction_passed": true,
+      "sha256_after": "27d9a97259597d204473b34a7e26e07f75d1e70143eec804262c9a81b7f13453",
+      "sha256_before": "27d9a97259597d204473b34a7e26e07f75d1e70143eec804262c9a81b7f13453",
+      "source_path": ".orchestration/reports/P1-T04.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T01.report.md",
+      "redaction_passed": true,
+      "sha256_after": "ef992b53aa45a7ab8d197ad40962cb932f68a87d4793fbb0bf02a35140a9dff1",
+      "sha256_before": "ef992b53aa45a7ab8d197ad40962cb932f68a87d4793fbb0bf02a35140a9dff1",
+      "source_path": ".orchestration/reports/P2-T01.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T02.report.md",
+      "redaction_passed": true,
+      "sha256_after": "4e50c178c76a7582c1545176557c7ebee365fa44da5282bbe5d6fedec98bcaf4",
+      "sha256_before": "4e50c178c76a7582c1545176557c7ebee365fa44da5282bbe5d6fedec98bcaf4",
+      "source_path": ".orchestration/reports/P2-T02.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T03.report.md",
+      "redaction_passed": true,
+      "sha256_after": "28d8c22ff1168986cda4f08cd085a9bb8157c2adf7c8b56492e5be55520834a0",
+      "sha256_before": "28d8c22ff1168986cda4f08cd085a9bb8157c2adf7c8b56492e5be55520834a0",
+      "source_path": ".orchestration/reports/P2-T03.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T04.report.md",
+      "redaction_passed": true,
+      "sha256_after": "6b95b8b6672ea515570d0f33d894a305c9a3bd290a26eede9bcb14016275c495",
+      "sha256_before": "6b95b8b6672ea515570d0f33d894a305c9a3bd290a26eede9bcb14016275c495",
+      "source_path": ".orchestration/reports/P2-T04.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/reports/P2-T05.report.md",
+      "redaction_passed": true,
+      "sha256_after": "ad52e7a149f59c5722a8af552256cbcf0363f13de813c60919d7db399b93f02a",
+      "sha256_before": "ad52e7a149f59c5722a8af552256cbcf0363f13de813c60919d7db399b93f02a",
+      "source_path": ".orchestration/reports/P2-T05.report.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "84f3bdd8ede5f993aa1c94b989b90fc0729b7f6492139ca18c2bf972dbd7ca57",
+      "sha256_before": "84f3bdd8ede5f993aa1c94b989b90fc0729b7f6492139ca18c2bf972dbd7ca57",
+      "source_path": ".orchestration/acceptance/P0-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T02.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "fdd9bcac70e745aaa06146dbf9c9f546af1f7831294d975b6cada7ea09749252",
+      "sha256_before": "fdd9bcac70e745aaa06146dbf9c9f546af1f7831294d975b6cada7ea09749252",
+      "source_path": ".orchestration/acceptance/P0-T02.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P0-T03.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "7997fa7f857f27f783fa30b5ea6beb94d6bfc72b046ccf8493e19c1f7dca4b18",
+      "sha256_before": "7997fa7f857f27f783fa30b5ea6beb94d6bfc72b046ccf8493e19c1f7dca4b18",
+      "source_path": ".orchestration/acceptance/P0-T03.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "558e3407a05c72bbb5dd552649adc104c67dfb6be626ebc4422e7165bb9b7688",
+      "sha256_before": "558e3407a05c72bbb5dd552649adc104c67dfb6be626ebc4422e7165bb9b7688",
+      "source_path": ".orchestration/acceptance/P1-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T03a.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "210f5937f1b929e4c04c5a5e7f62cd2059184e2f4635ab66a53bd8f9646af470",
+      "sha256_before": "210f5937f1b929e4c04c5a5e7f62cd2059184e2f4635ab66a53bd8f9646af470",
+      "source_path": ".orchestration/acceptance/P1-T03a.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T03b.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "0056a6a3d33889d729f27d58aace027422677562fa0935be4b31db24945a09a5",
+      "sha256_before": "0056a6a3d33889d729f27d58aace027422677562fa0935be4b31db24945a09a5",
+      "source_path": ".orchestration/acceptance/P1-T03b.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P1-T04.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "931a2de14dc9fdc9aba5eaa8cebe47047092216be81c4f5702a1902baba87b9e",
+      "sha256_before": "931a2de14dc9fdc9aba5eaa8cebe47047092216be81c4f5702a1902baba87b9e",
+      "source_path": ".orchestration/acceptance/P1-T04.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T01.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "05b60af5f6219b14634600964a94e012e6d72c10971f288001875589191638c0",
+      "sha256_before": "05b60af5f6219b14634600964a94e012e6d72c10971f288001875589191638c0",
+      "source_path": ".orchestration/acceptance/P2-T01.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T02.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "ea0a88f41d32f4436e9f7cf019f5efcc8c2245d7229938fd8053b36edf44b4f7",
+      "sha256_before": "ea0a88f41d32f4436e9f7cf019f5efcc8c2245d7229938fd8053b36edf44b4f7",
+      "source_path": ".orchestration/acceptance/P2-T02.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T03.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "7d6bd6a441cd6bd88516b1401dd2cbcb9e0030497b2217525c4517b7adff5a51",
+      "sha256_before": "7d6bd6a441cd6bd88516b1401dd2cbcb9e0030497b2217525c4517b7adff5a51",
+      "source_path": ".orchestration/acceptance/P2-T03.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T04.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "c6c93899ba61f7ef45dbe689c0a99d7fdb4380166a7d6b80fc90b16bb58f8662",
+      "sha256_before": "c6c93899ba61f7ef45dbe689c0a99d7fdb4380166a7d6b80fc90b16bb58f8662",
+      "source_path": ".orchestration/acceptance/P2-T04.acceptance.md"
+    },
+    {
+      "entities_found": 0,
+      "redacted_path": ".orchestration/autoskill/inputs/p2t07a-dryinput/.orchestration/acceptance/P2-T05.acceptance.md",
+      "redaction_passed": true,
+      "sha256_after": "006405cafe75d2209879fdb5dfece597fa326ec99d9ece0fe1cbd8e28d0bc5cd",
+      "sha256_before": "006405cafe75d2209879fdb5dfece597fa326ec99d9ece0fe1cbd8e28d0bc5cd",
+      "source_path": ".orchestration/acceptance/P2-T05.acceptance.md"
+    }
+  ],
+  "run_id": "p2t07a-dryinput",
+  "source_groups": [
+    "agmsg_history",
+    "reports",
+    "acceptance"
+  ]
+}
+
+## /opt/homebrew/bin/git status --short
+
+?? .orchestration/autoskill/config/Dockerfile.autoskill
+?? .orchestration/autoskill/config/INPUT_CONTRACT.md
+?? .orchestration/autoskill/config/PINNED_VERSION.md
+?? .orchestration/autoskill/config/build_inputs.py
+?? .orchestration/autoskill/inputs/p2t07a-dryinput.manifest.json
+?? .orchestration/autoskill/inputs/p2t07a-dryinput/
+?? .orchestration/tasks/P2-T07a.md
+?? .orchestration/validation/P2-T07a.validation.log
+
+## python3 -m py_compile .orchestration/autoskill/config/build_inputs.py
+
+exit=0
+
+## grep redacted outputs for raw emails/API-key-like tokens
+
+exit=1 (expected 1: no matches)
+
+## python3 -m pip index versions setuptools
+
+Escalated network metadata lookup output:
+
+```text
+setuptools (83.0.0)
+INSTALLED: 82.0.1
+LATEST:    83.0.0
+```
+
+## python3 -m pip index versions wheel
+
+Escalated network metadata lookup output:
+
+```text
+wheel (0.47.0)
+```
+
+## git diff --check
+
+exit=0
+
+## make require-crit-review
+
+```text
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+exit=2
+
+## Final /opt/homebrew/bin/git status --short
+
+```text
+?? .orchestration/autoskill/config/Dockerfile.autoskill
+?? .orchestration/autoskill/config/INPUT_CONTRACT.md
+?? .orchestration/autoskill/config/PINNED_VERSION.md
+?? .orchestration/autoskill/config/build_inputs.py
+?? .orchestration/autoskill/inputs/p2t07a-dryinput.manifest.json
+?? .orchestration/autoskill/inputs/p2t07a-dryinput/
+?? .orchestration/autoskill/runs/P2-T07a.autoskill.md
+?? .orchestration/learning/P2-T07a.learning.md
+?? .orchestration/reports/P2-T07a.report.md
+?? .orchestration/sandboxes/P2-T07a.sandbox.md
+?? .orchestration/tasks/P2-T07a.md
+?? .orchestration/validation/P2-T07a.validation.log
+```

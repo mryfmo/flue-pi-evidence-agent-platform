@@ -1,0 +1,15 @@
+# リスクレジスタ
+
+- 管理: orchestrator-fable5 / 更新: 2026-07-05
+- 形式: ID / リスク / 影響 / 緩和策 / 所有者 / 期限・トリガー
+
+| ID   | リスク                                                                  | 影響                                                         | 緩和策                                                                                                                      | 所有者       | 期限・トリガー                      |
+| ---- | ----------------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------- |
+| RR-1 | AutoSkill 上流にルート LICENSE ファイルが無い(README の MIT バッジのみ) | ライセンス根拠が弱い状態での採用                             | pinned SHA 固定を維持。T07b 着手前に上流の LICENSE 追加を確認、無ければ upstream issue で確認を取る                         | orchestrator | P2-T07b 着手時                      |
+| RR-2 | Apple container 1.0 builder の一時的 "invalid tar header" flake         | ローカルコンテナ検証の偶発失敗                               | リトライ手順を DEPLOYMENT.md に記載済み。CI(docker)は影響なし                                                               | orchestrator | 再発頻度が上がれば version 更新検討 |
+| RR-3 | OPA npm パッケージが 0.3.1-beta.0(ベータ)+ 同梱 OPA 0.70.0 は旧系       | 上流破壊的変更・脆弱性対応の遅延                             | 4 プラットフォーム同一 version 固定。Rego v1 移行(下記 RR-4)と合わせて安定版へ更新検討                                      | orchestrator | Phase 3(OPA bundle 配布設計時)      |
+| RR-4 | ポリシーが Rego v0 構文(OPA 1.x はデフォルト非対応)                     | 将来の OPA 更新で評価不能                                    | 現状は同梱 0.70.0 で動作。P3-T02(opa test ゲート)で v1 移行を実施                                                           | orchestrator | Phase 3                             |
+| RR-5 | 単一運用者・単一ホストのシークレット管理(env ファイル)                  | 鍵漏えい時の検知・ローテーション遅延                         | SECRETS_MANAGEMENT.md のローテーション手順 + 採用基準(マルチホスト/複数運用者/コンプライアンス要件)で secret manager へ移行 | user         | 採用基準のいずれか成立時            |
+| RR-6 | OpenSandbox は製品必須だが macOS 開発機で実行不可(Docker API 必須)      | 製品統合の開発・検証が CI 依存                               | 統合検証は GitHub Actions(docker)で実施。ローカルは Apple container 代替。設計は P2-T06(次セッション)                       | orchestrator | P2-T06 設計時                       |
+| RR-7 | codex sandbox 内で 127.0.0.1 bind とサーバー系テストが実行不能          | ワーカー自己検証の空白(受入時に初めて実行されるテストが出る) | 受入時のオーケストレーター再実行を必須プロセス化済み(P1-T03b で実バグ捕捉の実績)                                            | orchestrator | 常設運用                            |
+| RR-8 | ~/.codex/config.toml の writable_roots が chezmoi 未反映                | chezmoi apply で agmsg 書込権限が消失し委譲が停止            | ユーザーが dotfiles(home/dot_agents/agent-config.yaml)へ反映する                                                            | user         | 次回 chezmoi apply 前               |

@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+ARG AUTOSKILL_REPO=https://github.com/ECNU-ICALK/AutoSkill.git
+ARG AUTOSKILL_SHA=94c47ca488d4ba4117d20272e66d49b9877e68cf
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/autoskill
+RUN git clone "${AUTOSKILL_REPO}" . \
+  && git checkout "${AUTOSKILL_SHA}" \
+  && pip install --no-cache-dir .
+
+RUN useradd --create-home --shell /usr/sbin/nologin autoskill
+USER autoskill
+
+CMD ["python", "-m", "autoskill", "--help"]
