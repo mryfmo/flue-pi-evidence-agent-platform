@@ -1,0 +1,42 @@
+# AutoSkill 導入方針 v1
+
+- 作成: orchestrator-fable5, 2026-07-05(Phase 0)
+- 準拠: 指示書 §7.8.1 / §10.3
+- 状態: **未導入**(Phase 0 は受け皿と本方針のみ。導入は Phase 2、運用は Phase 4)
+
+## 原則
+
+1. AutoSkill(ECNU-ICALK/AutoSkill 公式実装)を再実装せず、固定 commit/tag でそのまま利用する。
+2. 導入前に必須: ライセンス確認、依存関係・脆弱性レビュー、SBOM 生成(G11 と連動)、実行権限レビュー。
+3. 実行は sandbox 内(OpenSandbox 導入後はその中、それまでは fallback sandbox + network deny)。
+4. 生成 Skill は直接採用禁止。`.orchestration/skills/candidates/` に保存し、validation-gated promotion のみ。
+
+## 入力データ契約(redaction gate)
+
+- ソース: `.orchestration/agmsg/history.jsonl`、`.orchestration/reports/`、`.orchestration/validation/`、`.orchestration/acceptance/`
+- redaction 後のみ `.orchestration/autoskill/inputs/<TaskID>.manifest.json` + 入力ファイルとして配置。
+- redaction 対象: 絶対パス中のユーザー名以外の個人情報、資格情報らしき文字列、メールアドレス、未承認の組織固有情報。redaction 実装は既存資産(Presidio regex recognizer, scripts/data_guard.py のパターン)を再利用する。新規 PII エンジンを作らない。
+
+## 出力データ契約
+
+- run log: `.orchestration/autoskill/runs/<TaskID>.autoskill.md`(固定 version、decision: discard/improve/merge/create/version_update、redaction_passed、promotion_allowed=false)
+- 生成候補: `.orchestration/skills/candidates/<TaskID>.SKILL.md`(SKILL.md 互換 frontmatter: purpose / activation hint / prerequisites / steps / validation / pitfalls / non-goals / rollback / provenance)
+
+## Skill registry 状態遷移(3 系統共通)
+
+```
+observed -> autoskill_generated | hermes_subset_candidate | manual_candidate
+         -> candidate -> validated -> promoted
+                      -> rejected
+                      -> merge_required
+                      -> improve
+```
+
+昇格条件(指示書 §7.9): 既存 16 ゲート非破壊 / 2 回以上の再利用価値または明示指示 / 狭い適用範囲と明確な activation / 秘密情報なし / run log と source input 保存済み / Hermes 由来はサブセット範囲内。
+
+## Phase 2 導入タスクの DoD(先行定義)
+
+- [ ] 固定 commit/tag と SHA を記録し、ライセンスを `.orchestration/autoskill/config/` に保存
+- [ ] pip-audit / SBOM を artifacts に保存(既存 G11 拡張と同じ形式)
+- [ ] sandbox 内 dry-run(P0/P1 の実タスクレポートを redacted input として candidate を 1 件以上生成)
+- [ ] 生成物が promotion されないこと(promotion_allowed=false)をレビューで確認
