@@ -29,6 +29,7 @@
 | `lockfile_registry` | assert npm lockfile resolved URLs use the public registry origin | `artifacts/validation/lockfile_registry.*.log` |
 | `opa_test` | run native Rego unit tests for agent, routing, and sandbox policy packages | `artifacts/validation/opa_test.*.log` |
 | `opa_bundle` | build a versioned OPA bundle for policy artifact publication | `artifacts/validation/opa_bundle.*.log`, `artifacts/policy/bundle.tar.gz` |
+| `skill_registry` | validate Skill registry frontmatter and Hermes-subset boundary markers | `artifacts/validation/skill_registry.*.log` |
 
 ## CI-only gates
 

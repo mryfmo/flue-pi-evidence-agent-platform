@@ -1,0 +1,47 @@
+# P4-T04 Validation
+
+$ ./node_modules/node/bin/node scripts/check-skill-registry.mjs
+skill-registry:ok checked=7 files=16
+
+$ temp-cwd absent registry check
+skill-registry:ok registry_absent=true checked=0
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why
+
+validate-release observed result:
+overall: failed
+setup_python through python_tests: passed
+vitest_all: failed after 120037ms
+failure: listen EPERM: operation not permitted 127.0.0.1 in tests/e2e/remediate_e2e.test.ts
+skill_registry gate was not reached in local validate-release; standalone validator passed above
+
+$ /opt/homebrew/bin/git status --short
+ M docs/VALIDATION_PLAN.md
+ M scripts/validate-release.mjs
+?? .agents/worklog/codex/plan/20260705_160347_plan.md
+?? .agents/worklog/codex/todo/20260705_160347_todo.md
+?? .orchestration/validation/P4-T04.validation.log
+?? scripts/check-skill-registry.mjs
+
+Crit review check:
+make require-crit-review unavailable: No rule to make target
+
+Final status after worklog completion:
+ M docs/VALIDATION_PLAN.md
+ M scripts/validate-release.mjs
+?? .agents/worklog/codex/plan/20260705_160347_plan.md
+?? .agents/worklog/codex/todo/20260705_160846_done.md
+?? .orchestration/autoskill/runs/P4-T04.autoskill.md
+?? .orchestration/learning/P4-T04.learning.md
+?? .orchestration/reports/P4-T04.report.md
+?? .orchestration/sandboxes/P4-T04.sandbox.md
+?? .orchestration/validation/P4-T04.validation.log
+?? scripts/check-skill-registry.mjs

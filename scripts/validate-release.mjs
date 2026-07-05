@@ -103,6 +103,7 @@ const commands = [
   ['lockfile_registry', node, ['scripts/check-lockfile-registry.mjs']],
   ['opa_test', node, ['scripts/opa-test.mjs']],
   ['opa_bundle', node, ['scripts/opa-bundle.mjs']],
+  ['skill_registry', node, ['scripts/check-skill-registry.mjs']],
 ];
 
 const results = [];
