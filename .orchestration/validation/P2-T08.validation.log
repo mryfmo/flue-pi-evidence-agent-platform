@@ -1,0 +1,102 @@
+# P2-T08 Validation Log
+
+Date: 2026-07-05T19:54:16+09:00
+Worker: codex-gpt55-high
+
+## Required commands
+
+Command:
+
+```sh
+bash -n scripts/deploy-smoke.sh
+```
+
+Result: passed.
+
+Command:
+
+```sh
+./node_modules/node/bin/node scripts/spec-check.mjs
+```
+
+Result: passed.
+
+```text
+spec-check:passed
+```
+
+Command:
+
+```sh
+/opt/homebrew/bin/git status --short
+```
+
+Result:
+
+```text
+ M .github/workflows/validate-release.yml
+ M docs/DEPLOYMENT.md
+ M docs/RUNBOOK.md
+ M docs/VALIDATION_PLAN.md
+?? .orchestration/autoskill/runs/P2-T08.autoskill.md
+?? .orchestration/learning/P2-T08.learning.md
+?? .orchestration/reports/P2-T08.report.md
+?? .orchestration/sandboxes/P2-T08.sandbox.md
+?? .orchestration/tasks/P2-T08.md
+?? .orchestration/validation/P2-T08.validation.log
+?? scripts/deploy-smoke.sh
+```
+
+## Additional checks
+
+Command:
+
+```sh
+ruby -e 'require "yaml"; YAML.load_file(".github/workflows/validate-release.yml"); puts "yaml:ok"'
+```
+
+Result: passed.
+
+```text
+yaml:ok
+```
+
+Command:
+
+```sh
+ls -l scripts/deploy-smoke.sh
+```
+
+Result: script is executable.
+
+```text
+-rwxr-xr-x  1 mryfmo  staff  1734 Jul  5 19:55 scripts/deploy-smoke.sh
+```
+
+Command:
+
+```sh
+make require-crit-review
+```
+
+Result: failed because this repository has no `require-crit-review` target.
+
+```text
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+## Local execution deferral
+
+Command attempted to identify the exact smoke output:
+
+```sh
+npm run flue:smoke
+```
+
+Result: failed in the Codex sandbox with local bind denial:
+
+```text
+Error: listen EPERM: operation not permitted 127.0.0.1
+```
+
+The deterministic marker was verified from source instead: `src/workflows/smoke.ts` returns `ack:${payload.text}` through the local gateway and `package.json` passes `{"text":"hello"}`, so the deploy smoke script asserts `ack:hello`.

@@ -16,6 +16,14 @@ OPA resolves from the platform-matching optional npm package by default. If the 
 npm run flue:e2e
 ```
 
+## Run deploy smoke
+
+```bash
+scripts/deploy-smoke.sh
+```
+
+Use this after container validation or before release handoff. It rebuilds or reuses `flue-pi-eap:validate`, checks the deterministic `ack:hello` smoke path, and confirms the built server returns HTTP 200 from `/health`.
+
 ## Read the remediation outcome
 
 ```bash

@@ -1,0 +1,21 @@
+#1 [resolver] fetching image...docker.io/library/node:22-bookworm
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 27B 9.7s
+#2 transferring dockerfile: 608B 9.7s done
+#2 DONE 9.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 30B 8.9s
+#3 transferring context: 160B 8.9s done
+#3 DONE 8.9s
+
+#4 oci-layout://docker.io/library/node:22-bookworm@sha256:c601a46abb4d2ab80a9dc3da208d50d1122642d53f17a101926ace71e5a9bf1c
+#4 resolve docker.io/library/node:22-bookworm@sha256:c601a46abb4d2ab80a9dc3da208d50d1122642d53f17a101926ace71e5a9bf1c 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+Error: interrupted: "exiting on signal 15"

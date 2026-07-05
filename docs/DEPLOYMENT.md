@@ -58,6 +58,16 @@ Or use the runtime-agnostic runner:
 scripts/container-validate.sh
 ```
 
+## Deploy Smoke
+
+The deploy smoke gate reuses the validation image `flue-pi-eap:validate`; no second image is built. It proves the image can run the deterministic Flue/Pi smoke workflow and serve the built app health endpoint.
+
+```bash
+scripts/deploy-smoke.sh
+```
+
+The script detects Docker first, then Apple container. It asserts `npm run flue:smoke` output contains `ack:hello`, then runs `npm run flue:build` inside the image, starts `PORT=3000 ./node_modules/node/bin/node dist/server.mjs`, and polls `http://127.0.0.1:3000/health` from inside the container so Docker and Apple container do not need host port mapping.
+
 ## Runtime notes
 
 The deterministic local gateway is used for repeatable Flue/Pi validation. Production model routing can replace `src/lib/localGateway.ts` behind the same typed boundaries, but the release gate intentionally avoids external LLM nondeterminism.

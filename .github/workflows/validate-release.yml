@@ -41,6 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash scripts/container-validate.sh
+      - run: bash scripts/deploy-smoke.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
