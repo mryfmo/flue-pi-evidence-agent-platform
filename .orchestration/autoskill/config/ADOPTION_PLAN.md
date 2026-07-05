@@ -36,10 +36,12 @@ observed -> autoskill_generated | hermes_subset_candidate | manual_candidate
 
 ## Phase 2 導入タスクの DoD(先行定義)
 
-- [ ] 固定 commit/tag と SHA を記録し、ライセンスを `.orchestration/autoskill/config/` に保存
-- [ ] pip-audit / SBOM を artifacts に保存(既存 G11 拡張と同じ形式)
-- [ ] sandbox 内 dry-run(P0/P1 の実タスクレポートを redacted input として candidate を 1 件以上生成)
-- [ ] 生成物が promotion されないこと(promotion_allowed=false)をレビューで確認
+- [x] 固定 commit/tag と SHA を記録し、ライセンスを `.orchestration/autoskill/config/` に保存
+- [x] pip-audit / SBOM を artifacts に保存(既存 G11 拡張と同じ形式)
+- [x] sandbox 内 dry-run(P0/P1 の実タスクレポートを redacted input として candidate を 1 件以上生成)
+- [x] 生成物が promotion されないこと(promotion_allowed=false)をレビューで確認
+
+P2-T07b acceptance confirmed pinned SHA `94c47ca488d4ba4117d20272e66d49b9877e68cf`, dry-run success through the Codex Auth shim, five generated candidates, redaction passed, and `promotion_allowed=false`. SBOM/audit gates are part of the accepted release-validation security gate set.
 
 ## Dual-auth dry-run
 

@@ -5,17 +5,22 @@
 # @description
 #   Supports direct OpenAI-compatible endpoints or the local Codex Auth proxy.
 #   Only allowlisted environment variables are passed into the container.
+#   Candidate export preserves each generated SkillBank skill as a unique file.
+# @option --rebuild Build Dockerfile.autoskill before running.
+# @option --auth openai|codex Select direct OpenAI-compatible auth or Codex Auth shim mode.
+# @option --run-id <id> Select output, candidate, and run-log identifiers.
 
 set -euo pipefail
 
 auth=""
 run_id=""
+rebuild=0
 image="${AUTOSKILL_IMAGE:-autoskill-sandbox:p2t07a}"
 input_run_id="${AUTOSKILL_INPUT_RUN_ID:-p2t07a-dryinput}"
 runtime="${CONTAINER_RUNTIME:-}"
 
 usage() {
-  echo "usage: $0 --auth openai|codex --run-id <id>" >&2
+  echo "usage: $0 [--rebuild] --auth openai|codex --run-id <id>" >&2
 }
 
 while [ "$#" -gt 0 ]; do
@@ -27,6 +32,10 @@ while [ "$#" -gt 0 ]; do
     --run-id)
       run_id="${2:-}"
       shift 2
+      ;;
+    --rebuild)
+      rebuild=1
+      shift
       ;;
     *)
       usage
@@ -50,6 +59,7 @@ if [ -z "$runtime" ]; then
 fi
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+dockerfile="$repo_root/.orchestration/autoskill/config/Dockerfile.autoskill"
 input_dir="$repo_root/.orchestration/autoskill/inputs/$input_run_id"
 dataset_path="$input_dir/openai_conversations.jsonl"
 output_dir="$repo_root/.orchestration/autoskill/outputs/$run_id"
@@ -61,6 +71,19 @@ api_key=""
 [ -d "$input_dir" ] || { echo "missing input dir: $input_dir" >&2; exit 1; }
 [ -f "$dataset_path" ] || { echo "missing OpenAI conversation dataset: $dataset_path" >&2; exit 1; }
 mkdir -p "$output_dir" "$candidates_dir" "$(dirname "$run_log")"
+
+image_created_at() {
+  "$runtime" image inspect "$image" --format '{{.Created}}' 2>/dev/null \
+    || "$runtime" inspect "$image" --format '{{.Created}}' 2>/dev/null \
+    || echo "unknown"
+}
+
+if [ "$rebuild" -eq 1 ]; then
+  "$runtime" build -f "$dockerfile" -t "$image" "$repo_root"
+fi
+
+echo "autoskill image: $image"
+echo "autoskill image created: $(image_created_at)"
 
 case "$auth" in
   openai)
@@ -103,9 +126,14 @@ container_args=(
 
 OPENAI_BASE_URL="$base_url" OPENAI_API_KEY="$api_key" "$runtime" "${container_args[@]}"
 
-find "$output_dir" -type f -name '*.md' -exec cp {} "$candidates_dir/" \;
+exported_candidates=()
+while IFS= read -r skill_file; do
+  skill_dir="$(basename "$(dirname "$skill_file")")"
+  target="$candidates_dir/$run_id-$skill_dir.SKILL.md"
+  cp "$skill_file" "$target"
+  exported_candidates+=("$target")
+done < <(find "$output_dir/SkillBank/Users" -mindepth 3 -maxdepth 3 -type f -name 'SKILL.md' -print 2>/dev/null | sort || true)
 
-candidate_list="$(find "$candidates_dir" -maxdepth 1 -type f -name '*.md' -print | sort || true)"
 {
   echo "autoskill: infrastructure_only"
   echo
@@ -115,10 +143,11 @@ candidate_list="$(find "$candidates_dir" -maxdepth 1 -type f -name '*.md' -print
   echo "- output_dir: \`.orchestration/autoskill/outputs/$run_id/\`"
   echo "- redaction_passed: true"
   echo "- promotion_allowed: false"
+  echo "- image_created: \`$(image_created_at)\`"
   echo "- decisions: discard=0 improve=0 merge=0 create=0 version_update=0"
   echo "- generated_candidates:"
-  if [ -n "$candidate_list" ]; then
-    printf '%s\n' "$candidate_list" | sed "s#^$repo_root/#  - \`#; s#\$#\`#"
+  if [ "${#exported_candidates[@]}" -gt 0 ]; then
+    printf '%s\n' "${exported_candidates[@]}" | sed "s#^$repo_root/#  - \`#; s#\$#\`#"
   else
     echo "  - none"
   fi
