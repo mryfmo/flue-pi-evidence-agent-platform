@@ -26,6 +26,9 @@ def test_metric_query_redacts_pii_and_rejects_unsafe_classes() -> None:
     assert result.rejectedUnsafeSql is True
     assert result.rejectedMutationSql is True
     assert result.rejectedMultiStatementSql is True
+    assert result.rejectedNonAggregateProjectionSql is True
+    assert result.rejectedSelectStarSql is True
+    assert result.rejectedTableNotAllowlistedSql is True
 
 
 def test_redact_text_returns_offline_deterministic_redaction() -> None:
@@ -105,8 +108,32 @@ def test_accepts_safe_aggregate_sql_and_parser_failure() -> None:
     reject_unsafe_sql(
         "select plan, count(*) as active_users from customers group by plan"
     )
+    reject_unsafe_sql(
+        "select plan, active, count(*) as users, max(plan) as max_plan "
+        "from customers group by plan, active order by plan"
+    )
     with pytest.raises(sqlglot.errors.ParseError):
         reject_unsafe_sql("select from")
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "select plan from customers",
+        "select * from customers",
+        "select plan, count(*) from customers where email = 'a@example.com' group by plan",
+        "select plan, count(*) from customers where id in "
+        "(select id from customers where email = 'a@example.com') group by plan",
+        "select plan, count(*) from customers group by plan "
+        "union select plan, count(*) from customers group by plan",
+        "select plan, count(*) from invoices group by plan",
+        "select plan, count(*) from customers group by plan having max(email) is not null",
+    ],
+)
+def test_rejects_non_aggregate_or_out_of_policy_sql(sql: str) -> None:
+    """Structural validator rejects unsafe metric-query shapes."""
+    with pytest.raises(ValueError):
+        reject_unsafe_sql(sql)
 
 
 def test_main_command_dispatch(capsys: pytest.CaptureFixture[str]) -> None:

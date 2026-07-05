@@ -1,0 +1,94 @@
+$ .venv/bin/ruff check scripts tests_py && .venv/bin/mypy scripts/data_guard.py && .venv/bin/bandit -q -r scripts -x scripts/__pycache__
+All checks passed!
+Success: no issues found in 1 source file
+
+$ .venv/bin/python -m pytest -q tests_py --cov=scripts --cov-report=term-missing --cov-fail-under=85
+...........................                                              [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+scripts/__init__.py         0      0   100%
+scripts/data_guard.py     120     12    90%   72, 77, 84, 118, 153, 225-226, 228-229, 231-232, 237
+-----------------------------------------------------
+TOTAL                     120     12    90%
+Required test coverage of 85% reached. Total coverage: 90.00%
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why
+
+$ /opt/homebrew/bin/git status --short
+ M .coverage
+ M .orchestration/validation/P3-T02.validation.log
+ M artifacts/audit/remediation.jsonl
+ D artifacts/validation/e2e_artifacts.stderr.log
+ D artifacts/validation/e2e_artifacts.stdout.log
+ M artifacts/validation/final_verification_report.json
+ M artifacts/validation/final_verification_report.md
+ D artifacts/validation/flue_build.stderr.log
+ D artifacts/validation/flue_build.stdout.log
+ M artifacts/validation/format.stdout.log
+ M artifacts/validation/lint.stdout.log
+ D artifacts/validation/llm_contract.stderr.log
+ D artifacts/validation/llm_contract.stdout.log
+ D artifacts/validation/lockfile_registry.stderr.log
+ D artifacts/validation/lockfile_registry.stdout.log
+ D artifacts/validation/npm_audit_prod.stderr.log
+ D artifacts/validation/npm_audit_prod.stdout.log
+ D artifacts/validation/npm_sbom_prod.stderr.log
+ D artifacts/validation/npm_sbom_prod.stdout.log
+ D artifacts/validation/opa_bundle.stderr.log
+ D artifacts/validation/opa_bundle.stdout.log
+ D artifacts/validation/opa_test.stderr.log
+ D artifacts/validation/opa_test.stdout.log
+ D artifacts/validation/python_audit.stderr.log
+ D artifacts/validation/python_audit.stdout.log
+ M artifacts/validation/python_mypy.stdout.log
+ M artifacts/validation/python_ruff.stdout.log
+ D artifacts/validation/python_sbom.stderr.log
+ D artifacts/validation/python_sbom.stdout.log
+ M artifacts/validation/python_tests.stdout.log
+ M artifacts/validation/setup_python.stderr.log
+ M artifacts/validation/vitest_all.stderr.log
+ M artifacts/validation/vitest_all.stdout.log
+ M docs/DATA_GOVERNANCE.md
+ M scripts/data_guard.py
+ M tests_py/test_data_guard.py
+?? .agents/worklog/codex/plan/20260705_220058_plan.md
+?? .agents/worklog/codex/todo/20260705_220058_todo.md
+?? .orchestration/tasks/P3-T04.md
+?? .orchestration/validation/P3-T04.validation.log
+
+$ npm run validate-release > .orchestration/validation/P3-T04.validate-release.escalated.log 2>&1 # escalated after sandbox EPERM
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+
+$ /opt/homebrew/bin/git status --short # after cleanup and artifact creation
+ M .agents/worklog/codex/learn/learn_index.md
+ M .orchestration/validation/P3-T02.validation.log
+ M docs/DATA_GOVERNANCE.md
+ M scripts/data_guard.py
+ M tests_py/test_data_guard.py
+?? .agents/worklog/codex/learn/20260705_221128_learn.md
+?? .agents/worklog/codex/plan/20260705_220058_plan.md
+?? .agents/worklog/codex/todo/20260705_221128_done.md
+?? .orchestration/autoskill/runs/P3-T04.autoskill.md
+?? .orchestration/learning/P3-T04.learning.md
+?? .orchestration/reports/P3-T04.report.md
+?? .orchestration/sandboxes/P3-T04.sandbox.md
+?? .orchestration/tasks/P3-T04.md
+?? .orchestration/validation/P3-T04.validation.log
+
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+$ /Users/mryfmo/.agents/skills/agmsg/scripts/send.sh flue-pi-productionization codex-gpt55-high orchestrator-fable5 "AGMSG-RESULT v1 task_id=P3-T04 status=ready_for_review report=.orchestration/reports/P3-T04.report.md validation=.orchestration/validation/P3-T04.validation.log sandbox=.orchestration/sandboxes/P3-T04.sandbox.md learning=.orchestration/learning/P3-T04.learning.md autoskill=.orchestration/autoskill/runs/P3-T04.autoskill.md"
+Sent to orchestrator-fable5 in team flue-pi-productionization

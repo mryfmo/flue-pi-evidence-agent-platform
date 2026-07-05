@@ -23,6 +23,7 @@ from presidio_analyzer.predefined_recognizers.generic import (
     UrlRecognizer,
 )
 from presidio_anonymizer import AnonymizerEngine
+from sqlglot import expressions
 
 FORBIDDEN_PII_COLUMNS = {
     "credit_card",
@@ -35,6 +36,14 @@ FORBIDDEN_PII_COLUMNS = {
     "url",
 }
 FORBIDDEN_STATEMENTS = {"insert", "update", "delete", "drop", "alter", "copy", "pragma"}
+ALLOWED_TABLES = {"customers"}
+ALLOWED_AGGREGATES = (
+    expressions.Avg,
+    expressions.Count,
+    expressions.Max,
+    expressions.Min,
+    expressions.Sum,
+)
 
 
 @dataclass(frozen=True)
@@ -48,14 +57,17 @@ class GuardResult:
     rejectedUnsafeSql: bool
     rejectedMutationSql: bool
     rejectedMultiStatementSql: bool
+    rejectedNonAggregateProjectionSql: bool
+    rejectedSelectStarSql: bool
+    rejectedTableNotAllowlistedSql: bool
 
 
 def reject_unsafe_sql(sql: str) -> None:
-    """Reject non-SELECT, multi-statement, mutation, and PII-projection SQL."""
-    expressions = sqlglot.parse(sql, read="duckdb")
-    if len(expressions) != 1:
+    """Reject non-SELECT, multi-statement, mutation, PII, and non-aggregate SQL."""
+    parsed = sqlglot.parse(sql, read="duckdb")
+    if len(parsed) != 1:
         raise ValueError("only one SQL statement is allowed")
-    expression = expressions[0]
+    expression = cast(expressions.Expression, parsed[0])
     if expression is None:
         raise ValueError("SQL expression could not be parsed")
     if expression.key != "select":
@@ -63,9 +75,47 @@ def reject_unsafe_sql(sql: str) -> None:
     lowered = f" {sql.lower()} "
     if any(f" {statement} " in lowered for statement in FORBIDDEN_STATEMENTS):
         raise ValueError("mutation and engine control statements are forbidden")
-    selected = {column.name.lower() for column in expression.find_all(sqlglot.expressions.Column)}
-    if selected & FORBIDDEN_PII_COLUMNS:
+    validate_metric_sql(expression)
+
+
+def validate_metric_sql(expression: expressions.Expression) -> None:
+    """Validate aggregate-only metric SQL over allowlisted non-PII tables."""
+    if expression.find(expressions.Union, expressions.Intersect, expressions.Except):
+        raise ValueError("set operations are forbidden")
+    cte_names = {
+        cte.alias.lower()
+        for cte in expression.find_all(expressions.CTE)
+        if cte.alias
+    }
+    table_names = {table.name.lower() for table in expression.find_all(expressions.Table)}
+    if table_names - ALLOWED_TABLES - cte_names:
+        raise ValueError("only allowlisted tables are allowed")
+    columns = {column.name.lower() for column in expression.find_all(expressions.Column)}
+    if columns & FORBIDDEN_PII_COLUMNS:
         raise ValueError("raw PII columns are forbidden")
+    for select in expression.find_all(expressions.Select):
+        validate_select_projection(select)
+
+
+def validate_select_projection(select: expressions.Select) -> None:
+    """Validate one SELECT's projection list against its GROUP BY columns."""
+    group = select.args.get("group")
+    grouped = {
+        column.name.lower()
+        for item in (group.expressions if group else [])
+        for column in item.find_all(expressions.Column)
+    }
+    for projection in select.expressions:
+        item = projection.this if isinstance(projection, expressions.Alias) else projection
+        if isinstance(item, expressions.Star):
+            raise ValueError("SELECT * is forbidden")
+        if isinstance(item, expressions.Column):
+            if item.name.lower() not in grouped:
+                raise ValueError("plain projections must appear in GROUP BY")
+            continue
+        if isinstance(item, ALLOWED_AGGREGATES):
+            continue
+        raise ValueError("only aggregates or grouped columns may be projected")
 
 
 def offline_findings(text: str) -> list[Any]:
@@ -144,6 +194,11 @@ def metric_query() -> GuardResult:
         rejectedMutationSql=unsafe_rejected("delete from customers"),
         rejectedMultiStatementSql=unsafe_rejected(
             "select plan from customers; select email from customers"
+        ),
+        rejectedNonAggregateProjectionSql=unsafe_rejected("select plan from customers"),
+        rejectedSelectStarSql=unsafe_rejected("select * from customers"),
+        rejectedTableNotAllowlistedSql=unsafe_rejected(
+            "select plan, count(*) from invoices group by plan"
         ),
     )
 

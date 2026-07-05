@@ -204,3 +204,6 @@ $ /opt/homebrew/bin/git status --short # revision 2 final after todo rename
 ?? .agents/worklog/codex/todo/20260705_215302_done.md
 ?? .orchestration/validation/P3-T02.revision2.validate-release.escalated.log
 ?? .orchestration/validation/P3-T03.validate-release.escalated.log
+
+$ /opt/homebrew/bin/git status --short # revision 2 final after generated cleanup
+ M .orchestration/validation/P3-T02.validation.log

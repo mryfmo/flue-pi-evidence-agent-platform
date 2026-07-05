@@ -1,2 +1,3 @@
 - [Offline Presidio built-ins without NLP](20260705_213532_learn.md) — Direct built-in recognizers cover email/phone/card/IP/URL offline; mypy needs a cast at the `nlp_artifacts=None` boundary.
 - [OPA bundle revision without git](20260705_215228_learn.md) — Container validation may lack `.git`; use env, git SHA, then deterministic policy content hash fallback.
+- [SQLGlot aggregate-only metric validation](20260705_221128_learn.md) — Split whole-query and projection checks; global Column scan denies PII across clauses and nested queries.
