@@ -1,0 +1,61 @@
+{
+  "cycle": 1,
+  "generatedBy": "scripts/skill-cycle.mjs",
+  "limitation": "Deterministic local gateway validates non-regression of the gated pipeline; semantic quality comparison activates on the production gateway path.",
+  "runs": [
+    {
+      "name": "best",
+      "skillPath": ".orchestration/skills/promoted/remediator/best_skill.md",
+      "workflowExit0": true,
+      "closureAchieved": true,
+      "artifactsPassed": true,
+      "passed": true,
+      "workflow": {
+        "name": "best:heldout",
+        "exitCode": 0,
+        "passed": true
+      },
+      "artifacts": {
+        "name": "best:artifacts",
+        "exitCode": 0,
+        "passed": true
+      }
+    },
+    {
+      "name": "candidate",
+      "skillPath": ".orchestration/skills/candidates/remediator/candidate_skill.md",
+      "workflowExit0": true,
+      "closureAchieved": true,
+      "artifactsPassed": true,
+      "passed": true,
+      "workflow": {
+        "name": "candidate:heldout",
+        "exitCode": 0,
+        "passed": true
+      },
+      "artifacts": {
+        "name": "candidate:artifacts",
+        "exitCode": 0,
+        "passed": true
+      }
+    }
+  ],
+  "criteria": {
+    "perRun": [
+      "workflow exit 0",
+      "closure achieved",
+      "e2e artifact assertions"
+    ],
+    "candidateValidated": [
+      "candidate run passes",
+      "validate-release passes"
+    ]
+  },
+  "release": {
+    "name": "validate-release",
+    "exitCode": 0,
+    "passed": true
+  },
+  "outcome": "validated",
+  "promotionAllowed": false
+}

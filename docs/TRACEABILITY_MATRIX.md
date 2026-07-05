@@ -10,3 +10,4 @@
 | PR-006 | Data governance | `scripts/data_guard.py` | Python and TS data proxy tests |
 | PR-007 / FR-011 | Observability | `src/lib/telemetry.ts`, `src/lib/audit.ts` | E2E artifact logs |
 | PR-008 | Validation plan | `scripts/validate-release.mjs` | final verification report |
+| P4-T01 | Skill optimization governance | `src/agents/remediator.ts`, `scripts/skill-cycle.mjs`, `docs/SKILL_OPTIMIZATION.md` | `tests/component/remediator_skill.test.ts`, cycle verdict |

@@ -2,13 +2,13 @@ import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { sqlite } from "@flue/runtime/node";
 import { Bash, InMemoryFs, bashFactoryToSessionEnv, configureFlueRuntime, createFlueContext, createNodeAgentCoordinator, createNodeDispatchQueue, generateWorkflowRunId, invokeDirectAttached, invokeWorkflowAttached, resolveModel } from "@flue/runtime/internal";
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { Type, createAgent, defineTool, observe, registerProvider } from "@flue/runtime";
 import { appendFile, mkdir, mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, join, posix, relative, resolve } from "node:path";
 import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { promisify } from "node:util";
-import { appendFileSync, existsSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { ConnectionConfig, Sandbox } from "@alibaba-group/opensandbox";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
@@ -1154,6 +1154,7 @@ var remediator_exports = /* @__PURE__ */ __exportAll({
 	default: () => remediator_default,
 	explainHypothesis: () => explainHypothesis
 });
+var DEFAULT_INSTRUCTIONS = "You are an evidence-driven remediation agent. Summarize only verified facts.";
 var explainHypothesis = defineTool({
 	name: "explain_hypothesis",
 	description: "Explain one evidence hypothesis for a remediation run.",
@@ -1163,9 +1164,23 @@ var explainHypothesis = defineTool({
 	}),
 	execute: async ({ id, title }) => `Hypothesis ${id}: ${title}`
 });
+function remediatorInstructions() {
+	const skillPath = process.env.EAP_REMEDIATOR_SKILL;
+	if (!skillPath) return DEFAULT_INSTRUCTIONS;
+	try {
+		return stripFrontmatter(readFileSync(skillPath, "utf8")).trim();
+	} catch (error) {
+		throw new Error(`EAP_REMEDIATOR_SKILL is unreadable: ${skillPath}`, { cause: error });
+	}
+}
+function stripFrontmatter(markdown) {
+	if (!markdown.startsWith("---\n")) return markdown;
+	const end = markdown.indexOf("\n---\n", 4);
+	return end === -1 ? markdown : markdown.slice(end + 5);
+}
 var remediator_default = createAgent(() => ({
 	model: "local-gateway/fixbot",
-	instructions: "You are an evidence-driven remediation agent. Summarize only verified facts.",
+	instructions: remediatorInstructions(),
 	tools: [explainHypothesis]
 }));
 //#endregion
