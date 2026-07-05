@@ -1,0 +1,344 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:68d04fe1-1dbc-45e4-98f6-a51d0edec0f0",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-07-05T08:42:40.556Z",
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": [
+      {
+        "vendor": "npm",
+        "name": "cli",
+        "version": "10.9.8"
+      }
+    ],
+    "component": {
+      "bom-ref": "flue-pi-evidence-agent-platform@1.1.0",
+      "type": "library",
+      "name": "app",
+      "version": "1.1.0",
+      "scope": "required",
+      "description": "Flue+Pi OSS-integrated evidence-driven remediation and governed data-analysis agent platform with release-gated validation.",
+      "purl": "pkg:npm/flue-pi-evidence-agent-platform@1.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": ""
+        }
+      ],
+      "externalReferences": [],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "@emnapi/runtime@1.11.1",
+      "type": "library",
+      "name": "@emnapi/runtime",
+      "version": "1.11.1",
+      "scope": "optional",
+      "author": "toyobayashi",
+      "description": "emnapi runtime",
+      "purl": "pkg:npm/%40emnapi/runtime@1.11.1",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@emnapi/runtime"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        },
+        {
+          "name": "cdx:npm:package:extraneous",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/toyobayashi/emnapi.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/toyobayashi/emnapi#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/toyobayashi/emnapi/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "be08fb477cb75a0c76e0841a18f03f47a6055cb1d530e674b951322103da5acfab7750337c43179400b6d856303b55e4291e8d3ecabb9946a7747f2821175917"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@opentelemetry/context-async-hooks@2.8.0",
+      "type": "library",
+      "name": "@opentelemetry/context-async-hooks",
+      "version": "2.8.0",
+      "scope": "required",
+      "author": "OpenTelemetry Authors",
+      "description": "OpenTelemetry AsyncLocalStorage-based Context Manager",
+      "purl": "pkg:npm/%40opentelemetry/context-async-hooks@2.8.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@opentelemetry/context-async-hooks"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@opentelemetry/context-async-hooks/-/context-async-hooks-2.8.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/open-telemetry/opentelemetry-js.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-context-async-hooks"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/open-telemetry/opentelemetry-js/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ff7148ada9de31c9e0ebb494242c6fc889e4fe8c73c2cc7269db9f934c307ce04b7f9c2ab40197e0ca10012c126e77413de011cc1af250cf40cebe641c87562f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@opentelemetry/sdk-trace-node@2.8.0",
+      "type": "library",
+      "name": "@opentelemetry/sdk-trace-node",
+      "version": "2.8.0",
+      "scope": "required",
+      "author": "OpenTelemetry Authors",
+      "description": "OpenTelemetry Node SDK provides automatic telemetry (tracing, metrics, etc) for Node.js applications",
+      "purl": "pkg:npm/%40opentelemetry/sdk-trace-node@2.8.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@opentelemetry/sdk-trace-node"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@opentelemetry/sdk-trace-node/-/sdk-trace-node-2.8.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/open-telemetry/opentelemetry-js.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-sdk-trace-node"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/open-telemetry/opentelemetry-js/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9d9b7d386b9f8a801cdc07e82d3a80f5bb0079a30902272d603748d9570d43e3e64fedeb7ca8c064366f80f7ddf153d7d0ee41c3585d405ea40caf154a96625a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "agent-control-specification-opa-linux-arm64@0.3.1-beta.0",
+      "type": "library",
+      "name": "agent-control-specification-opa-linux-arm64",
+      "version": "0.3.1-beta.0",
+      "scope": "optional",
+      "description": "Open Policy Agent (opa) binary for linux/arm64, bundled for agent-control-specification.",
+      "purl": "pkg:npm/agent-control-specification-opa-linux-arm64@0.3.1-beta.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/agent-control-specification-opa-linux-arm64"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/agent-control-specification-opa-linux-arm64/-/agent-control-specification-opa-linux-arm64-0.3.1-beta.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ee7ff492acee5d5997fde71ca70eb21230f89f9685774691aa95ecd04b43652e4fd43848391291ff0d5f96baf514ebd5bf4509a050ccee9efc493c0ef087481f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "node-bin-setup@1.1.4",
+      "type": "library",
+      "name": "node-bin-setup",
+      "version": "1.1.4",
+      "scope": "optional",
+      "author": "Aria Stewart",
+      "description": "Internal script used by the node package to install architecture-specific packages",
+      "purl": "pkg:npm/node-bin-setup@1.1.4",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/node-bin-setup"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        },
+        {
+          "name": "cdx:npm:package:extraneous",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/node-bin-setup/-/node-bin-setup-1.1.4.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/aredridel/node-bin-setup.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/aredridel/node-bin-setup#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/aredridel/node-bin-setup/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bd63473a77b46546af02ba8f3f92c9b5ae74f92f11dbad45af94af1ae977ec76c40dca30bcb8f076f77465e4abd2bda54d2acfc65ea892af50530f01146880c4"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "node-linux-arm64@22.19.0",
+      "type": "library",
+      "name": "node-linux-arm64",
+      "version": "22.19.0",
+      "scope": "optional",
+      "description": "node",
+      "purl": "pkg:npm/node-linux-arm64@v22.19.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/node/node_modules/node-linux-arm64"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        },
+        {
+          "name": "cdx:npm:package:extraneous",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "flue-pi-evidence-agent-platform@1.1.0",
+      "dependsOn": [
+        "@opentelemetry/sdk-trace-node@2.8.0",
+        "agent-control-specification-opa-linux-arm64@0.3.1-beta.0"
+      ]
+    },
+    {
+      "ref": "@emnapi/runtime@1.11.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "@opentelemetry/context-async-hooks@2.8.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@opentelemetry/sdk-trace-node@2.8.0",
+      "dependsOn": [
+        "@opentelemetry/context-async-hooks@2.8.0"
+      ]
+    },
+    {
+      "ref": "agent-control-specification-opa-linux-arm64@0.3.1-beta.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "node-bin-setup@1.1.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "node-linux-arm64@v22.19.0",
+      "dependsOn": []
+    }
+  ]
+}

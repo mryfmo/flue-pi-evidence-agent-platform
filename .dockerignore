@@ -1,0 +1,11 @@
+node_modules/
+.venv/
+artifacts/
+.orchestration/
+.git/
+dist/
+sample_repos/**/workspace/
+*.log
+.DS_Store
+__pycache__/
+*.pyc

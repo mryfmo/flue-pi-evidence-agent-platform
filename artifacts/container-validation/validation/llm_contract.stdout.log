@@ -1,0 +1,17 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.9 [39m[90m/app[39m
+
+ [32m✓[39m tests/contract/llm_contract.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 3494[2mms[22m[39m
+     [33m[2m✓[22m[39m returns content and response contract fields on the happy path [33m 536[2mms[22m[39m
+     [33m[2m✓[22m[39m redacts outbound prompts before dispatch [33m 485[2mms[22m[39m
+     [33m[2m✓[22m[39m writes audit metadata without raw prompt or response content [33m 488[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps the LLM path summarization-only with no tool dispatch payload [33m 507[2mms[22m[39m
+     [33m[2m✓[22m[39m fails closed before dispatch when the api key is missing [33m 485[2mms[22m[39m
+     [33m[2m✓[22m[39m fails closed before dispatch on OPA deny [33m 503[2mms[22m[39m
+     [33m[2m✓[22m[39m falls back from an unreachable provider to the next provider [33m 488[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 08:42:35
+[2m   Duration [22m 3.62s[2m (transform 49ms, setup 0ms, import 72ms, tests 3.49s, environment 0ms)[22m
+

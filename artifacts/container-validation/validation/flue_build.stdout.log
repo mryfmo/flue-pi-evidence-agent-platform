@@ -1,0 +1,10 @@
+[flue] Building: /app
+[flue] Source root: /app/src
+[flue] Output: /app/dist
+[flue] Target: node
+[flue] Custom app entry: src/app.ts
+[flue] Found 1 agent(s): remediator
+[flue] Found 2 workflow(s): remediate, smoke
+[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite
+[flue] Built: /app/dist/server.mjs
+[flue] Build complete. Output: /app/dist
