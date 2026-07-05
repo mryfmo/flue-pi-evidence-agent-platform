@@ -47,3 +47,44 @@ jobs:
           name: container-validate-evidence
           path: artifacts/container-validation/
           retention-days: 30
+
+  opensandbox-integration:
+    name: OpenSandbox integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci --no-audit --no-fund
+      - run: mkdir -p artifacts/opensandbox-integration
+      - name: Start pinned OpenSandbox server
+        run: |
+          docker run -d --name opensandbox-server \
+            -p 8080:8080 \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            opensandbox/server:v0.2.1@sha256:a41670fa956864f116b9db696bd8d0781b6c709be9cac1e66e2981740b1fbeb4
+      - name: Wait for OpenSandbox server
+        run: |
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/openapi.json >/dev/null || curl -fsS http://127.0.0.1:8080/docs >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs opensandbox-server | tee artifacts/opensandbox-integration/server.log
+          exit 1
+      - name: Run OpenSandbox integration tests
+        env:
+          EAP_SANDBOX_RUNTIME: opensandbox
+          EAP_OPENSANDBOX_URL: http://127.0.0.1:8080
+        run: npx vitest run tests/integration/opensandbox.test.ts --pool=forks
+      - name: Capture OpenSandbox logs
+        if: always()
+        run: docker logs opensandbox-server > artifacts/opensandbox-integration/server.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: opensandbox-integration-evidence
+          path: |
+            artifacts/opensandbox-integration/
+            artifacts/audit/
+          retention-days: 30

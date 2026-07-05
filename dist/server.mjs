@@ -4,12 +4,13 @@ import { sqlite } from "@flue/runtime/node";
 import { Bash, InMemoryFs, bashFactoryToSessionEnv, configureFlueRuntime, createFlueContext, createNodeAgentCoordinator, createNodeDispatchQueue, generateWorkflowRunId, invokeDirectAttached, invokeWorkflowAttached, resolveModel } from "@flue/runtime/internal";
 import { Type, createAgent, defineTool, observe, registerProvider } from "@flue/runtime";
 import { appendFile, mkdir, mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
-import { basename, dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, posix, relative, resolve } from "node:path";
 import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { promisify } from "node:util";
 import { appendFileSync, existsSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { ConnectionConfig, Sandbox } from "@alibaba-group/opensandbox";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
@@ -1574,6 +1575,193 @@ async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "
 	}
 }
 //#endregion
+//#region src/lib/sandboxOpenSandbox.ts
+var remoteRoot = "/workspace";
+var OpenSandboxExecutor = class {
+	auditLog;
+	connectionConfig;
+	sandboxes = /* @__PURE__ */ new Map();
+	constructor(options = {}) {
+		this.auditLog = options.auditLog ?? "artifacts/audit/remediation.jsonl";
+		const endpoint = process.env.EAP_OPENSANDBOX_URL;
+		if (!endpoint) throw new SandboxRuntimeError("EAP_OPENSANDBOX_URL is required for opensandbox runtime");
+		const url = new URL(endpoint);
+		const protocol = url.protocol.replace(":", "");
+		const config = {
+			domain: url.host,
+			protocol,
+			requestTimeoutSeconds: 30,
+			useServerProxy: true,
+			...process.env.EAP_OPENSANDBOX_API_KEY ? { apiKey: process.env.EAP_OPENSANDBOX_API_KEY } : {}
+		};
+		this.connectionConfig = new ConnectionConfig(config);
+	}
+	async create(spec) {
+		await this.enforcePolicy(spec);
+		try {
+			const sandbox = await Sandbox.create({
+				connectionConfig: this.connectionConfig,
+				image: `${spec.image.name}:${spec.image.tag}@${spec.image.digest}`,
+				env: spec.env ?? {},
+				networkPolicy: toOpenSandboxNetworkPolicy(spec),
+				resource: {
+					cpu: spec.limits.cpu,
+					memory: `${spec.limits.memoryMb}Mi`
+				},
+				timeoutSeconds: Math.ceil(spec.limits.timeoutMs / 1e3),
+				metadata: {
+					audit_id: spec.audit_id,
+					trace_id: spec.trace_id
+				}
+			});
+			await sandbox.files.createDirectories([{ path: remoteRoot }]);
+			this.sandboxes.set(sandbox.id, sandbox);
+			const handle = {
+				id: sandbox.id,
+				runtime: "opensandbox",
+				audit_id: spec.audit_id,
+				trace_id: spec.trace_id
+			};
+			await this.audit("sandbox_create", {
+				audit_id: spec.audit_id,
+				trace_id: spec.trace_id,
+				runtime: handle.runtime,
+				sandbox_id: sandbox.id,
+				image: spec.image,
+				limits: spec.limits,
+				network: spec.network,
+				envKeys: Object.keys(spec.env ?? {}).sort()
+			});
+			return handle;
+		} catch (error) {
+			throw new SandboxRuntimeError(`opensandbox create failed: ${errorMessage(error)}`);
+		}
+	}
+	async putFiles(handle, files) {
+		const sandbox = this.lookup(handle);
+		const directories = [...new Set(files.map((file) => posix.dirname(remotePath(file.path))).filter((path) => path !== remoteRoot))];
+		if (directories.length > 0) await sandbox.files.createDirectories(directories.map((path) => ({ path })));
+		await sandbox.files.writeFiles(files.map((file) => ({
+			path: remotePath(file.path),
+			data: file.content,
+			...file.mode === void 0 ? {} : { mode: file.mode }
+		})));
+		await this.audit("sandbox_put_files", {
+			audit_id: handle.audit_id,
+			trace_id: handle.trace_id,
+			sandbox_id: handle.id,
+			files: files.map((file) => ({
+				path: file.path,
+				bytes: typeof file.content === "string" ? Buffer.byteLength(file.content) : file.content.byteLength
+			}))
+		});
+	}
+	async exec(handle, argv, options) {
+		if (argv.length === 0) throw new SandboxRuntimeError("argv must not be empty");
+		const command = argv[0];
+		if (!command) throw new SandboxRuntimeError("argv must not be empty");
+		const result = toExecResult(await this.lookup(handle).commands.run(shellCommand(argv), {
+			workingDirectory: remoteRoot,
+			timeoutSeconds: Math.ceil(options.timeoutMs / 1e3)
+		}));
+		await this.audit("sandbox_exec", {
+			audit_id: options.audit_id,
+			trace_id: options.trace_id,
+			sandbox_id: handle.id,
+			command,
+			exitCode: result.exitCode
+		});
+		return result;
+	}
+	async collectArtifacts(handle, paths, options) {
+		const sandbox = this.lookup(handle);
+		let totalBytes = 0;
+		const files = [];
+		for (const path of paths) {
+			const content = await sandbox.files.readFile(remotePath(path));
+			totalBytes += Buffer.byteLength(content);
+			if (totalBytes > options.maxBytes) throw new SandboxRuntimeError("artifact size exceeds maxBytes");
+			files.push({
+				path,
+				content
+			});
+		}
+		await this.audit("sandbox_collect", {
+			audit_id: options.audit_id,
+			trace_id: options.trace_id,
+			sandbox_id: handle.id,
+			files: files.map((file) => ({
+				path: file.path,
+				bytes: typeof file.content === "string" ? Buffer.byteLength(file.content) : file.content.byteLength
+			})),
+			totalBytes
+		});
+		return files;
+	}
+	async destroy(handle) {
+		const sandbox = this.sandboxes.get(handle.id);
+		if (sandbox) try {
+			await sandbox.kill();
+		} finally {
+			await sandbox.close();
+			this.sandboxes.delete(handle.id);
+		}
+		await this.audit("sandbox_destroy", {
+			audit_id: handle.audit_id,
+			trace_id: handle.trace_id,
+			sandbox_id: handle.id,
+			retained: false
+		});
+	}
+	lookup(handle) {
+		const sandbox = this.sandboxes.get(handle.id);
+		if (!sandbox) throw new SandboxRuntimeError(`unknown opensandbox handle: ${handle.id}`);
+		return sandbox;
+	}
+	async enforcePolicy(spec) {
+		const decision = await evaluatePolicy({
+			tenant: process.env.EAP_SANDBOX_TENANT ?? "acme",
+			image: spec.image,
+			egress: spec.network.egress,
+			policy_id: spec.network.policyId ?? "",
+			env_keys: Object.keys(spec.env ?? {}).sort()
+		}, "policy/sandbox.rego", "data.eap.sandbox");
+		if (!decision.allow || decision.requires_approval) throw new SandboxRuntimeError(`sandbox policy denied: ${decision.reasons.join(",")}`);
+	}
+	async audit(type, event) {
+		await appendAudit(this.auditLog, {
+			type,
+			...event
+		});
+	}
+};
+function toOpenSandboxNetworkPolicy(spec) {
+	return { defaultAction: spec.network.egress === "deny" ? "deny" : "allow" };
+}
+function remotePath(requested) {
+	if (requested.startsWith("/") || requested === ".." || requested.startsWith("../") || requested.includes("/../")) throw new SandboxRuntimeError(`path escapes sandbox: ${requested}`);
+	return `${remoteRoot}/${requested}`;
+}
+function shellCommand(argv) {
+	return argv.map(shellQuote).join(" ");
+}
+function shellQuote(value) {
+	return `'${value.replaceAll("'", "'\\''")}'`;
+}
+function toExecResult(execution) {
+	return {
+		exitCode: execution.exitCode ?? (execution.error ? 1 : 0),
+		stdout: execution.logs.stdout.map(outputText).join(""),
+		stderr: [...execution.logs.stderr.map(outputText), ...execution.error ? [`${execution.error.name}: ${execution.error.value}`] : []].join("")
+	};
+}
+function outputText(message) {
+	return message.text ?? "";
+}
+function errorMessage(error) {
+	return error instanceof Error ? error.message : String(error);
+}
+//#endregion
 //#region src/lib/sandbox.ts
 /** Sandbox execution boundary for remediation workspace operations. */
 var execFileAsync = promisify(execFile);
@@ -1714,7 +1902,7 @@ var LocalWorkspaceExecutor = class {
 function getSandboxExecutor(options = {}) {
 	const runtime = process.env.EAP_SANDBOX_RUNTIME ?? "local";
 	if (runtime === "local") return new LocalWorkspaceExecutor(options);
-	if (runtime === "opensandbox") throw new SandboxRuntimeError("OpenSandboxExecutor not yet implemented; see T06c");
+	if (runtime === "opensandbox") return new OpenSandboxExecutor(options);
 	throw new SandboxRuntimeError(`Unknown sandbox runtime: ${runtime}`);
 }
 function confinedPath(root, requested) {

@@ -1,0 +1,105 @@
+# P2-T06c Validation Log
+
+Date: 2026-07-05T19:22:49+09:00
+Worker: codex-gpt55-high
+
+## Red-first checks
+
+Command:
+
+```sh
+npx vitest run tests/component/sandbox_policy.test.ts tests/component/sandbox_executor.test.ts --pool=forks
+```
+
+Result: failed as expected before implementation.
+
+- `tests/component/sandbox_executor.test.ts`: old placeholder still threw `OpenSandboxExecutor not yet implemented; see T06c`.
+- `tests/component/sandbox_policy.test.ts`: missing `policy/sandbox.rego` caused fail-closed policy decisions.
+
+## Required verification
+
+Command:
+
+```sh
+npx tsc --noEmit
+```
+
+Result: passed.
+
+Command:
+
+```sh
+npm run format:check && npm run lint
+```
+
+Result: passed.
+
+Command:
+
+```sh
+npx vitest run tests/component --pool=forks
+```
+
+Result: passed.
+
+- Test files: 6 passed.
+- Tests: 22 passed.
+
+Command:
+
+```sh
+npm run validate-release
+```
+
+Result: passed.
+
+- Output: `validate-release:passed`.
+- Task note expected an environmental gate failure on Darwin; actual observed result was pass.
+
+Command:
+
+```sh
+/opt/homebrew/bin/git status --short
+```
+
+Result:
+
+```text
+ M .github/workflows/validate-release.yml
+ M .orchestration/sandboxes/POLICY.md
+ M docs/VALIDATION_PLAN.md
+ M package-lock.json
+ M package.json
+ M src/lib/sandbox.ts
+ M tests/component/sandbox_executor.test.ts
+?? .orchestration/tasks/P2-T06c.md
+?? policy/sandbox.rego
+?? src/lib/sandboxOpenSandbox.ts
+?? tests/component/sandbox_policy.test.ts
+?? tests/integration/
+```
+
+## Additional verification
+
+Command:
+
+```sh
+npx vitest run tests/integration/opensandbox.test.ts --pool=forks
+```
+
+Result: passed with explicit skip because `EAP_OPENSANDBOX_URL` is unset.
+
+- Test files: 1 skipped.
+- Tests: 4 skipped.
+
+Command:
+
+```sh
+make require-crit-review
+```
+
+Result: failed because this repository has no `require-crit-review` target.
+
+```text
+make: *** No rule to make target `require-crit-review'.  Stop.
+```

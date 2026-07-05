@@ -83,10 +83,11 @@ describe('SandboxExecutor local implementation', () => {
     ).rejects.toThrow(/artifact size exceeds maxBytes/);
   });
 
-  it('fails closed for opensandbox runtime until T06c implements it', () => {
+  it('fails closed for opensandbox runtime when endpoint is unset', () => {
     process.env.EAP_SANDBOX_RUNTIME = 'opensandbox';
+    delete process.env.EAP_OPENSANDBOX_URL;
     expect(() => getSandboxExecutor()).toThrow(
-      /OpenSandboxExecutor not yet implemented; see T06c/,
+      /EAP_OPENSANDBOX_URL is required for opensandbox runtime/,
     );
   });
 });

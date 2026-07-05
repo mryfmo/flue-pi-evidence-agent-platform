@@ -28,6 +28,10 @@
 | `python_audit` | check Python virtualenv dependencies for known advisories | `artifacts/validation/python_audit.*.log` |
 | `lockfile_registry` | assert npm lockfile resolved URLs use the public registry origin | `artifacts/validation/lockfile_registry.*.log` |
 
+## CI-only gates
+
+`opensandbox-integration` runs outside `npm run validate-release` on GitHub Actions ubuntu runners with Docker. It starts `opensandbox/server:v0.2.1@sha256:a41670fa956864f116b9db696bd8d0781b6c709be9cac1e66e2981740b1fbeb4`, exercises `OpenSandboxExecutor` with `opensandbox/code-interpreter:v1.1.0@sha256:133a3c1720dd52291a019740c2987e7164ea6de79e23d8198798e58950ae2e6e`, and uploads server/audit evidence. Local macOS validation explicitly skips this gate unless `EAP_OPENSANDBOX_URL` points at a running server.
+
 ## Test taxonomy
 
 - Unit: ledger closure rules.

@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { appendAudit } from './audit.ts';
+import { OpenSandboxExecutor } from './sandboxOpenSandbox.ts';
 
 const execFileAsync = promisify(execFile);
 
@@ -78,14 +79,14 @@ export class SandboxRuntimeError extends Error {
   }
 }
 
-interface LocalWorkspaceExecutorOptions {
+export interface SandboxExecutorOptions {
   auditLog?: string;
 }
 
 export class LocalWorkspaceExecutor implements SandboxExecutor {
   private readonly auditLog: string;
 
-  constructor(options: LocalWorkspaceExecutorOptions = {}) {
+  constructor(options: SandboxExecutorOptions = {}) {
     this.auditLog = options.auditLog ?? 'artifacts/audit/remediation.jsonl';
   }
 
@@ -237,15 +238,11 @@ export class LocalWorkspaceExecutor implements SandboxExecutor {
 }
 
 export function getSandboxExecutor(
-  options: LocalWorkspaceExecutorOptions = {},
+  options: SandboxExecutorOptions = {},
 ): SandboxExecutor {
   const runtime = process.env.EAP_SANDBOX_RUNTIME ?? 'local';
   if (runtime === 'local') return new LocalWorkspaceExecutor(options);
-  if (runtime === 'opensandbox') {
-    throw new SandboxRuntimeError(
-      'OpenSandboxExecutor not yet implemented; see T06c',
-    );
-  }
+  if (runtime === 'opensandbox') return new OpenSandboxExecutor(options);
   throw new SandboxRuntimeError(`Unknown sandbox runtime: ${runtime}`);
 }
 
