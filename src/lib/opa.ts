@@ -16,8 +16,9 @@ export function opaBinary(): string {
 }
 
 export async function evaluatePolicy(
-  input: PolicyInput,
+  input: PolicyInput | unknown,
   policyPath = 'policy/agent.rego',
+  query = 'data.eap.agent',
 ): Promise<PolicyDecision> {
   const tmp = await mkdtemp(join(tmpdir(), 'eap-opa-'));
   const inputPath = join(tmp, 'input.json');
@@ -30,7 +31,7 @@ export async function evaluatePolicy(
     policyPath,
     '--input',
     inputPath,
-    'data.eap.agent',
+    query,
   ];
   try {
     const { stdout } = await execFileAsync(opaBinary(), args, {

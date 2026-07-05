@@ -1531,7 +1531,7 @@ var execFileAsync = promisify(execFile);
 function opaBinary() {
 	return process.env.EAP_OPA_BINARY ?? resolve("node_modules/agent-control-specification-opa-linux-x64/bin/opa");
 }
-async function evaluatePolicy(input, policyPath = "policy/agent.rego") {
+async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "data.eap.agent") {
 	const inputPath = join(await mkdtemp(join(tmpdir(), "eap-opa-")), "input.json");
 	await writeFile(inputPath, JSON.stringify(input), "utf8");
 	const args = [
@@ -1542,7 +1542,7 @@ async function evaluatePolicy(input, policyPath = "policy/agent.rego") {
 		policyPath,
 		"--input",
 		inputPath,
-		"data.eap.agent"
+		query
 	];
 	try {
 		const { stdout } = await execFileAsync(opaBinary(), args, {
