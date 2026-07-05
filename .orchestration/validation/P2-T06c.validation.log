@@ -1,6 +1,6 @@
 # P2-T06c Validation Log
 
-Date: 2026-07-05T19:22:49+09:00
+Date: 2026-07-05T19:31:08+09:00
 Worker: codex-gpt55-high
 
 ## Red-first checks
@@ -103,3 +103,42 @@ Result: failed because this repository has no `require-crit-review` target.
 ```text
 make: *** No rule to make target `require-crit-review'.  Stop.
 ```
+
+## Revision 1
+
+Date: 2026-07-05T19:31:08+09:00
+
+Revision request: CI run 28737649137 failed because the OpenSandbox server image used its baked Kubernetes config and raised `KUBERNETES::INITIALIZATION_ERROR: Invalid kube-config file. No configuration found.`
+
+Changes:
+
+- Updated `.github/workflows/validate-release.yml` so `opensandbox-integration` generates the official Docker-mode config with `opensandbox/server:v0.2.1@sha256:a41670fa956864f116b9db696bd8d0781b6c709be9cac1e66e2981740b1fbeb4 init-config /config/sandbox.toml --example docker --force`.
+- Patched generated config in CI to bind `server.host` to `0.0.0.0` and set `docker.host_ip = "host.docker.internal"` for server-in-container access to Docker-published sandbox ports.
+- Mounted the generated config over `/etc/opensandbox/config.toml`.
+- Kept Docker socket mount: `/var/run/docker.sock:/var/run/docker.sock`.
+- Added `--add-host host.docker.internal:host-gateway`, `DOCKER_HOST=unix:///var/run/docker.sock`, and `OPENSANDBOX_INSECURE_SERVER=YES`.
+- Pre-pulled pinned sandbox image `opensandbox/code-interpreter:v1.1.0@sha256:133a3c1720dd52291a019740c2987e7164ea6de79e23d8198798e58950ae2e6e`.
+- Changed readiness wait to official `/health`.
+- Updated `docs/VALIDATION_PLAN.md` CI-only gate description with the Docker config/socket note.
+
+Local verification:
+
+Command:
+
+```sh
+ruby -e 'require "yaml"; YAML.load_file(".github/workflows/validate-release.yml"); puts "yaml:ok"'
+```
+
+Result: passed.
+
+```text
+yaml:ok
+```
+
+Command:
+
+```sh
+sed -n '48,100p' .github/workflows/validate-release.yml
+```
+
+Result: verified workflow content includes Docker-mode config generation, config mount, Docker socket mount, pinned sandbox image pre-pull, `OPENSANDBOX_INSECURE_SERVER=YES`, and `/health` readiness.
