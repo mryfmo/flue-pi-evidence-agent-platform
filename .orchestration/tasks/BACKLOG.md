@@ -24,6 +24,8 @@
 | P1-T05 | OpenSandbox 配布方法調査 + 固定 version 選定(導入は P2)                                                                                                        | 調査レポート + ライセンス/SBOM レビュー                                  |
 | P1-T06 | レイテンシ/トークン計測フックの追加(G12 計測開始)                                                                                                              | telemetry JSONL に計測 span、既存形式維持                                |
 
+Phase 1 状態(2026-07-05): P1-T01 **accepted**(docs/PRODUCTION_GATEWAY_DESIGN.md)。P1-T02 は P1-T01 設計書の Routing Policy 節 + acceptance 記録に**統合済み**(独立タスクとして実施しない)。P1-T03 は T03a/T03b に分割し両方 **accepted**(validate-release 17/17、llm_contract ゲート新設)。P1-T04 **accepted**。P1-T05 **完了**(analysis/opensandbox_research.md — Docker ランタイム導入待ちで G15 は P2 へ)。P1-T06 は T03b の gateway.\* telemetry span として**実装済み**。残: ライブ疎通 runbook と実鍵投入は G3(P2-T05)連動。
+
 ## Phase 2: デプロイ / シークレット / CI-CD / サプライチェーン(G2, G3, G4, G11, G15, G16)
 
 | ID     | 内容                                                                                                               |
