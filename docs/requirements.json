@@ -1,0 +1,12 @@
+{
+  "requirements": [
+    {"id":"PR-001","text":"Flue runtime and Pi provider path are used in the execution path."},
+    {"id":"PR-002","text":"Every remediation run creates a hypothesis ledger and evidence graph."},
+    {"id":"PR-003","text":"No patch is applied until OPA authorizes the tool request."},
+    {"id":"PR-004","text":"A run does not close while unresolved hypotheses remain."},
+    {"id":"PR-005","text":"Data analysis uses SQLGlot, DuckDB, and Presidio gates."},
+    {"id":"PR-006","text":"Unsafe SQL, raw PII projection, mutation SQL, and multi-statement SQL are rejected."},
+    {"id":"PR-007","text":"OpenTelemetry spans and JSONL audit records are emitted."},
+    {"id":"PR-008","text":"Release creation is blocked unless all quality gates pass."}
+  ]
+}

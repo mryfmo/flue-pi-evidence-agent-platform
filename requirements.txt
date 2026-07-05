@@ -1,0 +1,10 @@
+duckdb
+sqlglot
+presidio-analyzer
+presidio-anonymizer
+pytest
+pytest-cov
+ruff
+mypy
+bandit
+pip-audit

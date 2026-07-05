@@ -1,0 +1,11 @@
+......                                                                   [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.5-final-0 ________________
+
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+scripts/__init__.py         0      0   100%
+scripts/data_guard.py      76     10    87%   44, 49, 83, 138-139, 141-142, 144-145, 150
+-----------------------------------------------------
+TOTAL                      76     10    87%
+Required test coverage of 85% reached. Total coverage: 86.84%

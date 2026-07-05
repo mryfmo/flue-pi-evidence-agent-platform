@@ -1,0 +1,133 @@
+{
+  "runId": "run-1782723188612",
+  "hypotheses": [
+    {
+      "id": "HYP-DIVIDE-ZERO-001",
+      "title": "divide() does not reject zero divisor before division",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "affectedSymbol": "divide",
+      "evidence": [
+        "app.py contains `return a / b` without a zero-divisor guard"
+      ],
+      "status": "verified",
+      "severity": "medium",
+      "requiredChecks": [
+        "pytest",
+        "rescan"
+      ]
+    },
+    {
+      "id": "HYP-DISCOUNT-VALIDATION-001",
+      "title": "parse_discount() accepts invalid integer strings through raw int()",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "affectedSymbol": "parse_discount",
+      "evidence": [
+        "app.py contains `return int(value)` without explicit input validation"
+      ],
+      "status": "verified",
+      "severity": "low",
+      "requiredChecks": [
+        "pytest",
+        "rescan"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV-CODE-SCAN-001",
+      "kind": "source",
+      "summary": "Code scan localized 2 hypotheses.",
+      "location": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab",
+      "linkedHypotheses": [
+        "HYP-DIVIDE-ZERO-001",
+        "HYP-DISCOUNT-VALIDATION-001"
+      ]
+    },
+    {
+      "id": "EV-OPA-001",
+      "kind": "policy",
+      "summary": "OPA decision allow=true approval=false"
+    },
+    {
+      "id": "EV-PATCH-FANOUT-001",
+      "kind": "agent",
+      "summary": "4 patch candidates generated; 2 selected and applied.",
+      "linkedHypotheses": [
+        "HYP-DIVIDE-ZERO-001",
+        "HYP-DISCOUNT-VALIDATION-001"
+      ]
+    },
+    {
+      "id": "EV-VERIFY-001",
+      "kind": "verification",
+      "summary": "Verifier python -m pytest -q passed=true",
+      "location": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab"
+    },
+    {
+      "id": "EV-RESCAN-001",
+      "kind": "impact",
+      "summary": "Rescan remaining hypotheses=0",
+      "location": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab"
+    },
+    {
+      "id": "EV-DATA-PROXY-001",
+      "kind": "data",
+      "summary": "SQLGlot/DuckDB/Presidio path executed metric=active_users_by_plan; PII redacted=true"
+    }
+  ],
+  "patches": [
+    {
+      "id": "PATCH-HYP-DIVIDE-ZERO-001-MINIMAL",
+      "hypothesisId": "HYP-DIVIDE-ZERO-001",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "strategy": "minimal_guard",
+      "status": "applied",
+      "rationale": "Smallest targeted change that satisfies the failing behavior."
+    },
+    {
+      "id": "PATCH-HYP-DIVIDE-ZERO-001-VALIDATION",
+      "hypothesisId": "HYP-DIVIDE-ZERO-001",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "strategy": "input_validation",
+      "status": "proposed",
+      "rationale": "Explicit defensive validation for the affected boundary."
+    },
+    {
+      "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-MINIMAL",
+      "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "strategy": "minimal_guard",
+      "status": "applied",
+      "rationale": "Smallest targeted change that satisfies the failing behavior."
+    },
+    {
+      "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-VALIDATION",
+      "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
+      "affectedFile": "/mnt/data/rebuild_flue_pi/flue_pi_evidence_complete/artifacts/demo/workspace/buggy_multi-38908-372291c8-5521-43e7-a683-69489688d3ab/app.py",
+      "strategy": "input_validation",
+      "status": "proposed",
+      "rationale": "Explicit defensive validation for the affected boundary."
+    }
+  ],
+  "impactGraph": [
+    {
+      "from": "divide",
+      "to": "tests/test_app.py",
+      "reason": "Regression tests exercise the affected public function."
+    },
+    {
+      "from": "parse_discount",
+      "to": "tests/test_app.py",
+      "reason": "Regression tests exercise the affected public function."
+    }
+  ],
+  "verifications": [
+    {
+      "passed": true,
+      "command": "python -m pytest -q",
+      "stdout": "....                                                                     [100%]\n",
+      "stderr": "",
+      "exitCode": 0
+    }
+  ]
+}

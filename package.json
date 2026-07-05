@@ -1,0 +1,45 @@
+{
+  "name": "flue-pi-evidence-agent-platform",
+  "version": "1.1.0",
+  "description": "Flue+Pi OSS-integrated evidence-driven remediation and governed data-analysis agent platform with release-gated validation.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "flue": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs",
+    "flue:build": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs build --target node",
+    "flue:smoke": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run smoke --target node --payload '{\"text\":\"hello\"}'",
+    "flue:e2e": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload '{\"workspace\":\"sample_repos/buggy_multi\",\"user\":\"engineer\",\"tenant\":\"acme\",\"issue\":\"fix all localized defects\"}'",
+    "format:check": "biome format --diagnostic-level=error src tests scripts flue.config.ts",
+    "lint": "biome lint --diagnostic-level=error src tests scripts flue.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --pool=forks",
+    "opa:check": "node scripts/opa-check.mjs",
+    "python:check": "python -m py_compile scripts/data_guard.py",
+    "validate-release": "./node_modules/node/bin/node scripts/validate-release.mjs",
+    "python:test": ".venv/bin/python -m pytest -q tests_py --cov=scripts --cov-report=term-missing --cov-fail-under=85",
+    "python:lint": ".venv/bin/ruff check scripts tests_py",
+    "python:type": ".venv/bin/mypy scripts/data_guard.py",
+    "python:security": ".venv/bin/bandit -q -r scripts -x scripts/__pycache__",
+    "npm:audit": "npm audit --audit-level=high --omit=dev"
+  },
+  "dependencies": {
+    "@flue/runtime": "0.11.1",
+    "@opentelemetry/sdk-trace-node": "2.8.0",
+    "@opentelemetry/semantic-conventions": "1.41.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.1",
+    "@flue/cli": "0.11.1",
+    "@flue/opentelemetry": "0.11.1",
+    "@flue/sdk": "0.11.1",
+    "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/resources": "2.8.0",
+    "@opentelemetry/sdk-trace-base": "2.8.0",
+    "@types/node": "26.0.1",
+    "agent-control-specification-opa-linux-x64": "0.3.1-beta.0",
+    "node": "22.19.0",
+    "tsx": "4.22.4",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
+  }
+}

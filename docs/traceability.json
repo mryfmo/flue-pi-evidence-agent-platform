@@ -1,0 +1,12 @@
+{
+  "links": [
+    {"requirement":"PR-001","implementation":["src/agents/remediator.ts","src/lib/localGateway.ts"],"tests":["tests/system/flue_pi.test.ts","tests/e2e/remediate_e2e.test.ts"]},
+    {"requirement":"PR-002","implementation":["src/lib/ledger.ts","src/lib/code.ts"],"tests":["tests/unit/ledger.test.ts","tests/component/code.test.ts"]},
+    {"requirement":"PR-003","implementation":["src/lib/opa.ts","policy/agent.rego"],"tests":["tests/component/opa.test.ts"]},
+    {"requirement":"PR-004","implementation":["src/lib/ledger.ts"],"tests":["tests/regression/regression_closure.test.ts"]},
+    {"requirement":"PR-005","implementation":["scripts/data_guard.py","src/lib/dataProxy.ts"],"tests":["tests/component/data_proxy.test.ts","tests_py/test_data_guard.py"]},
+    {"requirement":"PR-006","implementation":["scripts/data_guard.py","policy/agent.rego"],"tests":["tests/failure/failure_security.test.ts","tests/security/policy_security.test.ts"]},
+    {"requirement":"PR-007","implementation":["src/lib/telemetry.ts","src/lib/audit.ts"],"tests":["tests/e2e/remediate_e2e.test.ts"]},
+    {"requirement":"PR-008","implementation":["scripts/validate-release.mjs"],"tests":["artifacts/validation/final_verification_report.json"]}
+  ]
+}

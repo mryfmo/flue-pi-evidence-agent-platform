@@ -1,0 +1,23 @@
+wrote artifacts/sbom/npm-cyclonedx.json
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:479b7df7-69d4-41ea-9694-3a733c4982ca",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-06-29T08:53:19.116Z",
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": [
+      {
+        "vendor": "npm",
+        "name": "cli",
+        "version": "10.9.2"
+      }
+    ],
+    "component": {
+      "bom-ref": "flue-pi-evidence-ag
