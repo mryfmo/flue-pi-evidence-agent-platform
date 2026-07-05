@@ -10,14 +10,30 @@ from __future__ import annotations
 import json
 import sys
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import duckdb
 import sqlglot
-from presidio_analyzer import Pattern, PatternRecognizer
+from presidio_analyzer import EntityRecognizer, Pattern, PatternRecognizer
+from presidio_analyzer.predefined_recognizers.generic import (
+    CreditCardRecognizer,
+    EmailRecognizer,
+    IpRecognizer,
+    PhoneRecognizer,
+    UrlRecognizer,
+)
 from presidio_anonymizer import AnonymizerEngine
 
-FORBIDDEN_PII_COLUMNS = {"email", "name", "phone"}
+FORBIDDEN_PII_COLUMNS = {
+    "credit_card",
+    "credit_card_number",
+    "email",
+    "ip_address",
+    "name",
+    "phone",
+    "phone_number",
+    "url",
+}
 FORBIDDEN_STATEMENTS = {"insert", "update", "delete", "drop", "alter", "copy", "pragma"}
 
 
@@ -54,24 +70,28 @@ def reject_unsafe_sql(sql: str) -> None:
 
 def offline_findings(text: str) -> list[Any]:
     """Return deterministic Presidio findings without downloading NLP models."""
-    email_recognizer = PatternRecognizer(
-        supported_entity="EMAIL_ADDRESS",
-        patterns=[
-            Pattern(
-                name="email",
-                regex=r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-                score=0.95,
-            )
-        ],
-    )
+    recognizers = [
+        EmailRecognizer(),
+        PhoneRecognizer(supported_regions=("US",), leniency=1),
+        CreditCardRecognizer(),
+        IpRecognizer(),
+        UrlRecognizer(),
+    ]
     person_recognizer = PatternRecognizer(
         supported_entity="PERSON",
         patterns=[Pattern(name="person", regex=r"\bAlice\s+Tanaka\b", score=0.85)],
     )
-    return [
-        *email_recognizer.analyze(text=text, entities=["EMAIL_ADDRESS"]),
-        *person_recognizer.analyze(text=text, entities=["PERSON"]),
-    ]
+    recognizers.append(person_recognizer)
+    findings: list[Any] = []
+    for recognizer in recognizers:
+        findings.extend(
+            recognizer.analyze(
+                text=text,
+                entities=recognizer.supported_entities,
+                nlp_artifacts=cast(Any, None),
+            )
+        )
+    return EntityRecognizer.remove_duplicates(findings)
 
 
 def unsafe_rejected(sql: str) -> bool:

@@ -1,0 +1,105 @@
+$ .venv/bin/ruff check scripts tests_py && .venv/bin/mypy scripts/data_guard.py && .venv/bin/bandit -q -r scripts -x scripts/__pycache__
+All checks passed!
+Success: no issues found in 1 source file
+
+$ .venv/bin/python -m pytest -q tests_py --cov=scripts --cov-report=term-missing --cov-fail-under=85
+....................                                                     [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+scripts/__init__.py         0      0   100%
+scripts/data_guard.py      90     10    89%   60, 65, 103, 170-171, 173-174, 176-177, 182
+-----------------------------------------------------
+TOTAL                      90     10    89%
+Required test coverage of 85% reached. Total coverage: 88.89%
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why
+
+$ /opt/homebrew/bin/git status --short
+ M .coverage
+ M .orchestration/tasks/P3-T02.md
+ M artifacts/audit/remediation.jsonl
+ D artifacts/validation/e2e_artifacts.stderr.log
+ D artifacts/validation/e2e_artifacts.stdout.log
+ M artifacts/validation/final_verification_report.json
+ M artifacts/validation/final_verification_report.md
+ D artifacts/validation/flue_build.stderr.log
+ D artifacts/validation/flue_build.stdout.log
+ M artifacts/validation/format.stdout.log
+ M artifacts/validation/lint.stdout.log
+ D artifacts/validation/llm_contract.stderr.log
+ D artifacts/validation/llm_contract.stdout.log
+ D artifacts/validation/lockfile_registry.stderr.log
+ D artifacts/validation/lockfile_registry.stdout.log
+ D artifacts/validation/npm_audit_prod.stderr.log
+ D artifacts/validation/npm_audit_prod.stdout.log
+ D artifacts/validation/npm_sbom_prod.stderr.log
+ D artifacts/validation/npm_sbom_prod.stdout.log
+ D artifacts/validation/opa_bundle.stderr.log
+ D artifacts/validation/opa_bundle.stdout.log
+ D artifacts/validation/opa_test.stderr.log
+ D artifacts/validation/opa_test.stdout.log
+ D artifacts/validation/python_audit.stderr.log
+ D artifacts/validation/python_audit.stdout.log
+ M artifacts/validation/python_mypy.stdout.log
+ M artifacts/validation/python_ruff.stdout.log
+ D artifacts/validation/python_sbom.stderr.log
+ D artifacts/validation/python_sbom.stdout.log
+ M artifacts/validation/python_tests.stdout.log
+ M artifacts/validation/setup_python.stderr.log
+ M artifacts/validation/vitest_all.stderr.log
+ M artifacts/validation/vitest_all.stdout.log
+ M docs/DATA_GOVERNANCE.md
+ M scripts/data_guard.py
+ M tests_py/test_data_guard.py
+?? .agents/worklog/codex/plan/20260705_212654_plan.md
+?? .agents/worklog/codex/todo/20260705_212654_todo.md
+?? .orchestration/tasks/P3-T03.md
+?? .orchestration/validation/P3-T03.validation.log
+?? artifacts/demo/workspace/buggy_multi-96924-078d7e95-86d7-4e3f-a213-09c8dcce5453/
+?? artifacts/demo/workspace/buggy_multi-96924-fe2a1871-a6bd-4745-bfc8-948e22e05bbb/
+?? artifacts/demo/workspace/buggy_multi-96967-7a5ec063-3eee-4c0e-85df-22e5e60536f2/
+?? artifacts/demo/workspace/local-96963-367d8258-ad2a-4a08-858e-ec1eb16fb20a/
+?? artifacts/demo/workspace/local-96963-f0346e8e-1fe1-4484-bec0-0be62d4e9b67/
+
+$ npm run validate-release > .orchestration/validation/P3-T03.validate-release.escalated.log 2>&1 # escalated after sandbox EPERM
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+
+$ /opt/homebrew/bin/git status --short # final post-cleanup before report
+ M .orchestration/tasks/P3-T02.md
+ M docs/DATA_GOVERNANCE.md
+ M scripts/data_guard.py
+ M tests_py/test_data_guard.py
+?? .agents/worklog/codex/learn/
+?? .agents/worklog/codex/plan/20260705_212654_plan.md
+?? .agents/worklog/codex/todo/20260705_212654_todo.md
+?? .orchestration/tasks/P3-T03.md
+?? .orchestration/validation/P3-T03.validate-release.escalated.log
+?? .orchestration/validation/P3-T03.validation.log
+
+$ /opt/homebrew/bin/git status --short # final after reports
+ M .orchestration/tasks/P3-T02.md
+ M docs/DATA_GOVERNANCE.md
+ M scripts/data_guard.py
+ M tests_py/test_data_guard.py
+?? .agents/worklog/codex/learn/
+?? .agents/worklog/codex/plan/20260705_212654_plan.md
+?? .agents/worklog/codex/todo/20260705_213630_done.md
+?? .orchestration/autoskill/runs/P3-T03.autoskill.md
+?? .orchestration/learning/P3-T03.learning.md
+?? .orchestration/reports/P3-T03.report.md
+?? .orchestration/sandboxes/P3-T03.sandbox.md
+?? .orchestration/tasks/P3-T03.md
+?? .orchestration/validation/P3-T03.validate-release.escalated.log
+?? .orchestration/validation/P3-T03.validation.log

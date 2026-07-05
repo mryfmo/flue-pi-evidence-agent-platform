@@ -1,0 +1,1 @@
+- [Offline Presidio built-ins without NLP](20260705_213532_learn.md) — Direct built-in recognizers cover email/phone/card/IP/URL offline; mypy needs a cast at the `nlp_artifacts=None` boundary.
