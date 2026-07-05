@@ -1,0 +1,157 @@
+$ ./node_modules/agent-control-specification-opa-darwin-arm64/bin/opa check policy --strict
+
+$ /opt/homebrew/bin/opa check policy 2>&1 | head -3
+
+$ ./node_modules/node/bin/node scripts/opa-test.mjs
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (324.541µs)
+data.eap.agent_test.test_guest_denied: PASS (107.542µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (356.416µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (158.083µs)
+data.eap.agent_test.test_shell_denied: PASS (89.75µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (86.334µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (101.458µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (236.458µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path: PASS (189.542µs)
+data.eap.routing_test.test_tenant_mismatch_denied: PASS (692.542µs)
+data.eap.routing_test.test_empty_tenant_allowlist_denied: PASS (179.417µs)
+data.eap.routing_test.test_restricted_external_denied: PASS (169.542µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (118.333µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (99.25µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (123.333µs)
+data.eap.sandbox_test.test_egress_denied: PASS (102.5µs)
+data.eap.sandbox_test.test_env_denied: PASS (274.292µs)
+--------------------------------------------------------------------------------
+PASS: 17/17
+
+$ ./node_modules/node/bin/node scripts/opa-bundle.mjs
+opa-bundle:ok revision=c5f36cf path=artifacts/policy/bundle.tar.gz
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why
+
+$ /opt/homebrew/bin/git status --short
+ M artifacts/audit/remediation.jsonl
+ D artifacts/validation/e2e_artifacts.stderr.log
+ D artifacts/validation/e2e_artifacts.stdout.log
+ M artifacts/validation/final_verification_report.json
+ M artifacts/validation/final_verification_report.md
+ D artifacts/validation/flue_build.stderr.log
+ D artifacts/validation/flue_build.stdout.log
+ M artifacts/validation/format.stdout.log
+ M artifacts/validation/lint.stdout.log
+ D artifacts/validation/llm_contract.stderr.log
+ D artifacts/validation/llm_contract.stdout.log
+ D artifacts/validation/lockfile_registry.stderr.log
+ D artifacts/validation/lockfile_registry.stdout.log
+ D artifacts/validation/npm_audit_prod.stderr.log
+ D artifacts/validation/npm_audit_prod.stdout.log
+ D artifacts/validation/npm_sbom_prod.stderr.log
+ D artifacts/validation/npm_sbom_prod.stdout.log
+ D artifacts/validation/python_audit.stderr.log
+ D artifacts/validation/python_audit.stdout.log
+ M artifacts/validation/python_mypy.stdout.log
+ M artifacts/validation/python_ruff.stdout.log
+ D artifacts/validation/python_sbom.stderr.log
+ D artifacts/validation/python_sbom.stdout.log
+ M artifacts/validation/python_tests.stdout.log
+ M artifacts/validation/setup_python.stderr.log
+ M artifacts/validation/vitest_all.stderr.log
+ M artifacts/validation/vitest_all.stdout.log
+ M docs/POLICY_MODEL.md
+ M docs/VALIDATION_PLAN.md
+ M policy/agent.rego
+ M policy/routing.rego
+ M policy/sandbox.rego
+ M scripts/validate-release.mjs
+?? .agents/worklog/codex/plan/20260705_210321_plan.md
+?? .agents/worklog/codex/todo/20260705_210321_todo.md
+?? .orchestration/tasks/P3-T02.md
+?? .orchestration/validation/P3-T02.validation.log
+?? artifacts/demo/workspace/buggy_multi-87781-4d61e12c-485a-4944-8c2c-893aa1587e3f/
+?? artifacts/demo/workspace/buggy_multi-87781-4d7ce27c-f285-4051-9709-8bda098396b4/
+?? artifacts/demo/workspace/buggy_multi-88493-318b8a14-93c8-44f6-bc06-aec434c4e7ff/
+?? artifacts/demo/workspace/buggy_multi-88493-a533e63a-ac03-44fa-ab19-a576087b0074/
+?? artifacts/demo/workspace/buggy_multi-88536-4993ae32-b2e3-47a8-a86f-5bb308434b96/
+?? artifacts/demo/workspace/local-87785-5fa83170-7ef8-44da-939a-7742076937cc/
+?? artifacts/demo/workspace/local-87785-8570df09-1fec-4b76-bbd7-12a6f4fa6588/
+?? artifacts/demo/workspace/local-88529-6b12487c-2a11-4f6f-8109-666a2e879285/
+?? artifacts/demo/workspace/local-88529-e0e3b186-a045-4cc5-8cfa-6461d3569985/
+?? artifacts/policy/
+?? policy/tests/
+?? scripts/opa-bundle.mjs
+?? scripts/opa-test.mjs
+
+$ npm run validate-release > .orchestration/validation/P3-T02.validate-release.escalated.log 2>&1 # escalated after sandbox EPERM
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+
+$ ./node_modules/agent-control-specification-opa-darwin-arm64/bin/opa inspect artifacts/policy/bundle.tar.gz | sed -n '1,20p'
+MANIFEST:
++--------------+---------+
+|    FIELD     |  VALUE  |
++--------------+---------+
+| Rego Version | 0       |
+| Revision     | c5f36cf |
++--------------+---------+
+NAMESPACES:
++-----------------------+---------------------------------+
+|       NAMESPACE       |              FILE               |
++-----------------------+---------------------------------+
+| data                  | /data.json                      |
+| data.eap.agent        | /policy/agent.rego              |
+| data.eap.agent_test   | /policy/tests/agent_test.rego   |
+| data.eap.routing      | /policy/routing.rego            |
+| data.eap.routing_test | /policy/tests/routing_test.rego |
+| data.eap.sandbox      | /policy/sandbox.rego            |
+| data.eap.sandbox_test | /policy/tests/sandbox_test.rego |
++-----------------------+---------------------------------+
+
+$ /opt/homebrew/bin/git status --short # final post-cleanup
+ M docs/POLICY_MODEL.md
+ M docs/VALIDATION_PLAN.md
+ M policy/agent.rego
+ M policy/routing.rego
+ M policy/sandbox.rego
+ M scripts/validate-release.mjs
+?? .agents/worklog/codex/plan/20260705_210321_plan.md
+?? .agents/worklog/codex/todo/20260705_210321_todo.md
+?? .orchestration/tasks/P3-T02.md
+?? .orchestration/validation/P3-T02.validate-release.escalated.log
+?? .orchestration/validation/P3-T02.validation.log
+?? artifacts/policy/
+?? policy/tests/
+?? scripts/opa-bundle.mjs
+?? scripts/opa-test.mjs
+
+$ /opt/homebrew/bin/git status --short # final after reports
+ M docs/POLICY_MODEL.md
+ M docs/VALIDATION_PLAN.md
+ M policy/agent.rego
+ M policy/routing.rego
+ M policy/sandbox.rego
+ M scripts/validate-release.mjs
+?? .agents/worklog/codex/plan/20260705_210321_plan.md
+?? .agents/worklog/codex/todo/20260705_211831_done.md
+?? .orchestration/autoskill/runs/P3-T02.autoskill.md
+?? .orchestration/learning/P3-T02.learning.md
+?? .orchestration/reports/P3-T02.report.md
+?? .orchestration/sandboxes/P3-T02.sandbox.md
+?? .orchestration/tasks/P3-T02.md
+?? .orchestration/validation/P3-T02.validate-release.escalated.log
+?? .orchestration/validation/P3-T02.validation.log
+?? artifacts/policy/
+?? policy/tests/
+?? scripts/opa-bundle.mjs
+?? scripts/opa-test.mjs

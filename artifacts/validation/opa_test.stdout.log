@@ -1,0 +1,24 @@
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (882.917µs)
+data.eap.agent_test.test_guest_denied: PASS (138.291µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (125.583µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (162.625µs)
+data.eap.agent_test.test_shell_denied: PASS (112µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (110.542µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (108.75µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (170.708µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path: PASS (174.583µs)
+data.eap.routing_test.test_tenant_mismatch_denied: PASS (129.542µs)
+data.eap.routing_test.test_empty_tenant_allowlist_denied: PASS (549.875µs)
+data.eap.routing_test.test_restricted_external_denied: PASS (421.458µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (122.208µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (107.875µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (125.334µs)
+data.eap.sandbox_test.test_egress_denied: PASS (103.375µs)
+data.eap.sandbox_test.test_env_denied: PASS (100.334µs)
+--------------------------------------------------------------------------------
+PASS: 17/17

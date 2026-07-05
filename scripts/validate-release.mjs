@@ -101,6 +101,8 @@ const commands = [
     ['--local', '--progress-spinner', 'off'],
   ],
   ['lockfile_registry', node, ['scripts/check-lockfile-registry.mjs']],
+  ['opa_test', node, ['scripts/opa-test.mjs']],
+  ['opa_bundle', node, ['scripts/opa-bundle.mjs']],
 ];
 
 const results = [];

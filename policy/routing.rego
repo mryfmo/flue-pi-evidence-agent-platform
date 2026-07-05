@@ -1,38 +1,42 @@
 package eap.routing
 
-default allow = false
-default requires_approval = false
+import rego.v1
+
+default allow := false
+default requires_approval := false
 
 provider_type := input.policy.providers[input.decision.provider].type
 
-known_route {
-  input.decision.route_id == "default"
+known_route if {
+	input.decision.route_id == "default"
 }
 
-known_route {
-  route := input.policy.routes[_]
-  route.id == input.decision.route_id
+known_route if {
+	route := input.policy.routes[_]
+	route.id == input.decision.route_id
 }
 
-external_provider {
-  provider_type != "local_gateway"
+external_provider if {
+	provider_type != "local_gateway"
 }
 
-allowed_tenant {
-  data.eap.tenants.allowed[_] == input.decision.tenant
+allowed_tenant if {
+	data.eap.tenants.allowed[_] == input.decision.tenant
 }
 
-deny_reason["tenant_mismatch"] { not allowed_tenant }
-deny_reason["unknown_route"] { not known_route }
-deny_reason["unknown_provider"] { not input.policy.providers[input.decision.provider] }
-deny_reason["restricted_external_provider"] {
-  input.decision.data_classification == "restricted"
-  external_provider
+deny_reason contains "tenant_mismatch" if { not allowed_tenant }
+deny_reason contains "unknown_route" if { not known_route }
+deny_reason contains "unknown_provider" if {
+	not input.policy.providers[input.decision.provider]
+}
+deny_reason contains "restricted_external_provider" if {
+	input.decision.data_classification == "restricted"
+	external_provider
 }
 
-allow {
-  allowed_tenant
-  known_route
-  input.policy.providers[input.decision.provider]
+allow if {
+	allowed_tenant
+	known_route
+	input.policy.providers[input.decision.provider]
   not deny_reason["restricted_external_provider"]
 }

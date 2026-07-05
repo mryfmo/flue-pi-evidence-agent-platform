@@ -27,6 +27,8 @@
 | `python_sbom` | emit CycloneDX SBOM for Python virtualenv dependencies | `artifacts/sbom/python-cyclonedx.json` |
 | `python_audit` | check Python virtualenv dependencies for known advisories | `artifacts/validation/python_audit.*.log` |
 | `lockfile_registry` | assert npm lockfile resolved URLs use the public registry origin | `artifacts/validation/lockfile_registry.*.log` |
+| `opa_test` | run native Rego unit tests for agent, routing, and sandbox policy packages | `artifacts/validation/opa_test.*.log` |
+| `opa_bundle` | build a versioned OPA bundle for policy artifact publication | `artifacts/validation/opa_bundle.*.log`, `artifacts/policy/bundle.tar.gz` |
 
 ## CI-only gates
 

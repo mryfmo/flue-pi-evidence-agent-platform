@@ -14,6 +14,10 @@ Data:
 - Agent, routing, and sandbox policies allow only tenants present in that list.
 - Missing or empty tenant data does not satisfy the allow rules, so tenant authorization fails closed.
 
+Bundle:
+- `scripts/opa-bundle.mjs` builds `artifacts/policy/bundle.tar.gz` from `policy/` with the git short SHA as the OPA bundle revision.
+- Bundle serving and distribution are deployment concerns outside the local policy model.
+
 Outputs:
 - allow
 - requires_approval

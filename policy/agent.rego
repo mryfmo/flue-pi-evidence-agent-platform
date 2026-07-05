@@ -1,28 +1,30 @@
 package eap.agent
 
-default allow = false
-default requires_approval = false
+import rego.v1
 
-allowed_tool["apply_patch"]
-allowed_tool["verify_workspace"]
-allowed_tool["metric_query"]
-allowed_tool["rescan_workspace"]
+default allow := false
+default requires_approval := false
 
-allowed_tenant {
-  data.eap.tenants.allowed[_] == input.tenant
+allowed_tool contains "apply_patch"
+allowed_tool contains "verify_workspace"
+allowed_tool contains "metric_query"
+allowed_tool contains "rescan_workspace"
+
+allowed_tenant if {
+	data.eap.tenants.allowed[_] == input.tenant
 }
 
-deny_reason["unauthorized_user"] { input.user == "guest" }
-deny_reason["dangerous_shell"] { input.tool == "shell" }
-deny_reason["tenant_mismatch"] { not allowed_tenant }
-deny_reason["raw_data_tool_blocked"] { input.tool == "raw_sql" }
-deny_reason["unknown_tool"] { not allowed_tool[input.tool] }
+deny_reason contains "unauthorized_user" if { input.user == "guest" }
+deny_reason contains "dangerous_shell" if { input.tool == "shell" }
+deny_reason contains "tenant_mismatch" if { not allowed_tenant }
+deny_reason contains "raw_data_tool_blocked" if { input.tool == "raw_sql" }
+deny_reason contains "unknown_tool" if { not allowed_tool[input.tool] }
 
-requires_approval { input.risk == "high" }
+requires_approval if { input.risk == "high" }
 
-allow {
-  input.user != "guest"
-  allowed_tenant
-  allowed_tool[input.tool]
+allow if {
+	input.user != "guest"
+	allowed_tenant
+	allowed_tool[input.tool]
   not requires_approval
 }
