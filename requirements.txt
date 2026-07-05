@@ -4,6 +4,8 @@ presidio-analyzer
 presidio-anonymizer
 # Transitive security pin for presidio-anonymizer: GHSA-537c-gmf6-5ccf.
 cryptography>=48.0.1
+# Venv-seeded setuptools floor for container bases: CVE-2024-6345 / PYSEC-2025-49.
+setuptools>=78.1.1
 pytest
 pytest-cov
 ruff

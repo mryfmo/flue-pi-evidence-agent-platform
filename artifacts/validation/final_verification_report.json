@@ -1,109 +1,109 @@
 {
   "status": "passed",
-  "generatedAt": "2026-07-05T09:05:05.992Z",
+  "generatedAt": "2026-07-05T09:14:17.176Z",
   "node": "v22.19.0",
   "results": [
     {
       "name": "setup_python",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 911
+      "durationMs": 981
     },
     {
       "name": "spec_traceability",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 52
+      "durationMs": 48
     },
     {
       "name": "format",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 149
+      "durationMs": 701
     },
     {
       "name": "lint",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 80
+      "durationMs": 58
     },
     {
       "name": "typecheck",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 1930
+      "durationMs": 1654
     },
     {
       "name": "opa",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 197
+      "durationMs": 192
     },
     {
       "name": "python_compile",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 25
+      "durationMs": 26
     },
     {
       "name": "python_ruff",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 290
+      "durationMs": 283
     },
     {
       "name": "python_mypy",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 368
+      "durationMs": 366
     },
     {
       "name": "python_bandit",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 139
+      "durationMs": 138
     },
     {
       "name": "python_tests",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 2155
+      "durationMs": 2446
     },
     {
       "name": "vitest_all",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 6440
+      "durationMs": 6582
     },
     {
       "name": "llm_contract",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 5701
+      "durationMs": 5622
     },
     {
       "name": "flue_build",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 1000
+      "durationMs": 939
     },
     {
       "name": "e2e_artifacts",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 39
+      "durationMs": 37
     },
     {
       "name": "npm_audit_prod",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 538
+      "durationMs": 542
     },
     {
       "name": "npm_sbom_prod",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 230
+      "durationMs": 229
     },
     {
       "name": "python_sbom",
@@ -115,13 +115,13 @@
       "name": "python_audit",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 598
+      "durationMs": 799
     },
     {
       "name": "lockfile_registry",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 30
+      "durationMs": 32
     }
   ]
 }
