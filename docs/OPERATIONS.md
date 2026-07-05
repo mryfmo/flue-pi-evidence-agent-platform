@@ -45,6 +45,10 @@ npm run python:test
 | Unsafe SQL accepted | block release and inspect `scripts/data_guard.py` plus data proxy tests |
 | Missing trace evidence | inspect `src/lib/telemetry.ts` and `artifacts/telemetry/traces.jsonl` |
 
+## Secrets
+
+The platform needs no secrets for release validation. When live providers are enabled, use `docs/SECRETS_MANAGEMENT.md` for injection, rotation, and incident response; never paste key material into logs, audit files, telemetry, agmsg, or repository config.
+
 ## Extension protocol
 
 New tools, new policy inputs, new data paths, or new model providers require:
