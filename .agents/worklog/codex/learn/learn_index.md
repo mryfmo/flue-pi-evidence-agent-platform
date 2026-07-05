@@ -1,1 +1,2 @@
 - [Offline Presidio built-ins without NLP](20260705_213532_learn.md) — Direct built-in recognizers cover email/phone/card/IP/URL offline; mypy needs a cast at the `nlp_artifacts=None` boundary.
+- [OPA bundle revision without git](20260705_215228_learn.md) — Container validation may lack `.git`; use env, git SHA, then deterministic policy content hash fallback.

@@ -155,3 +155,52 @@ $ /opt/homebrew/bin/git status --short # final after reports
 ?? policy/tests/
 ?? scripts/opa-bundle.mjs
 ?? scripts/opa-test.mjs
+
+## Revision 2 verification
+$ EAP_BUNDLE_REVISION=rev-env-test ./node_modules/node/bin/node scripts/opa-bundle.mjs
+opa-bundle:ok revision=rev-env-test path=artifacts/policy/bundle.tar.gz
+
+$ ./node_modules/node/bin/node scripts/opa-bundle.mjs
+opa-bundle:ok revision=e580557 path=artifacts/policy/bundle.tar.gz
+
+$ no-git tmp copy hash fallback # initial attempt used repo cwd, corrected below
+opa-bundle:ok revision=e580557 path=artifacts/policy/bundle.tar.gz
+
+$ npm run validate-release > .orchestration/validation/P3-T02.revision2.validate-release.escalated.log 2>&1 # revision 2 full validation
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+
+$ no-git tmp copy hash fallback # rerun with tmp cwd
+opa-bundle:ok revision=policyhash-5d486d852f7c path=artifacts/policy/bundle.tar.gz
+
+$ /opt/homebrew/bin/git status --short # revision 2 final after report updates
+ M .agents/worklog/codex/learn/learn_index.md
+ M .orchestration/learning/P3-T02.learning.md
+ M .orchestration/reports/P3-T02.report.md
+ M .orchestration/sandboxes/P3-T02.sandbox.md
+ M .orchestration/tasks/P3-T02.md
+ M .orchestration/validation/P3-T02.validation.log
+ M scripts/opa-bundle.mjs
+?? .agents/worklog/codex/learn/20260705_215228_learn.md
+?? .agents/worklog/codex/plan/20260705_214537_plan.md
+?? .agents/worklog/codex/todo/20260705_214537_todo.md
+?? .orchestration/validation/P3-T02.revision2.validate-release.escalated.log
+?? .orchestration/validation/P3-T03.validate-release.escalated.log
+
+$ /opt/homebrew/bin/git status --short # revision 2 final after todo rename
+ M .agents/worklog/codex/learn/learn_index.md
+ M .orchestration/learning/P3-T02.learning.md
+ M .orchestration/reports/P3-T02.report.md
+ M .orchestration/sandboxes/P3-T02.sandbox.md
+ M .orchestration/tasks/P3-T02.md
+ M .orchestration/validation/P3-T02.validation.log
+ M artifacts/policy/bundle.tar.gz
+ M scripts/opa-bundle.mjs
+?? .agents/worklog/codex/learn/20260705_215228_learn.md
+?? .agents/worklog/codex/plan/20260705_214537_plan.md
+?? .agents/worklog/codex/todo/20260705_215302_done.md
+?? .orchestration/validation/P3-T02.revision2.validate-release.escalated.log
+?? .orchestration/validation/P3-T03.validate-release.escalated.log
