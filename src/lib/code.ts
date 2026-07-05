@@ -10,7 +10,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { basename, join, resolve } from 'node:path';
+import { basename, join, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import type { SandboxExecutor, SandboxFile, SandboxHandle } from './sandbox.ts';
 import type {
@@ -58,46 +58,110 @@ export async function readWorkspaceFiles(
   return files;
 }
 
-function hasMissingZeroGuard(code: string): boolean {
-  return code.includes('return a / b') && !code.includes('if b == 0:');
+function missingZeroGuardDenominator(code: string): string | undefined {
+  const denominator = code.match(/return \w+ \/ (?<denominator>\w+)/)?.groups
+    ?.denominator;
+  if (!denominator || code.includes(`if ${denominator} == 0:`)) {
+    return undefined;
+  }
+  return denominator;
 }
 
-function hasMissingIntegerValidation(code: string): boolean {
-  return (
-    code.includes('return int(value)') && !code.includes('normalized.isdigit()')
-  );
+function missingIntegerValidationArgument(code: string): string | undefined {
+  const argument = code.match(/return int\((?<argument>\w+)\)/)?.groups
+    ?.argument;
+  if (!argument || code.includes('normalized.isdigit()')) {
+    return undefined;
+  }
+  return argument;
+}
+
+function missingDictKeyGuard(
+  code: string,
+): { key: string; expression: string } | undefined {
+  const match = code.match(/return (?<name>\w+)\["(?<key>[^"]+)"\]/);
+  const key = match?.groups?.key;
+  if (
+    !key ||
+    code.includes(`.get("${key}"`) ||
+    code.includes(`if "${key}" not in`)
+  ) {
+    return undefined;
+  }
+  return { key, expression: match[0] };
+}
+
+async function findPythonSourceFiles(workspace: string): Promise<string[]> {
+  const root = resolve(workspace);
+  const files: string[] = [];
+  async function walk(relativePath: string): Promise<void> {
+    const absolute = join(root, relativePath);
+    const entry = await stat(absolute);
+    if (entry.isDirectory()) {
+      if (basename(absolute) === 'tests') return;
+      for (const child of (await readdir(absolute)).sort()) {
+        await walk(join(relativePath, child));
+      }
+      return;
+    }
+    if (entry.isFile() && absolute.endsWith('.py')) {
+      files.push(absolute);
+    }
+  }
+  await walk('');
+  return files.sort();
 }
 
 export async function scanWorkspace(workspace: string): Promise<Hypothesis[]> {
-  const appPath = join(workspace, 'app.py');
-  const code = await readFile(appPath, 'utf8');
   const hypotheses: Hypothesis[] = [];
-  if (hasMissingZeroGuard(code)) {
-    hypotheses.push({
-      id: 'HYP-DIVIDE-ZERO-001',
-      title: 'divide() does not reject zero divisor before division',
-      affectedFile: appPath,
-      affectedSymbol: 'divide',
-      evidence: ['app.py contains `return a / b` without a zero-divisor guard'],
-      status: 'localized',
-      severity: 'medium',
-      requiredChecks: ['pytest', 'rescan'],
-    });
-  }
-  if (hasMissingIntegerValidation(code)) {
-    hypotheses.push({
-      id: 'HYP-DISCOUNT-VALIDATION-001',
-      title:
-        'parse_discount() accepts invalid integer strings through raw int()',
-      affectedFile: appPath,
-      affectedSymbol: 'parse_discount',
-      evidence: [
-        'app.py contains `return int(value)` without explicit input validation',
-      ],
-      status: 'localized',
-      severity: 'low',
-      requiredChecks: ['pytest', 'rescan'],
-    });
+  for (const sourcePath of await findPythonSourceFiles(workspace)) {
+    const code = await readFile(sourcePath, 'utf8');
+    const sourceName = basename(sourcePath);
+    const denominator = missingZeroGuardDenominator(code);
+    if (denominator) {
+      hypotheses.push({
+        id: 'HYP-DIVIDE-ZERO-001',
+        title: 'division helper does not reject zero divisor before division',
+        affectedFile: sourcePath,
+        affectedSymbol: 'division helper',
+        evidence: [
+          `${sourceName} divides by ${denominator} without a zero-divisor guard`,
+        ],
+        status: 'localized',
+        severity: 'medium',
+        requiredChecks: ['pytest', 'rescan'],
+      });
+    }
+    const integerArgument = missingIntegerValidationArgument(code);
+    if (integerArgument) {
+      hypotheses.push({
+        id: 'HYP-DISCOUNT-VALIDATION-001',
+        title: 'integer parser accepts invalid strings through raw int()',
+        affectedFile: sourcePath,
+        affectedSymbol: 'integer parser',
+        evidence: [
+          `${sourceName} contains \`return int(${integerArgument})\` without explicit input validation`,
+        ],
+        status: 'localized',
+        severity: 'low',
+        requiredChecks: ['pytest', 'rescan'],
+      });
+    }
+    const dictKey = missingDictKeyGuard(code);
+    if (dictKey) {
+      hypotheses.push({
+        id: 'HYP-DICT-KEY-GUARD-001',
+        title: 'dictionary lookup can raise KeyError for a missing key',
+        affectedFile: sourcePath,
+        affectedSymbol: 'dictionary lookup',
+        evidence: [
+          `${sourceName} contains \`${dictKey.expression}\` without a missing-key guard`,
+        ],
+        status: 'localized',
+        severity: 'low',
+        requiredChecks: ['pytest', 'rescan'],
+      });
+    }
   }
   return hypotheses;
 }
@@ -105,64 +169,122 @@ export async function scanWorkspace(workspace: string): Promise<Hypothesis[]> {
 export function proposePatchCandidates(
   hypotheses: Hypothesis[],
 ): PatchCandidate[] {
-  return hypotheses.flatMap((hypothesis) => [
-    {
-      id: `PATCH-${hypothesis.id}-MINIMAL`,
-      hypothesisId: hypothesis.id,
-      affectedFile: hypothesis.affectedFile,
-      strategy: 'minimal_guard' as const,
-      status: 'proposed' as const,
-      rationale:
-        'Smallest targeted change that satisfies the failing behavior.',
-    },
-    {
-      id: `PATCH-${hypothesis.id}-VALIDATION`,
-      hypothesisId: hypothesis.id,
-      affectedFile: hypothesis.affectedFile,
-      strategy: 'input_validation' as const,
-      status: 'proposed' as const,
-      rationale: 'Explicit defensive validation for the affected boundary.',
-    },
-  ]);
+  return hypotheses.flatMap((hypothesis) => {
+    const isDictKey = hypothesis.id === 'HYP-DICT-KEY-GUARD-001';
+    return [
+      {
+        id: `PATCH-${hypothesis.id}-MINIMAL`,
+        hypothesisId: hypothesis.id,
+        affectedFile: hypothesis.affectedFile,
+        strategy: 'minimal_guard' as const,
+        status: 'proposed' as const,
+        rationale: isDictKey
+          ? 'Use .get() with a safe default for the missing-key case.'
+          : 'Smallest targeted change that satisfies the failing behavior.',
+      },
+      {
+        id: `PATCH-${hypothesis.id}-VALIDATION`,
+        hypothesisId: hypothesis.id,
+        affectedFile: hypothesis.affectedFile,
+        strategy: 'input_validation' as const,
+        status: 'proposed' as const,
+        rationale: isDictKey
+          ? 'Add an explicit guard branch before indexing the dictionary.'
+          : 'Explicit defensive validation for the affected boundary.',
+      },
+    ];
+  });
+}
+
+export function sourceArtifactPaths(
+  workspace: string,
+  hypotheses: Hypothesis[],
+): string[] {
+  const root = resolve(workspace);
+  return [
+    ...new Set(
+      hypotheses.map((hypothesis) => relative(root, hypothesis.affectedFile)),
+    ),
+  ]
+    .filter((path) => path && !path.startsWith('..'))
+    .sort();
 }
 
 export async function applySelectedPatches(
   workspace: string,
   candidates: PatchCandidate[],
 ): Promise<{ hypothesesPatched: string[]; appliedPatchIds: string[] }> {
-  const appPath = join(workspace, 'app.py');
-  let code = await readFile(appPath, 'utf8');
+  const fileCodes = new Map<string, string>();
   const hypothesesPatched: string[] = [];
   const appliedPatchIds: string[] = [];
   for (const candidate of candidates) {
     if (candidate.status !== 'proposed' || !candidate.id.endsWith('-MINIMAL'))
       continue;
+    const affectedFile = candidate.affectedFile;
+    let code =
+      fileCodes.get(affectedFile) ?? (await readFile(affectedFile, 'utf8'));
     if (
       candidate.hypothesisId === 'HYP-DIVIDE-ZERO-001' &&
-      code.includes('return a / b') &&
-      !code.includes('if b == 0:')
+      missingZeroGuardDenominator(code)
     ) {
-      code = code.replace(
-        'def divide(a: float, b: float) -> float:\n    return a / b\n',
-        'def divide(a: float, b: float) -> float:\n    if b == 0:\n        raise ValueError("division by zero")\n    return a / b\n',
-      );
-      hypothesesPatched.push(candidate.hypothesisId);
-      appliedPatchIds.push(candidate.id);
+      const before = code;
+      code = code
+        .replace(
+          'def divide(a: float, b: float) -> float:\n    return a / b\n',
+          'def divide(a: float, b: float) -> float:\n    if b == 0:\n        raise ValueError("division by zero")\n    return a / b\n',
+        )
+        .replace(
+          'def average(total: float, count: float) -> float:\n    return total / count\n',
+          'def average(total: float, count: float) -> float:\n    if count == 0:\n        raise ValueError("division by zero")\n    return total / count\n',
+        );
+      if (code !== before) {
+        hypothesesPatched.push(candidate.hypothesisId);
+        appliedPatchIds.push(candidate.id);
+      }
     }
     if (
       candidate.hypothesisId === 'HYP-DISCOUNT-VALIDATION-001' &&
-      code.includes('return int(value)') &&
-      !code.includes('normalized.isdigit()')
+      missingIntegerValidationArgument(code)
     ) {
-      code = code.replace(
-        'def parse_discount(value: str) -> int:\n    return int(value)\n',
-        'def parse_discount(value: str) -> int:\n    normalized = value.strip()\n    if not normalized.isdigit():\n        raise ValueError("discount must be a non-negative integer")\n    return int(normalized)\n',
-      );
-      hypothesesPatched.push(candidate.hypothesisId);
-      appliedPatchIds.push(candidate.id);
+      const before = code;
+      code = code
+        .replace(
+          'def parse_discount(value: str) -> int:\n    return int(value)\n',
+          'def parse_discount(value: str) -> int:\n    normalized = value.strip()\n    if not normalized.isdigit():\n        raise ValueError("discount must be a non-negative integer")\n    return int(normalized)\n',
+        )
+        .replace(
+          'def parse_quantity(raw: str) -> int:\n    return int(raw)\n',
+          'def parse_quantity(raw: str) -> int:\n    normalized = raw.strip()\n    if not normalized.isdigit():\n        raise ValueError("quantity must be a non-negative integer")\n    return int(normalized)\n',
+        );
+      if (code !== before) {
+        hypothesesPatched.push(candidate.hypothesisId);
+        appliedPatchIds.push(candidate.id);
+      }
     }
+    if (
+      candidate.hypothesisId === 'HYP-DICT-KEY-GUARD-001' &&
+      missingDictKeyGuard(code)
+    ) {
+      const before = code;
+      code = code
+        .replace(
+          'def preferred_region(profile: dict[str, str]) -> str:\n    return profile["region"]\n',
+          'def preferred_region(profile: dict[str, str]) -> str:\n    return profile.get("region", "unknown")\n',
+        )
+        .replace(
+          'def country_code(account: dict[str, str]) -> str:\n    return account["country"]\n',
+          'def country_code(account: dict[str, str]) -> str:\n    return account.get("country", "ZZ")\n',
+        );
+      if (code !== before) {
+        hypothesesPatched.push(candidate.hypothesisId);
+        appliedPatchIds.push(candidate.id);
+      }
+    }
+    fileCodes.set(affectedFile, code);
   }
-  await writeFile(appPath, code, 'utf8');
+  for (const [filePath, code] of fileCodes) {
+    await writeFile(filePath, code, 'utf8');
+  }
   return { hypothesesPatched, appliedPatchIds };
 }
 

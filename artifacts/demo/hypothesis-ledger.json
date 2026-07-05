@@ -1,13 +1,13 @@
 {
-  "runId": "run-1783253988510",
+  "runId": "run-1783266444709",
   "hypotheses": [
     {
       "id": "HYP-DIVIDE-ZERO-001",
-      "title": "divide() does not reject zero divisor before division",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
-      "affectedSymbol": "divide",
+      "title": "division helper does not reject zero divisor before division",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
+      "affectedSymbol": "division helper",
       "evidence": [
-        "app.py contains `return a / b` without a zero-divisor guard"
+        "billing.py divides by count without a zero-divisor guard"
       ],
       "status": "verified",
       "severity": "medium",
@@ -18,11 +18,26 @@
     },
     {
       "id": "HYP-DISCOUNT-VALIDATION-001",
-      "title": "parse_discount() accepts invalid integer strings through raw int()",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
-      "affectedSymbol": "parse_discount",
+      "title": "integer parser accepts invalid strings through raw int()",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
+      "affectedSymbol": "integer parser",
       "evidence": [
-        "app.py contains `return int(value)` without explicit input validation"
+        "billing.py contains `return int(raw)` without explicit input validation"
+      ],
+      "status": "verified",
+      "severity": "low",
+      "requiredChecks": [
+        "pytest",
+        "rescan"
+      ]
+    },
+    {
+      "id": "HYP-DICT-KEY-GUARD-001",
+      "title": "dictionary lookup can raise KeyError for a missing key",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
+      "affectedSymbol": "dictionary lookup",
+      "evidence": [
+        "billing.py contains `return account[\"country\"]` without a missing-key guard"
       ],
       "status": "verified",
       "severity": "low",
@@ -36,11 +51,12 @@
     {
       "id": "EV-CODE-SCAN-001",
       "kind": "source",
-      "summary": "Code scan localized 2 hypotheses.",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0",
+      "summary": "Code scan localized 3 hypotheses.",
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0",
       "linkedHypotheses": [
         "HYP-DIVIDE-ZERO-001",
-        "HYP-DISCOUNT-VALIDATION-001"
+        "HYP-DISCOUNT-VALIDATION-001",
+        "HYP-DICT-KEY-GUARD-001"
       ]
     },
     {
@@ -51,23 +67,24 @@
     {
       "id": "EV-PATCH-FANOUT-001",
       "kind": "agent",
-      "summary": "4 patch candidates generated; 2 selected and applied.",
+      "summary": "6 patch candidates generated; 3 selected and applied.",
       "linkedHypotheses": [
         "HYP-DIVIDE-ZERO-001",
-        "HYP-DISCOUNT-VALIDATION-001"
+        "HYP-DISCOUNT-VALIDATION-001",
+        "HYP-DICT-KEY-GUARD-001"
       ]
     },
     {
       "id": "EV-VERIFY-001",
       "kind": "verification",
       "summary": "Verifier python -m pytest -q passed=true",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0"
     },
     {
       "id": "EV-RESCAN-001",
       "kind": "impact",
       "summary": "Rescan remaining hypotheses=0",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0"
     },
     {
       "id": "EV-DATA-PROXY-001",
@@ -79,7 +96,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-MINIMAL",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -87,7 +104,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-VALIDATION",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
@@ -95,7 +112,7 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-MINIMAL",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -103,21 +120,42 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-VALIDATION",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-91327-810c252f-8710-4bba-8b34-678422737df0/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
+    },
+    {
+      "id": "PATCH-HYP-DICT-KEY-GUARD-001-MINIMAL",
+      "hypothesisId": "HYP-DICT-KEY-GUARD-001",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
+      "strategy": "minimal_guard",
+      "status": "applied",
+      "rationale": "Use .get() with a safe default for the missing-key case."
+    },
+    {
+      "id": "PATCH-HYP-DICT-KEY-GUARD-001-VALIDATION",
+      "hypothesisId": "HYP-DICT-KEY-GUARD-001",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-87000-9e718ae3-63c7-42c1-b264-bdbf0a8734d0/billing.py",
+      "strategy": "input_validation",
+      "status": "proposed",
+      "rationale": "Add an explicit guard branch before indexing the dictionary."
     }
   ],
   "impactGraph": [
     {
-      "from": "divide",
-      "to": "tests/test_app.py",
+      "from": "division helper",
+      "to": "tests/test_billing.py",
       "reason": "Regression tests exercise the affected public function."
     },
     {
-      "from": "parse_discount",
-      "to": "tests/test_app.py",
+      "from": "integer parser",
+      "to": "tests/test_billing.py",
+      "reason": "Regression tests exercise the affected public function."
+    },
+    {
+      "from": "dictionary lookup",
+      "to": "tests/test_billing.py",
       "reason": "Regression tests exercise the affected public function."
     }
   ],
@@ -125,7 +163,7 @@
     {
       "passed": true,
       "command": "python -m pytest -q",
-      "stdout": "\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m                                                                     [100%]\u001b[0m\n",
+      "stdout": "\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m                                                                    [100%]\u001b[0m\n",
       "stderr": "",
       "exitCode": 0
     }

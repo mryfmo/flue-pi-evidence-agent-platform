@@ -1,7 +1,7 @@
 {
   "status": "passed",
-  "hypotheses": 2,
-  "patches": 4,
+  "hypotheses": 3,
+  "patches": 6,
   "evidenceKinds": [
     "agent",
     "data",
@@ -11,5 +11,5 @@
     "verification"
   ],
   "auditRunStatus": "passed",
-  "traceSpanCount": 249
+  "traceSpanCount": 258
 }

@@ -42,6 +42,7 @@
 - Component: code localization/patching, OPA adapter, data proxy.
 - System: Flue build and Flue/Pi path smoke.
 - E2E: issue -> localization -> policy -> patch -> verify -> data guard -> closure.
+- Held-out E2E: `npm run flue:e2e:heldout` exercises the fresh `buggy_heldout` fixture manually and is intentionally excluded from `npm run validate-release`.
 - Failure: high-risk action, shell tool, unsafe SQL, verifier failure.
 - Security: guest/cross-tenant denial and raw SQL denial.
 - Regression: closure gate cannot pass without complete evidence.

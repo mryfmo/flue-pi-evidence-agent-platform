@@ -1198,74 +1198,141 @@ async function readWorkspaceFiles(source) {
 	await walk("");
 	return files;
 }
-function hasMissingZeroGuard(code) {
-	return code.includes("return a / b") && !code.includes("if b == 0:");
+function missingZeroGuardDenominator(code) {
+	const denominator = code.match(/return \w+ \/ (?<denominator>\w+)/)?.groups?.denominator;
+	if (!denominator || code.includes(`if ${denominator} == 0:`)) return;
+	return denominator;
 }
-function hasMissingIntegerValidation(code) {
-	return code.includes("return int(value)") && !code.includes("normalized.isdigit()");
+function missingIntegerValidationArgument(code) {
+	const argument = code.match(/return int\((?<argument>\w+)\)/)?.groups?.argument;
+	if (!argument || code.includes("normalized.isdigit()")) return;
+	return argument;
+}
+function missingDictKeyGuard(code) {
+	const match = code.match(/return (?<name>\w+)\["(?<key>[^"]+)"\]/);
+	const key = match?.groups?.key;
+	if (!key || code.includes(`.get("${key}"`) || code.includes(`if "${key}" not in`)) return;
+	return {
+		key,
+		expression: match[0]
+	};
+}
+async function findPythonSourceFiles(workspace) {
+	const root = resolve(workspace);
+	const files = [];
+	async function walk(relativePath) {
+		const absolute = join(root, relativePath);
+		const entry = await stat(absolute);
+		if (entry.isDirectory()) {
+			if (basename(absolute) === "tests") return;
+			for (const child of (await readdir(absolute)).sort()) await walk(join(relativePath, child));
+			return;
+		}
+		if (entry.isFile() && absolute.endsWith(".py")) files.push(absolute);
+	}
+	await walk("");
+	return files.sort();
 }
 async function scanWorkspace(workspace) {
-	const appPath = join(workspace, "app.py");
-	const code = await readFile(appPath, "utf8");
 	const hypotheses = [];
-	if (hasMissingZeroGuard(code)) hypotheses.push({
-		id: "HYP-DIVIDE-ZERO-001",
-		title: "divide() does not reject zero divisor before division",
-		affectedFile: appPath,
-		affectedSymbol: "divide",
-		evidence: ["app.py contains `return a / b` without a zero-divisor guard"],
-		status: "localized",
-		severity: "medium",
-		requiredChecks: ["pytest", "rescan"]
-	});
-	if (hasMissingIntegerValidation(code)) hypotheses.push({
-		id: "HYP-DISCOUNT-VALIDATION-001",
-		title: "parse_discount() accepts invalid integer strings through raw int()",
-		affectedFile: appPath,
-		affectedSymbol: "parse_discount",
-		evidence: ["app.py contains `return int(value)` without explicit input validation"],
-		status: "localized",
-		severity: "low",
-		requiredChecks: ["pytest", "rescan"]
-	});
+	for (const sourcePath of await findPythonSourceFiles(workspace)) {
+		const code = await readFile(sourcePath, "utf8");
+		const sourceName = basename(sourcePath);
+		const denominator = missingZeroGuardDenominator(code);
+		if (denominator) hypotheses.push({
+			id: "HYP-DIVIDE-ZERO-001",
+			title: "division helper does not reject zero divisor before division",
+			affectedFile: sourcePath,
+			affectedSymbol: "division helper",
+			evidence: [`${sourceName} divides by ${denominator} without a zero-divisor guard`],
+			status: "localized",
+			severity: "medium",
+			requiredChecks: ["pytest", "rescan"]
+		});
+		const integerArgument = missingIntegerValidationArgument(code);
+		if (integerArgument) hypotheses.push({
+			id: "HYP-DISCOUNT-VALIDATION-001",
+			title: "integer parser accepts invalid strings through raw int()",
+			affectedFile: sourcePath,
+			affectedSymbol: "integer parser",
+			evidence: [`${sourceName} contains \`return int(${integerArgument})\` without explicit input validation`],
+			status: "localized",
+			severity: "low",
+			requiredChecks: ["pytest", "rescan"]
+		});
+		const dictKey = missingDictKeyGuard(code);
+		if (dictKey) hypotheses.push({
+			id: "HYP-DICT-KEY-GUARD-001",
+			title: "dictionary lookup can raise KeyError for a missing key",
+			affectedFile: sourcePath,
+			affectedSymbol: "dictionary lookup",
+			evidence: [`${sourceName} contains \`${dictKey.expression}\` without a missing-key guard`],
+			status: "localized",
+			severity: "low",
+			requiredChecks: ["pytest", "rescan"]
+		});
+	}
 	return hypotheses;
 }
 function proposePatchCandidates(hypotheses) {
-	return hypotheses.flatMap((hypothesis) => [{
-		id: `PATCH-${hypothesis.id}-MINIMAL`,
-		hypothesisId: hypothesis.id,
-		affectedFile: hypothesis.affectedFile,
-		strategy: "minimal_guard",
-		status: "proposed",
-		rationale: "Smallest targeted change that satisfies the failing behavior."
-	}, {
-		id: `PATCH-${hypothesis.id}-VALIDATION`,
-		hypothesisId: hypothesis.id,
-		affectedFile: hypothesis.affectedFile,
-		strategy: "input_validation",
-		status: "proposed",
-		rationale: "Explicit defensive validation for the affected boundary."
-	}]);
+	return hypotheses.flatMap((hypothesis) => {
+		const isDictKey = hypothesis.id === "HYP-DICT-KEY-GUARD-001";
+		return [{
+			id: `PATCH-${hypothesis.id}-MINIMAL`,
+			hypothesisId: hypothesis.id,
+			affectedFile: hypothesis.affectedFile,
+			strategy: "minimal_guard",
+			status: "proposed",
+			rationale: isDictKey ? "Use .get() with a safe default for the missing-key case." : "Smallest targeted change that satisfies the failing behavior."
+		}, {
+			id: `PATCH-${hypothesis.id}-VALIDATION`,
+			hypothesisId: hypothesis.id,
+			affectedFile: hypothesis.affectedFile,
+			strategy: "input_validation",
+			status: "proposed",
+			rationale: isDictKey ? "Add an explicit guard branch before indexing the dictionary." : "Explicit defensive validation for the affected boundary."
+		}];
+	});
+}
+function sourceArtifactPaths(workspace, hypotheses) {
+	const root = resolve(workspace);
+	return [...new Set(hypotheses.map((hypothesis) => relative(root, hypothesis.affectedFile)))].filter((path) => path && !path.startsWith("..")).sort();
 }
 async function applySelectedPatches(workspace, candidates) {
-	const appPath = join(workspace, "app.py");
-	let code = await readFile(appPath, "utf8");
+	const fileCodes = /* @__PURE__ */ new Map();
 	const hypothesesPatched = [];
 	const appliedPatchIds = [];
 	for (const candidate of candidates) {
 		if (candidate.status !== "proposed" || !candidate.id.endsWith("-MINIMAL")) continue;
-		if (candidate.hypothesisId === "HYP-DIVIDE-ZERO-001" && code.includes("return a / b") && !code.includes("if b == 0:")) {
-			code = code.replace("def divide(a: float, b: float) -> float:\n    return a / b\n", "def divide(a: float, b: float) -> float:\n    if b == 0:\n        raise ValueError(\"division by zero\")\n    return a / b\n");
-			hypothesesPatched.push(candidate.hypothesisId);
-			appliedPatchIds.push(candidate.id);
+		const affectedFile = candidate.affectedFile;
+		let code = fileCodes.get(affectedFile) ?? await readFile(affectedFile, "utf8");
+		if (candidate.hypothesisId === "HYP-DIVIDE-ZERO-001" && missingZeroGuardDenominator(code)) {
+			const before = code;
+			code = code.replace("def divide(a: float, b: float) -> float:\n    return a / b\n", "def divide(a: float, b: float) -> float:\n    if b == 0:\n        raise ValueError(\"division by zero\")\n    return a / b\n").replace("def average(total: float, count: float) -> float:\n    return total / count\n", "def average(total: float, count: float) -> float:\n    if count == 0:\n        raise ValueError(\"division by zero\")\n    return total / count\n");
+			if (code !== before) {
+				hypothesesPatched.push(candidate.hypothesisId);
+				appliedPatchIds.push(candidate.id);
+			}
 		}
-		if (candidate.hypothesisId === "HYP-DISCOUNT-VALIDATION-001" && code.includes("return int(value)") && !code.includes("normalized.isdigit()")) {
-			code = code.replace("def parse_discount(value: str) -> int:\n    return int(value)\n", "def parse_discount(value: str) -> int:\n    normalized = value.strip()\n    if not normalized.isdigit():\n        raise ValueError(\"discount must be a non-negative integer\")\n    return int(normalized)\n");
-			hypothesesPatched.push(candidate.hypothesisId);
-			appliedPatchIds.push(candidate.id);
+		if (candidate.hypothesisId === "HYP-DISCOUNT-VALIDATION-001" && missingIntegerValidationArgument(code)) {
+			const before = code;
+			code = code.replace("def parse_discount(value: str) -> int:\n    return int(value)\n", "def parse_discount(value: str) -> int:\n    normalized = value.strip()\n    if not normalized.isdigit():\n        raise ValueError(\"discount must be a non-negative integer\")\n    return int(normalized)\n").replace("def parse_quantity(raw: str) -> int:\n    return int(raw)\n", "def parse_quantity(raw: str) -> int:\n    normalized = raw.strip()\n    if not normalized.isdigit():\n        raise ValueError(\"quantity must be a non-negative integer\")\n    return int(normalized)\n");
+			if (code !== before) {
+				hypothesesPatched.push(candidate.hypothesisId);
+				appliedPatchIds.push(candidate.id);
+			}
 		}
+		if (candidate.hypothesisId === "HYP-DICT-KEY-GUARD-001" && missingDictKeyGuard(code)) {
+			const before = code;
+			code = code.replace("def preferred_region(profile: dict[str, str]) -> str:\n    return profile[\"region\"]\n", "def preferred_region(profile: dict[str, str]) -> str:\n    return profile.get(\"region\", \"unknown\")\n").replace("def country_code(account: dict[str, str]) -> str:\n    return account[\"country\"]\n", "def country_code(account: dict[str, str]) -> str:\n    return account.get(\"country\", \"ZZ\")\n");
+			if (code !== before) {
+				hypothesesPatched.push(candidate.hypothesisId);
+				appliedPatchIds.push(candidate.id);
+			}
+		}
+		fileCodes.set(affectedFile, code);
 	}
-	await writeFile(appPath, code, "utf8");
+	for (const [filePath, code] of fileCodes) await writeFile(filePath, code, "utf8");
 	return {
 		hypothesesPatched,
 		appliedPatchIds
@@ -1977,6 +2044,7 @@ async function run$1({ init, log, payload }) {
 	const traceId = runId;
 	const sandboxExecutor = getSandboxExecutor({ auditLog });
 	let sandboxHandle;
+	const workspaceFiles = await readWorkspaceFiles(payload.workspace);
 	const gateway = await startLocalGateway("Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.");
 	try {
 		await appendAudit(auditLog, {
@@ -1999,7 +2067,7 @@ async function run$1({ init, log, payload }) {
 				audit_id: auditId,
 				trace_id: traceId
 			});
-			await sandboxExecutor.putFiles(sandboxHandle, await readWorkspaceFiles(payload.workspace));
+			await sandboxExecutor.putFiles(sandboxHandle, workspaceFiles);
 			return sandboxHandle.id;
 		});
 		let ledger = createLedger(runId);
@@ -2012,9 +2080,11 @@ async function run$1({ init, log, payload }) {
 			location: workspace,
 			linkedHypotheses: localized.map((item) => item.id)
 		});
+		const testTargets = workspaceFiles.map((file) => file.path).filter((path) => path.startsWith("tests/") && path.endsWith(".py")).sort();
+		const impactTarget = testTargets.length > 0 ? testTargets.join(", ") : "";
 		for (const hypothesis of localized) ledger = addImpactEdge(ledger, {
 			from: hypothesis.affectedSymbol,
-			to: "tests/test_app.py",
+			to: impactTarget,
 			reason: "Regression tests exercise the affected public function."
 		});
 		log.info("Hypotheses localized", { count: localized.length });
@@ -2089,7 +2159,7 @@ async function run$1({ init, log, payload }) {
 			location: workspace
 		});
 		const remaining = await withSpan("code.rescan", { workspace }, () => scanWorkspace(workspace));
-		await sandboxExecutor.collectArtifacts(requireSandboxHandle(sandboxHandle), ["app.py"], {
+		await sandboxExecutor.collectArtifacts(requireSandboxHandle(sandboxHandle), sourceArtifactPaths(workspace, localized), {
 			maxBytes: 1024 * 1024,
 			audit_id: auditId,
 			trace_id: traceId

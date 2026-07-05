@@ -7,6 +7,7 @@ import {
   proposePatchCandidates,
   readWorkspaceFiles,
   scanWorkspace,
+  sourceArtifactPaths,
   verifyWorkspaceWithExecutor,
 } from '../lib/code.ts';
 import { metricQuery } from '../lib/dataProxy.ts';
@@ -41,6 +42,7 @@ export async function run({
   const traceId = runId;
   const sandboxExecutor = getSandboxExecutor({ auditLog });
   let sandboxHandle: SandboxHandle | undefined;
+  const workspaceFiles = await readWorkspaceFiles(payload.workspace);
   const gateway = await startLocalGateway(
     'Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.',
   );
@@ -61,10 +63,7 @@ export async function run({
           audit_id: auditId,
           trace_id: traceId,
         });
-        await sandboxExecutor.putFiles(
-          sandboxHandle,
-          await readWorkspaceFiles(payload.workspace),
-        );
+        await sandboxExecutor.putFiles(sandboxHandle, workspaceFiles);
         return sandboxHandle.id;
       },
     );
@@ -81,10 +80,15 @@ export async function run({
       location: workspace,
       linkedHypotheses: localized.map((item) => item.id),
     });
+    const testTargets = workspaceFiles
+      .map((file) => file.path)
+      .filter((path) => path.startsWith('tests/') && path.endsWith('.py'))
+      .sort();
+    const impactTarget = testTargets.length > 0 ? testTargets.join(', ') : '';
     for (const hypothesis of localized) {
       ledger = addImpactEdge(ledger, {
         from: hypothesis.affectedSymbol,
-        to: 'tests/test_app.py',
+        to: impactTarget,
         reason: 'Regression tests exercise the affected public function.',
       });
     }
@@ -184,7 +188,7 @@ export async function run({
     );
     await sandboxExecutor.collectArtifacts(
       requireSandboxHandle(sandboxHandle),
-      ['app.py'],
+      sourceArtifactPaths(workspace, localized),
       {
         maxBytes: 1024 * 1024,
         audit_id: auditId,

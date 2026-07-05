@@ -31,8 +31,8 @@ const assert = (condition, message) => {
 
 assert(Array.isArray(ledger.hypotheses), 'ledger.hypotheses must be an array');
 assert(
-  ledger.hypotheses.length >= 2,
-  'ledger must contain at least two hypotheses',
+  ledger.hypotheses.length >= 3,
+  'ledger must contain at least three hypotheses',
 );
 assert(
   ledger.hypotheses.every((hypothesis) => hypothesis.status === 'verified'),

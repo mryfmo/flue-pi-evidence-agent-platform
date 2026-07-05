@@ -9,6 +9,7 @@
     "flue:build": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs build --target node",
     "flue:smoke": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run smoke --target node --payload '{\"text\":\"hello\"}'",
     "flue:e2e": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload '{\"workspace\":\"sample_repos/buggy_multi\",\"user\":\"engineer\",\"tenant\":\"acme\",\"issue\":\"fix all localized defects\"}'",
+    "flue:e2e:heldout": "./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload '{\"workspace\":\"sample_repos/buggy_heldout\",\"user\":\"engineer\",\"tenant\":\"acme\",\"issue\":\"fix held-out localized defects\"}'",
     "format:check": "biome format --diagnostic-level=error src tests scripts flue.config.ts",
     "lint": "biome lint --diagnostic-level=error src tests scripts flue.config.ts",
     "typecheck": "tsc --noEmit",

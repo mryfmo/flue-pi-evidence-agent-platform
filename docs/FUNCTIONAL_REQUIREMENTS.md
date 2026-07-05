@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | FR-001 | Accept a remediation payload with workspace, user, tenant, and issue. | `src/workflows/remediate.ts` | `tests/e2e/remediate_e2e.test.ts` |
 | FR-002 | Prepare an isolated run workspace copy instead of editing the source fixture. | `prepareWorkspace()` | `tests/component/code.test.ts` |
-| FR-003 | Localize zero-divisor and invalid integer parsing hypotheses. | `scanWorkspace()` | `tests/component/code.test.ts` |
+| FR-003 | Localize zero-divisor, invalid integer parsing, and unguarded dictionary key-access hypotheses. | `scanWorkspace()` | `tests/component/code.test.ts` |
 | FR-004 | Generate more than one patch candidate per hypothesis. | `proposePatchCandidates()` | `tests/component/code.test.ts` |
 | FR-005 | Apply only selected minimal candidates and leave alternatives recorded. | `applySelectedPatches()` + ledger | `tests/component/code.test.ts`, E2E |
 | FR-006 | Run pytest verification after patching. | `verifyWorkspace()` | `tests/component/code.test.ts`, E2E |

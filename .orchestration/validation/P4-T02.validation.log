@@ -1,0 +1,99 @@
+# P4-T02 Revision 1 Validation
+
+$ npx tsc --noEmit && npm run format:check && npm run lint
+
+> flue-pi-evidence-agent-platform@1.1.0 format:check
+> biome format --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 40 files in 20ms. No fixes applied.
+
+> flue-pi-evidence-agent-platform@1.1.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 40 files in 35ms. No fixes applied.
+
+$ npx vitest run tests/component --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  6 passed (6)
+      Tests  27 passed (27)
+   Start at  00:41:26
+   Duration  4.35s (transform 173ms, setup 0ms, import 283ms, tests 5.46s, environment 0ms)
+
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+
+$ npm run validate-release || echo "record failing gate and why (sandbox limits expected)"
+
+> flue-pi-evidence-agent-platform@1.1.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why (sandbox limits expected)
+
+validate-release observed result:
+overall: failed
+setup_python through python_tests: passed
+vitest_all: failed after 120024ms
+failure: listen EPERM: operation not permitted 127.0.0.1 in tests/e2e/remediate_e2e.test.ts
+RR-7: no escalation requested
+
+$ /opt/homebrew/bin/git status --short
+ M .orchestration/tasks/P4-T02.md
+ M docs/FUNCTIONAL_REQUIREMENTS.md
+ M docs/TRACEABILITY_MATRIX.md
+ M docs/VALIDATION_PLAN.md
+ M package.json
+ M sample_repos/buggy_multi/app.py
+ M sample_repos/buggy_multi/tests/test_app.py
+ M scripts/assert-e2e-artifacts.mjs
+ M src/lib/code.ts
+ M src/workflows/remediate.ts
+ M tests/component/code.test.ts
+?? .agents/worklog/codex/plan/20260705_150600_plan.md
+?? .agents/worklog/codex/plan/20260705_153926_plan.md
+?? .agents/worklog/codex/todo/20260705_153121_done.md
+?? .agents/worklog/codex/todo/20260705_153926_todo.md
+?? .orchestration/autoskill/runs/P4-T02.autoskill.md
+?? .orchestration/learning/P4-T02.learning.md
+?? .orchestration/reports/P4-T02.report.md
+?? .orchestration/sandboxes/P4-T02.sandbox.md
+?? .orchestration/tasks/P4-T01.md
+?? .orchestration/tasks/P4-T03.md
+?? .orchestration/tasks/P4-T04.md
+?? .orchestration/validation/P4-T02.validation.log
+?? sample_repos/buggy_heldout/
+
+hard-coded path grep:
+no matches for app.py/test_app.py literals in src/lib/code.ts or src/workflows/remediate.ts
+
+crit review check:
+make require-crit-review unavailable: No rule to make target
+
+$ /opt/homebrew/bin/git status --short
+ M .orchestration/tasks/P4-T02.md
+ M docs/FUNCTIONAL_REQUIREMENTS.md
+ M docs/TRACEABILITY_MATRIX.md
+ M docs/VALIDATION_PLAN.md
+ M package.json
+ M sample_repos/buggy_multi/app.py
+ M sample_repos/buggy_multi/tests/test_app.py
+ M scripts/assert-e2e-artifacts.mjs
+ M src/lib/code.ts
+ M src/workflows/remediate.ts
+ M tests/component/code.test.ts
+?? .agents/worklog/codex/plan/20260705_150600_plan.md
+?? .agents/worklog/codex/plan/20260705_153926_plan.md
+?? .agents/worklog/codex/todo/20260705_153121_done.md
+?? .agents/worklog/codex/todo/20260705_154455_done.md
+?? .orchestration/autoskill/runs/P4-T02.autoskill.md
+?? .orchestration/learning/P4-T02.learning.md
+?? .orchestration/reports/P4-T02.report.md
+?? .orchestration/sandboxes/P4-T02.sandbox.md
+?? .orchestration/tasks/P4-T01.md
+?? .orchestration/tasks/P4-T03.md
+?? .orchestration/tasks/P4-T04.md
+?? .orchestration/validation/P4-T02.validation.log
+?? sample_repos/buggy_heldout/
