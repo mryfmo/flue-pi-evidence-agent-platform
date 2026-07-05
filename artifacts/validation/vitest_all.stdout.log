@@ -2,8 +2,8 @@
  RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
 
 
- Test Files  11 passed (11)
-      Tests  30 passed (30)
-   Start at  18:14:02
-   Duration  6.21s (transform 232ms, setup 0ms, import 453ms, tests 18.72s, environment 1ms)
+ Test Files  12 passed (12)
+      Tests  33 passed (33)
+   Start at  19:07:59
+   Duration  6.51s (transform 324ms, setup 0ms, import 636ms, tests 20.22s, environment 1ms)
 

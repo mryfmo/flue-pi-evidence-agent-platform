@@ -4,10 +4,10 @@ import remediator from '../agents/remediator.ts';
 import { appendAudit } from '../lib/audit.ts';
 import {
   applySelectedPatches,
-  prepareWorkspace,
   proposePatchCandidates,
+  readWorkspaceFiles,
   scanWorkspace,
-  verifyWorkspace,
+  verifyWorkspaceWithExecutor,
 } from '../lib/code.ts';
 import { metricQuery } from '../lib/dataProxy.ts';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../lib/ledger.ts';
 import { startLocalGateway } from '../lib/localGateway.ts';
 import { evaluatePolicy } from '../lib/opa.ts';
+import { getSandboxExecutor, type SandboxHandle } from '../lib/sandbox.ts';
 import { configureTelemetry, withSpan } from '../lib/telemetry.ts';
 import type { RemediationPayload, RemediationResult } from '../lib/types.ts';
 
@@ -35,6 +36,11 @@ export async function run({
   const auditLog = 'artifacts/audit/remediation.jsonl';
   const ledgerPath = 'artifacts/demo/hypothesis-ledger.json';
   const tracePath = configureTelemetry('artifacts/telemetry/traces.jsonl');
+  const runId = `run-${Date.now()}`;
+  const auditId = runId;
+  const traceId = runId;
+  const sandboxExecutor = getSandboxExecutor({ auditLog });
+  let sandboxHandle: SandboxHandle | undefined;
   const gateway = await startLocalGateway(
     'Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.',
   );
@@ -43,9 +49,26 @@ export async function run({
     const workspace = await withSpan(
       'workspace.prepare',
       { workspace: payload.workspace },
-      () => prepareWorkspace(payload.workspace),
+      async () => {
+        sandboxHandle = await sandboxExecutor.create({
+          image: {
+            name: 'local-workspace',
+            tag: 'validate-release',
+            digest: 'sha256:local',
+          },
+          limits: { cpu: '1', memoryMb: 1024, timeoutMs: 30_000 },
+          network: { egress: 'deny' },
+          audit_id: auditId,
+          trace_id: traceId,
+        });
+        await sandboxExecutor.putFiles(
+          sandboxHandle,
+          await readWorkspaceFiles(payload.workspace),
+        );
+        return sandboxHandle.id;
+      },
     );
-    let ledger = createLedger(`run-${Date.now()}`);
+    let ledger = createLedger(runId);
 
     const localized = await withSpan('code.localize', { workspace }, () =>
       scanWorkspace(workspace),
@@ -142,7 +165,11 @@ export async function run({
     const verification = await withSpan(
       'verification.pytest',
       { workspace },
-      () => verifyWorkspace(workspace),
+      () =>
+        verifyWorkspaceWithExecutor(
+          sandboxExecutor,
+          requireSandboxHandle(sandboxHandle),
+        ),
     );
     ledger = markHypothesesVerified(ledger, verification);
     ledger = addEvidence(ledger, {
@@ -154,6 +181,15 @@ export async function run({
 
     const remaining = await withSpan('code.rescan', { workspace }, () =>
       scanWorkspace(workspace),
+    );
+    await sandboxExecutor.collectArtifacts(
+      requireSandboxHandle(sandboxHandle),
+      ['app.py'],
+      {
+        maxBytes: 1024 * 1024,
+        audit_id: auditId,
+        trace_id: traceId,
+      },
     );
     ledger = addEvidence(ledger, {
       id: 'EV-RESCAN-001',
@@ -215,6 +251,14 @@ export async function run({
       flueGatewayRequests: gateway.requests.length,
     };
   } finally {
+    if (sandboxHandle) await sandboxExecutor.destroy(sandboxHandle);
     await gateway.close();
   }
+}
+
+function requireSandboxHandle(
+  handle: SandboxHandle | undefined,
+): SandboxHandle {
+  if (!handle) throw new Error('sandbox handle is unavailable');
+  return handle;
 }

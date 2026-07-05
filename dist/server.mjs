@@ -3,10 +3,10 @@ import { createServer } from "node:http";
 import { sqlite } from "@flue/runtime/node";
 import { Bash, InMemoryFs, bashFactoryToSessionEnv, configureFlueRuntime, createFlueContext, createNodeAgentCoordinator, createNodeDispatchQueue, generateWorkflowRunId, invokeDirectAttached, invokeWorkflowAttached, resolveModel } from "@flue/runtime/internal";
 import { Type, createAgent, defineTool, observe, registerProvider } from "@flue/runtime";
-import { appendFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, join, resolve } from "node:path";
+import { appendFile, mkdir, mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { promisify } from "node:util";
 import { appendFileSync, existsSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -1177,19 +1177,25 @@ async function appendAudit(path, event) {
 		...event
 	})}\n`, "utf8");
 }
-//#endregion
-//#region src/lib/code.ts
-/** Code scanning, patch fan-out, and verification for remediation workflows. */
-var execFileAsync$2 = promisify(execFile);
-async function prepareWorkspace(source) {
-	const target = resolve("artifacts/demo/workspace", `${basename(source)}-${process.pid}-${randomUUID()}`);
-	await rm(target, {
-		recursive: true,
-		force: true
-	});
-	await mkdir(target, { recursive: true });
-	await cp(source, target, { recursive: true });
-	return target;
+promisify(execFile);
+async function readWorkspaceFiles(source) {
+	const root = resolve(source);
+	const files = [];
+	async function walk(relativePath) {
+		const absolute = join(root, relativePath);
+		const entry = await stat(absolute);
+		if (entry.isDirectory()) {
+			for (const child of (await readdir(absolute)).sort()) await walk(join(relativePath, child));
+			return;
+		}
+		if (entry.isFile()) files.push({
+			path: relativePath,
+			content: await readFile(absolute),
+			mode: entry.mode
+		});
+	}
+	await walk("");
+	return files;
 }
 function hasMissingZeroGuard(code) {
 	return code.includes("return a / b") && !code.includes("if b == 0:");
@@ -1264,46 +1270,36 @@ async function applySelectedPatches(workspace, candidates) {
 		appliedPatchIds
 	};
 }
-async function verifyWorkspace(workspace) {
-	try {
-		const { stdout, stderr } = await execFileAsync$2(process.env.EAP_PYTHON ?? resolve(".venv/bin/python"), [
-			"-m",
-			"pytest",
-			"-q"
-		], {
-			cwd: workspace,
-			maxBuffer: 1024 * 1024,
-			timeout: 3e4
-		});
-		return {
-			passed: true,
-			command: "python -m pytest -q",
-			stdout,
-			stderr,
-			exitCode: 0
-		};
-	} catch (error) {
-		const err = error;
-		return {
-			passed: false,
-			command: "python -m pytest -q",
-			stdout: err.stdout ?? "",
-			stderr: err.stderr ?? "",
-			exitCode: typeof err.code === "number" ? err.code : 1
-		};
-	}
+async function verifyWorkspaceWithExecutor(executor, handle) {
+	const result = await executor.exec(handle, [
+		process.env.EAP_PYTHON ?? resolve(".venv/bin/python"),
+		"-m",
+		"pytest",
+		"-q"
+	], {
+		timeoutMs: 3e4,
+		audit_id: handle.audit_id,
+		trace_id: handle.trace_id
+	});
+	return {
+		passed: result.exitCode === 0,
+		command: "python -m pytest -q",
+		stdout: result.stdout,
+		stderr: result.stderr,
+		exitCode: result.exitCode
+	};
 }
 //#endregion
 //#region src/lib/dataProxy.ts
 /** Python OSS data proxy bridge for SQLGlot, DuckDB, and Presidio. */
-var execFileAsync$1 = promisify(execFile);
+var execFileAsync$2 = promisify(execFile);
 function pythonBinary() {
 	if (process.env.EAP_PYTHON) return process.env.EAP_PYTHON;
 	if (existsSync(".venv/bin/python")) return ".venv/bin/python";
 	return "python";
 }
 async function metricQuery() {
-	const { stdout } = await execFileAsync$1(pythonBinary(), ["scripts/data_guard.py", "metric"], { maxBuffer: 1024 * 1024 });
+	const { stdout } = await execFileAsync$2(pythonBinary(), ["scripts/data_guard.py", "metric"], { maxBuffer: 1024 * 1024 });
 	return JSON.parse(stdout);
 }
 //#endregion
@@ -1527,7 +1523,7 @@ async function startLocalGateway(responseText) {
 //#endregion
 //#region src/lib/opa.ts
 /** OPA-backed policy decision adapter using a real bundled OPA binary. */
-var execFileAsync = promisify(execFile);
+var execFileAsync$1 = promisify(execFile);
 var opaPackages = {
 	"darwin-arm64": "agent-control-specification-opa-darwin-arm64",
 	"darwin-x64": "agent-control-specification-opa-darwin-x64",
@@ -1557,7 +1553,7 @@ async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "
 		query
 	];
 	try {
-		const { stdout } = await execFileAsync(opaBinary(), args, {
+		const { stdout } = await execFileAsync$1(opaBinary(), args, {
 			cwd: process.cwd(),
 			maxBuffer: 1024 * 1024
 		});
@@ -1576,6 +1572,159 @@ async function evaluatePolicy(input, policyPath = "policy/agent.rego", query = "
 			reasons: [`policy_unavailable:${String(error)}`]
 		};
 	}
+}
+//#endregion
+//#region src/lib/sandbox.ts
+/** Sandbox execution boundary for remediation workspace operations. */
+var execFileAsync = promisify(execFile);
+var SandboxRuntimeError = class extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "SandboxRuntimeError";
+	}
+};
+var LocalWorkspaceExecutor = class {
+	auditLog;
+	constructor(options = {}) {
+		this.auditLog = options.auditLog ?? "artifacts/audit/remediation.jsonl";
+	}
+	async create(spec) {
+		const workspace = resolve("artifacts/demo/workspace", `local-${process.pid}-${randomUUID()}`);
+		await mkdir(workspace, { recursive: true });
+		const handle = {
+			id: workspace,
+			runtime: "local",
+			audit_id: spec.audit_id,
+			trace_id: spec.trace_id
+		};
+		await this.audit("sandbox_create", {
+			audit_id: spec.audit_id,
+			trace_id: spec.trace_id,
+			runtime: handle.runtime,
+			workspace,
+			image: spec.image,
+			limits: spec.limits,
+			network: spec.network,
+			envKeys: Object.keys(spec.env ?? {}).sort()
+		});
+		return handle;
+	}
+	async putFiles(handle, files) {
+		const written = [];
+		for (const file of files) {
+			const target = confinedPath(handle.id, file.path);
+			await mkdir(dirname(target), { recursive: true });
+			await writeFile(target, file.content, file.mode ? { mode: file.mode } : void 0);
+			const bytes = typeof file.content === "string" ? Buffer.byteLength(file.content) : file.content.byteLength;
+			written.push({
+				path: file.path,
+				bytes,
+				sha256: digest(file.content)
+			});
+		}
+		await this.audit("sandbox_put_files", {
+			audit_id: handle.audit_id,
+			trace_id: handle.trace_id,
+			sandbox_id: handle.id,
+			files: written
+		});
+	}
+	async exec(handle, argv, options) {
+		if (argv.length === 0) throw new SandboxRuntimeError("argv must not be empty");
+		const command = argv[0];
+		if (!command) throw new SandboxRuntimeError("argv must not be empty");
+		const args = argv.slice(1);
+		try {
+			const { stdout, stderr } = await execFileAsync(command, args, {
+				cwd: handle.id,
+				maxBuffer: 1024 * 1024,
+				timeout: options.timeoutMs
+			});
+			const result = {
+				exitCode: 0,
+				stdout,
+				stderr
+			};
+			await this.auditExec(handle, argv, options, result);
+			return result;
+		} catch (error) {
+			const err = error;
+			const result = {
+				exitCode: typeof err.code === "number" ? err.code : 1,
+				stdout: err.stdout ?? "",
+				stderr: err.stderr ?? ""
+			};
+			await this.auditExec(handle, argv, options, result);
+			return result;
+		}
+	}
+	async collectArtifacts(handle, paths, options) {
+		let totalBytes = 0;
+		const files = [];
+		const auditFiles = [];
+		for (const path of paths) {
+			const content = await readFile(confinedPath(handle.id, path), "utf8");
+			const bytes = Buffer.byteLength(content);
+			totalBytes += bytes;
+			if (totalBytes > options.maxBytes) throw new SandboxRuntimeError("artifact size exceeds maxBytes");
+			files.push({
+				path,
+				content
+			});
+			auditFiles.push({
+				path,
+				bytes,
+				sha256: digest(content)
+			});
+		}
+		await this.audit("sandbox_collect", {
+			audit_id: options.audit_id,
+			trace_id: options.trace_id,
+			sandbox_id: handle.id,
+			files: auditFiles,
+			totalBytes
+		});
+		return files;
+	}
+	async destroy(handle) {
+		await this.audit("sandbox_destroy", {
+			audit_id: handle.audit_id,
+			trace_id: handle.trace_id,
+			sandbox_id: handle.id,
+			retained: true
+		});
+	}
+	async audit(type, event) {
+		await appendAudit(this.auditLog, {
+			type,
+			...event
+		});
+	}
+	async auditExec(handle, argv, options, result) {
+		await this.audit("sandbox_exec", {
+			audit_id: options.audit_id,
+			trace_id: options.trace_id,
+			sandbox_id: handle.id,
+			argvDigest: digest(argv.join("\0")),
+			command: basename(argv[0] ?? "unknown"),
+			exitCode: result.exitCode
+		});
+	}
+};
+function getSandboxExecutor(options = {}) {
+	const runtime = process.env.EAP_SANDBOX_RUNTIME ?? "local";
+	if (runtime === "local") return new LocalWorkspaceExecutor(options);
+	if (runtime === "opensandbox") throw new SandboxRuntimeError("OpenSandboxExecutor not yet implemented; see T06c");
+	throw new SandboxRuntimeError(`Unknown sandbox runtime: ${runtime}`);
+}
+function confinedPath(root, requested) {
+	const target = resolve(root, requested);
+	const rel = relative(root, target);
+	if (rel.startsWith("..") || rel === "" || rel.startsWith(`..${resolve("/")}`)) throw new SandboxRuntimeError(`path escapes sandbox: ${requested}`);
+	return target;
+}
+function digest(content) {
+	return createHash("sha256").update(content).digest("hex");
 }
 //#endregion
 //#region src/lib/telemetry.ts
@@ -1633,14 +1782,37 @@ async function run$1({ init, log, payload }) {
 	const auditLog = "artifacts/audit/remediation.jsonl";
 	const ledgerPath = "artifacts/demo/hypothesis-ledger.json";
 	const tracePath = configureTelemetry("artifacts/telemetry/traces.jsonl");
+	const runId = `run-${Date.now()}`;
+	const auditId = runId;
+	const traceId = runId;
+	const sandboxExecutor = getSandboxExecutor({ auditLog });
+	let sandboxHandle;
 	const gateway = await startLocalGateway("Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.");
 	try {
 		await appendAudit(auditLog, {
 			type: "run_start",
 			payload
 		});
-		const workspace = await withSpan("workspace.prepare", { workspace: payload.workspace }, () => prepareWorkspace(payload.workspace));
-		let ledger = createLedger(`run-${Date.now()}`);
+		const workspace = await withSpan("workspace.prepare", { workspace: payload.workspace }, async () => {
+			sandboxHandle = await sandboxExecutor.create({
+				image: {
+					name: "local-workspace",
+					tag: "validate-release",
+					digest: "sha256:local"
+				},
+				limits: {
+					cpu: "1",
+					memoryMb: 1024,
+					timeoutMs: 3e4
+				},
+				network: { egress: "deny" },
+				audit_id: auditId,
+				trace_id: traceId
+			});
+			await sandboxExecutor.putFiles(sandboxHandle, await readWorkspaceFiles(payload.workspace));
+			return sandboxHandle.id;
+		});
+		let ledger = createLedger(runId);
 		const localized = await withSpan("code.localize", { workspace }, () => scanWorkspace(workspace));
 		ledger = addHypotheses(ledger, localized);
 		ledger = addEvidence(ledger, {
@@ -1718,7 +1890,7 @@ async function run$1({ init, log, payload }) {
 			summary: `${candidates.length} patch candidates generated; ${applied.appliedPatchIds.length} selected and applied.`,
 			linkedHypotheses: applied.hypothesesPatched
 		});
-		const verification = await withSpan("verification.pytest", { workspace }, () => verifyWorkspace(workspace));
+		const verification = await withSpan("verification.pytest", { workspace }, () => verifyWorkspaceWithExecutor(sandboxExecutor, requireSandboxHandle(sandboxHandle)));
 		ledger = markHypothesesVerified(ledger, verification);
 		ledger = addEvidence(ledger, {
 			id: "EV-VERIFY-001",
@@ -1727,6 +1899,11 @@ async function run$1({ init, log, payload }) {
 			location: workspace
 		});
 		const remaining = await withSpan("code.rescan", { workspace }, () => scanWorkspace(workspace));
+		await sandboxExecutor.collectArtifacts(requireSandboxHandle(sandboxHandle), ["app.py"], {
+			maxBytes: 1024 * 1024,
+			audit_id: auditId,
+			trace_id: traceId
+		});
 		ledger = addEvidence(ledger, {
 			id: "EV-RESCAN-001",
 			kind: "impact",
@@ -1772,8 +1949,13 @@ async function run$1({ init, log, payload }) {
 			flueGatewayRequests: gateway.requests.length
 		};
 	} finally {
+		if (sandboxHandle) await sandboxExecutor.destroy(sandboxHandle);
 		await gateway.close();
 	}
+}
+function requireSandboxHandle(handle) {
+	if (!handle) throw new Error("sandbox handle is unavailable");
+	return handle;
 }
 //#endregion
 //#region src/workflows/smoke.ts

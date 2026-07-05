@@ -1,0 +1,116 @@
+# P2-T06b Validation Log
+
+## TDD red check
+
+Command:
+
+```bash
+npx vitest run tests/component/sandbox_executor.test.ts --pool=forks
+```
+
+Exit: 1 before implementation.
+
+```text
+Error: Cannot find module '../../src/lib/sandbox.ts'
+```
+
+## npx tsc --noEmit
+
+Exit: 0
+
+```text
+```
+
+## npm run format:check && npm run lint
+
+Exit: 0
+
+```text
+> flue-pi-evidence-agent-platform@1.1.0 format:check
+> biome format --diagnostic-level=error src tests scripts flue.config.ts
+Checked 35 files in 31ms. No fixes applied.
+
+> flue-pi-evidence-agent-platform@1.1.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+Checked 35 files in 57ms. No fixes applied.
+```
+
+## npx vitest run tests/component --pool=forks
+
+Exit: 0
+
+```text
+Test Files  5 passed (5)
+Tests  17 passed (17)
+```
+
+## npx vitest run --pool=forks
+
+Sandboxed run: interrupted after E2E failed and process did not exit.
+
+```text
+Error: listen EPERM: operation not permitted 127.0.0.1
+Workflow error: Local execution process exited before returning a result (code 1).
+```
+
+Escalated rerun for localhost bind:
+
+Exit: 0
+
+```text
+Test Files  12 passed (12)
+Tests  33 passed (33)
+```
+
+## ./node_modules/node/bin/node scripts/assert-e2e-artifacts.mjs
+
+Exit: 0
+
+```json
+{
+  "status": "passed",
+  "hypotheses": 2,
+  "patches": 4,
+  "auditRunStatus": "passed"
+}
+```
+
+## npm run validate-release
+
+Exit: 0
+
+```text
+validate-release:passed
+```
+
+## /opt/homebrew/bin/git status --short
+
+Exit: 0
+
+```text
+ M src/lib/code.ts
+ M src/workflows/remediate.ts
+?? .orchestration/autoskill/runs/P2-T06b.autoskill.md
+?? .orchestration/learning/P2-T06b.learning.md
+?? .orchestration/reports/P2-T06b.report.md
+?? .orchestration/sandboxes/P2-T06b.sandbox.md
+?? .orchestration/tasks/P2-T06b.md
+?? .orchestration/validation/P2-T06b.validation.log
+?? src/lib/sandbox.ts
+?? tests/component/sandbox_executor.test.ts
+```
+
+## git diff --check
+
+Exit: 0
+
+```text
+```
+
+## make require-crit-review
+
+Exit: 2
+
+```text
+make: *** No rule to make target `require-crit-review'.  Stop.
+```

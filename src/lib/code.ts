@@ -1,9 +1,18 @@
 /** Code scanning, patch fan-out, and verification for remediation workflows. */
 import { execFile } from 'node:child_process';
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  cp,
+  mkdir,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { basename, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
+import type { SandboxExecutor, SandboxFile, SandboxHandle } from './sandbox.ts';
 import type {
   Hypothesis,
   PatchCandidate,
@@ -21,6 +30,32 @@ export async function prepareWorkspace(source: string): Promise<string> {
   await mkdir(target, { recursive: true });
   await cp(source, target, { recursive: true });
   return target;
+}
+
+export async function readWorkspaceFiles(
+  source: string,
+): Promise<SandboxFile[]> {
+  const root = resolve(source);
+  const files: SandboxFile[] = [];
+  async function walk(relativePath: string): Promise<void> {
+    const absolute = join(root, relativePath);
+    const entry = await stat(absolute);
+    if (entry.isDirectory()) {
+      for (const child of (await readdir(absolute)).sort()) {
+        await walk(join(relativePath, child));
+      }
+      return;
+    }
+    if (entry.isFile()) {
+      files.push({
+        path: relativePath,
+        content: await readFile(absolute),
+        mode: entry.mode,
+      });
+    }
+  }
+  await walk('');
+  return files;
 }
 
 function hasMissingZeroGuard(code: string): boolean {
@@ -157,4 +192,31 @@ export async function verifyWorkspace(
       exitCode: typeof err.code === 'number' ? err.code : 1,
     };
   }
+}
+
+export async function verifyWorkspaceWithExecutor(
+  executor: SandboxExecutor,
+  handle: SandboxHandle,
+): Promise<VerificationResult> {
+  const result = await executor.exec(
+    handle,
+    [
+      process.env.EAP_PYTHON ?? resolve('.venv/bin/python'),
+      '-m',
+      'pytest',
+      '-q',
+    ],
+    {
+      timeoutMs: 30_000,
+      audit_id: handle.audit_id,
+      trace_id: handle.trace_id,
+    },
+  );
+  return {
+    passed: result.exitCode === 0,
+    command: 'python -m pytest -q',
+    stdout: result.stdout,
+    stderr: result.stderr,
+    exitCode: result.exitCode,
+  };
 }
