@@ -80,3 +80,115 @@ $ /opt/homebrew/bin/git status --short
 ?? artifacts/demo/workspace/buggy_multi-40758-7a4406ec-1207-48a0-a048-15243f8a703a/
 ?? artifacts/demo/workspace/local-40739-664f9aaa-c61e-4e58-b86f-f9c2927f7d73/
 ?? artifacts/demo/workspace/local-40739-e638e56e-de61-4483-adde-2d016a39dcab/
+
+--- validate-release rerun with failure details ---
+$ npm run validate-release
+
+> flue-pi-evidence-agent-platform@1.2.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release rerun exit: 1
+$ cat artifacts/validation/final_verification_report.md
+# Final verification report
+
+overall: failed
+
+- setup_python: passed (8676ms)
+- spec_traceability: passed (52ms)
+- format: passed (94ms)
+- lint: passed (72ms)
+- typecheck: passed (2154ms)
+- opa: passed (200ms)
+- python_compile: passed (27ms)
+- python_ruff: passed (282ms)
+- python_mypy: passed (362ms)
+- python_bandit: passed (142ms)
+- python_tests: passed (2540ms)
+- vitest_all: failed (120021ms)
+$ tail -n 80 artifacts/validation/vitest_all.stderr.log
+    at execFileSync (node:child_process:951:15)
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/run-flue-workflow.mjs:12:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+      '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+      '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+      '[flue] Target: node\n' +
+      '[flue] Custom app entry: src/app.ts\n' +
+      '[flue] Found 1 agent(s): remediator\n' +
+      '[flue] Found 2 workflow(s): remediate, smoke\n' +
+      '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+      '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+      '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+    '[flue] Loaded config: flue.config.ts\n' +
+      '[flue] Running workflow: remediate\n' +
+      '(node:43748) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n' +
+      '(Use `node --trace-warnings ...` to show where the warning was created)\n' +
+      '[flue] Run ID: workflow:remediate:01KWTCJ112F88FVDNBCRB20DBR\n' +
+      'node:events:497\n' +
+      "      throw er; // Unhandled 'error' event\n" +
+      '      ^\n' +
+      'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+      '    at Server.setupListenHandle [as _listen2] (node:net:1918:21)\n' +
+      '    at listenInCluster (node:net:1997:12)\n' +
+      '    at node:net:2206:7\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+      "Emitted 'error' event on Server instance at:\n" +
+      '    at emitErrorNT (node:net:1976:8)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+      "  code: 'EPERM',\n" +
+      '  errno: -1,\n' +
+      "  syscall: 'listen',\n" +
+      "  address: '127.0.0.1'\n" +
+      '}\n' +
+      'Node.js v22.19.0\n' +
+      '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+  ],
+  pid: 43716,
+  stdout: '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+    '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+    '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+    '[flue] Target: node\n' +
+    '[flue] Custom app entry: src/app.ts\n' +
+    '[flue] Found 1 agent(s): remediator\n' +
+    '[flue] Found 2 workflow(s): remediate, smoke\n' +
+    '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+    '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+    '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+  stderr: '[flue] Loaded config: flue.config.ts\n' +
+    '[flue] Running workflow: remediate\n' +
+    '(node:43748) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n' +
+    '(Use `node --trace-warnings ...` to show where the warning was created)\n' +
+    '[flue] Run ID: workflow:remediate:01KWTCJ112F88FVDNBCRB20DBR\n' +
+    'node:events:497\n' +
+    "      throw er; // Unhandled 'error' event\n" +
+    '      ^\n' +
+    'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1918:21)\n' +
+    '    at listenInCluster (node:net:1997:12)\n' +
+    '    at node:net:2206:7\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+    "Emitted 'error' event on Server instance at:\n" +
+    '    at emitErrorNT (node:net:1976:8)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+    "  code: 'EPERM',\n" +
+    '  errno: -1,\n' +
+    "  syscall: 'listen',\n" +
+    "  address: '127.0.0.1'\n" +
+    '}\n' +
+    'Node.js v22.19.0\n' +
+    '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+}
+
+Node.js v22.19.0
+$ tail -n 80 artifacts/validation/vitest_all.stdout.log
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ ❯ tests/e2e/remediate_e2e.test.ts (1 test | 1 failed) 2145ms
+     × runs issue localization, patching, verification, data guard, and closure gate 2144ms
