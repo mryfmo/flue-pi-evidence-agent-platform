@@ -1,6 +1,6 @@
 {
   "name": "flue-pi-evidence-agent-platform",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Flue+Pi OSS-integrated evidence-driven remediation and governed data-analysis agent platform with release-gated validation.",
   "type": "module",
   "license": "Apache-2.0",

@@ -1,49 +1,49 @@
 {
   "status": "passed",
-  "generatedAt": "2026-07-05T16:45:33.755Z",
+  "generatedAt": "2026-07-06T00:09:42.631Z",
   "node": "v22.19.0",
   "results": [
     {
       "name": "setup_python",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 1518
+      "durationMs": 1128
     },
     {
       "name": "spec_traceability",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 69
+      "durationMs": 45
     },
     {
       "name": "format",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 103
+      "durationMs": 100
     },
     {
       "name": "lint",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 71
+      "durationMs": 159
     },
     {
       "name": "typecheck",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 1838
+      "durationMs": 1668
     },
     {
       "name": "opa",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 201
+      "durationMs": 191
     },
     {
       "name": "python_compile",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 26
+      "durationMs": 27
     },
     {
       "name": "python_ruff",
@@ -55,55 +55,55 @@
       "name": "python_mypy",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 382
+      "durationMs": 424
     },
     {
       "name": "python_bandit",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 135
+      "durationMs": 128
     },
     {
       "name": "python_tests",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 2271
+      "durationMs": 2443
     },
     {
       "name": "vitest_all",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 11264
+      "durationMs": 9038
     },
     {
       "name": "llm_contract",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 6386
+      "durationMs": 6343
     },
     {
       "name": "flue_build",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 978
+      "durationMs": 936
     },
     {
       "name": "e2e_artifacts",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 77
+      "durationMs": 42
     },
     {
       "name": "npm_audit_prod",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 568
+      "durationMs": 565
     },
     {
       "name": "npm_sbom_prod",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 232
+      "durationMs": 227
     },
     {
       "name": "python_sbom",
@@ -115,31 +115,31 @@
       "name": "python_audit",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 4127
+      "durationMs": 6669
     },
     {
       "name": "lockfile_registry",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 35
+      "durationMs": 37
     },
     {
       "name": "opa_test",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 79
+      "durationMs": 77
     },
     {
       "name": "opa_bundle",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 197
+      "durationMs": 154
     },
     {
       "name": "skill_registry",
       "status": "passed",
       "returnCode": 0,
-      "durationMs": 41
+      "durationMs": 49
     }
   ]
 }

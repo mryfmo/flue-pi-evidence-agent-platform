@@ -20,4 +20,4 @@ The platform is a Flue + Pi evidence-driven remediation system for controlled co
 - PR-008: Release creation is blocked unless format, lint, typecheck, tests, policy, data guard, Flue build, E2E, audit, and SBOM gates pass.
 
 ## Out of scope for this package
-This package is a single-host OSS-integrated implementation. It does not claim Kubernetes, external OpenMetadata, external Trino, external LiteLLM, or production secret-manager deployment. Those are extension targets behind the same typed tool contracts.
+This package is a single-host OSS-integrated implementation by default. Docker-based validation and GitHub Actions CI are in scope, and the production LLM gateway exists behind typed contracts with environment-injected provider keys. It does not claim Kubernetes, external OpenMetadata, external Trino, or production secret-manager deployment; those remain extension targets behind the same typed tool contracts.

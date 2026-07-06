@@ -20,6 +20,7 @@
 | `python_bandit` | run Python static security scan | `artifacts/validation/python_bandit.*.log` |
 | `python_tests` | run SQLGlot/DuckDB/Presidio tests with coverage | `artifacts/validation/python_tests.*.log` |
 | `vitest_all` | run unit, component, system, E2E, failure, security, and regression tests | `artifacts/validation/vitest_all.*.log` |
+| `llm_contract` | validate production gateway routing, redaction, audit digests, fail-closed, and fallback behavior with mock providers | `artifacts/validation/llm_contract.*.log` |
 | `flue_build` | build the Flue Node target | `artifacts/validation/flue_build.*.log` |
 | `e2e_artifacts` | assert ledger, evidence, audit, and OpenTelemetry artifacts from E2E | `artifacts/validation/e2e_artifacts.*.log` |
 | `npm_audit_prod` | check production Node dependencies for high-severity advisories | `artifacts/validation/npm_audit_prod.*.log` |

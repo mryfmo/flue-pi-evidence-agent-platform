@@ -44,3 +44,15 @@ Routing policy, redaction, secret, or OPA failures shall prevent external provid
 
 ## REQ-MEASURE-001
 Gateway calls shall emit latency, token, and cost telemetry for G12 measurement.
+
+## REQ-SANDBOX-001
+The product shall support OpenSandbox as the required execution-isolation layer for remediation workspace operations.
+
+## REQ-SANDBOX-002
+OpenSandbox runtime failures shall fail closed with no silent fallback to local execution.
+
+## REQ-SANDBOX-003
+Sandboxes shall isolate credentials and deny network egress by default.
+
+## REQ-SANDBOX-004
+Sandbox lifecycle operations shall emit audit evidence.

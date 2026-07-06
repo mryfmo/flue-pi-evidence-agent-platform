@@ -1,0 +1,82 @@
+$ grep -n 'not a Docker' README.md || echo OK-readme
+OK-readme
+
+$ grep -nE '16 gates|Version: .1\.1\.0' RELEASE_MANIFEST.md || echo OK-manifest
+OK-manifest
+
+$ grep -c 'REQ-SANDBOX' docs/SPECIFICATION.md
+4
+
+$ grep -c '^| `' docs/VALIDATION_PLAN.md
+23
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+spec-check exit: 0
+
+$ npm run validate-release || echo "record failing gate and why"
+
+> flue-pi-evidence-agent-platform@1.2.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+record failing gate and why: npm run validate-release exited 1; see gate output above.
+validate-release exit: 1
+
+$ /opt/homebrew/bin/git status --short
+ M README.md
+ M RELEASE_MANIFEST.md
+ M artifacts/audit/remediation.jsonl
+ D artifacts/validation/e2e_artifacts.stderr.log
+ D artifacts/validation/e2e_artifacts.stdout.log
+ M artifacts/validation/final_verification_report.json
+ M artifacts/validation/final_verification_report.md
+ D artifacts/validation/flue_build.stderr.log
+ D artifacts/validation/flue_build.stdout.log
+ M artifacts/validation/format.stdout.log
+ M artifacts/validation/lint.stdout.log
+ D artifacts/validation/llm_contract.stderr.log
+ D artifacts/validation/llm_contract.stdout.log
+ D artifacts/validation/lockfile_registry.stderr.log
+ D artifacts/validation/lockfile_registry.stdout.log
+ D artifacts/validation/npm_audit_prod.stderr.log
+ D artifacts/validation/npm_audit_prod.stdout.log
+ D artifacts/validation/npm_sbom_prod.stderr.log
+ D artifacts/validation/npm_sbom_prod.stdout.log
+ D artifacts/validation/opa_bundle.stderr.log
+ D artifacts/validation/opa_bundle.stdout.log
+ D artifacts/validation/opa_test.stderr.log
+ D artifacts/validation/opa_test.stdout.log
+ D artifacts/validation/python_audit.stderr.log
+ D artifacts/validation/python_audit.stdout.log
+ M artifacts/validation/python_mypy.stdout.log
+ M artifacts/validation/python_ruff.stdout.log
+ D artifacts/validation/python_sbom.stderr.log
+ D artifacts/validation/python_sbom.stdout.log
+ M artifacts/validation/python_tests.stdout.log
+ M artifacts/validation/setup_python.stderr.log
+ D artifacts/validation/skill_registry.stderr.log
+ D artifacts/validation/skill_registry.stdout.log
+ M artifacts/validation/vitest_all.stderr.log
+ M artifacts/validation/vitest_all.stdout.log
+ M docs/ARCHITECTURE.md
+ M docs/PRODUCT_REQUIREMENTS.md
+ M docs/SPECIFICATION.md
+ M docs/SYSTEM_ARCHITECTURE.md
+ M docs/VALIDATION_PLAN.md
+ M package-lock.json
+ M package.json
+?? .agents/worklog/codex/plan/20260706_090250_plan.md
+?? .agents/worklog/codex/todo/20260706_090250_todo.md
+?? .orchestration/autoskill/runs/P6-T03.autoskill.md
+?? .orchestration/learning/P6-T03.learning.md
+?? .orchestration/reports/P6-T03.report.md
+?? .orchestration/sandboxes/P6-T03.sandbox.md
+?? .orchestration/tasks/P6-T03.md
+?? .orchestration/validation/P6-T03.validation.log
+?? artifacts/demo/workspace/buggy_heldout-40721-17fde5c6-dbeb-45e6-9d51-55d9a03bd911/
+?? artifacts/demo/workspace/buggy_heldout-40721-e04678c7-ef72-43a2-bdd6-2896610057aa/
+?? artifacts/demo/workspace/buggy_multi-40721-66a9fadb-0da1-46c7-b26d-02a1b88f36ff/
+?? artifacts/demo/workspace/buggy_multi-40721-cb622d22-9007-45ad-b0fb-b724f45ff97c/
+?? artifacts/demo/workspace/buggy_multi-40758-7a4406ec-1207-48a0-a048-15243f8a703a/
+?? artifacts/demo/workspace/local-40739-664f9aaa-c61e-4e58-b86f-f9c2927f7d73/
+?? artifacts/demo/workspace/local-40739-e638e56e-de61-4483-adde-2d016a39dcab/

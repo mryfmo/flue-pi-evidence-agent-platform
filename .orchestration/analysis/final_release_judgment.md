@@ -34,3 +34,7 @@
 - コミット: baseline 含め 40 前後(全 push 済み)/ 受入記録 22 件 / 差し戻し 7 件(全て根本原因特定 → 最小修正で解消、うち実バグ捕捉 4 件: selectRoute 入力混入、cryptography/setuptools 脆弱性、app.py ハードコード)
 - ゲート推移: 16 → 23(+CI-only 3 系統)
 - ワーカー: Codex gpt-5.5 high(agmsg 全 118 メッセージ、Codex Auth シム経由 LLM 呼び出し 182 回)
+
+## 追記(2026-07-06): ドキュメント整合の完了(P6-T03)
+
+ユーザー監査指摘に基づき、基幹文書 6 点(README / RELEASE_MANIFEST / ARCHITECTURE / SYSTEM_ARCHITECTURE / SPECIFICATION / VALIDATION_PLAN / PRODUCT_REQUIREMENTS)を最終状態(v1.2.0、23 ゲート、本番コンポーネント)に整合。P6-T03 accepted、23/23 green。
