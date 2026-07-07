@@ -37,3 +37,13 @@ Rejected candidates require an entry in the relevant rejected buffer with an `an
 ## Promotion Authority
 
 Only orchestrator acceptance may promote a validated candidate. Workers may recommend, improve, or prepare merge plans, but must not copy candidates into `promoted/`.
+
+## Native Lifecycle Automation
+
+`scripts/skill-lifecycle.mjs` automates evidence collection and recommendation prep without promoting skills:
+
+1. `observe --trigger task-completion|error-recovery|user-correction --task <id>` redacts task evidence from reports, validation, and acceptance files into `.orchestration/autoskill/inputs/<id>.manifest.json`.
+2. `decide --task <id>` compares the task evidence with candidate and promoted registry skills, then writes `.orchestration/autoskill/runs/<id>.lifecycle.md` with `promotion_allowed=false`.
+3. `apply --task <id> --decision create|patch|merge|discard` records the caller's decision, creates a candidate only for `create`, and appends a triage record. The orchestrator remains the decision owner.
+
+Use `scripts/skill-activate.mjs --query "<task text>"` to list matching promoted skills, and `--full <name>` to load a full promoted skill body on demand.

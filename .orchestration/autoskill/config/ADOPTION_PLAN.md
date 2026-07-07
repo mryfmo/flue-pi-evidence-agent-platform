@@ -46,3 +46,5 @@ P2-T07b acceptance confirmed pinned SHA `94c47ca488d4ba4117d20272e66d49b9877e68c
 ## Dual-auth dry-run
 
 AutoSkill dry-run は `run_autoskill.sh --auth openai|codex --run-id <id>` で起動する。`openai` は OpenAI-compatible base URL と API key を明示注入し、`codex` は `codex_auth_proxy.mjs` の bearer token 付き local shim を OpenAI-compatible endpoint として使う。コンテナから host shim へは `EAP_SHIM_URL` を明示し、Docker では `host.docker.internal`、Apple `container` では検出済み VM gateway IP または `EAP_SHIM_HOST` override を使う。生成 Skill は引き続き candidates 保存のみで promotion 禁止。
+
+P7-T01 adds native Hermes Skill Subset lifecycle automation (`scripts/skill-lifecycle.mjs` and `scripts/skill-activate.mjs`) for observe/decide/apply recommendations and progressive disclosure; it does not replace AutoSkill dry-run generation or allow automated promotion.

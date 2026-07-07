@@ -21,7 +21,10 @@
     "python:lint": ".venv/bin/ruff check scripts tests_py",
     "python:type": ".venv/bin/mypy scripts/data_guard.py",
     "python:security": ".venv/bin/bandit -q -r scripts -x scripts/__pycache__",
-    "npm:audit": "npm audit --audit-level=high --omit=dev"
+    "npm:audit": "npm audit --audit-level=high --omit=dev",
+    "skill:lifecycle": "node scripts/skill-lifecycle.mjs",
+    "skill:activate": "node scripts/skill-activate.mjs",
+    "test:skill-lifecycle": "node --test tests/unit/skill_lifecycle.test.mjs"
   },
   "dependencies": {
     "@alibaba-group/opensandbox": "0.1.9",

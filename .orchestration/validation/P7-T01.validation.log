@@ -1,0 +1,77 @@
+# P7-T01 Validation Log
+
+## npm run test:skill-lifecycle
+
+```text
+> flue-pi-evidence-agent-platform@1.2.0 test:skill-lifecycle
+> node --test tests/unit/skill_lifecycle.test.mjs
+
+TAP version 13
+# Subtest: observe decide and apply create produce lifecycle artifacts
+ok 1 - observe decide and apply create produce lifecycle artifacts
+# Subtest: skill activate ranks and prints promoted skill bodies
+ok 2 - skill activate ranks and prints promoted skill bodies
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+```
+
+## Real-evidence demo in temp copy
+
+Command shape:
+
+```text
+copy .orchestration/skills, P2-T07b report, P2-T07b validation, P2-T07b acceptance, scripts/data_guard.py, and .venv symlink into a temp repo
+node <repo>/scripts/skill-lifecycle.mjs observe --trigger task-completion --task P2-T07b
+node <repo>/scripts/skill-lifecycle.mjs decide --task P2-T07b
+node <repo>/scripts/skill-lifecycle.mjs apply --task P2-T07b --decision create
+test manifest, lifecycle log, candidate, triage row, and promotion_allowed=false
+```
+
+Output:
+
+```text
+observed 3 file(s); wrote .orchestration/autoskill/inputs/P2-T07b.manifest.json
+patch: highest overlap Secure summarization LLM gateway implementation score=41
+wrote .orchestration/autoskill/runs/P2-T07b.lifecycle.md
+applied create; promotion_allowed=false
+wrote .orchestration/skills/candidates/P2-T07b.SKILL.md
+demo_ok
+```
+
+## npm run skill:activate -- --query "AGMSG task allowed_files"
+
+```text
+AGMSGタスク実行プロトコル    AGMSG-TASK形式で渡されたリポジトリ作業を、参照タスクファイル、許可された変更範囲、禁止操作、指定された成果物パスに従って実行する。オーケストレータから構造化されたタスク指示を受ける作業で使う。    .orchestration/skills/promoted/agmsg-task-protocol/SKILL.md
+remediator        .orchestration/skills/promoted/remediator/best_skill.md
+```
+
+## Forbidden-call grep
+
+Command:
+
+```text
+rg -n "hermes|Hermes|https?://|fetch\(|axios|openai|anthropic|llm|LLM|network|curl|wget|spawnSync|execFileSync" scripts/skill-lifecycle.mjs scripts/skill-activate.mjs tests/unit/skill_lifecycle.test.mjs package.json .orchestration/skills/TRIAGE.md .orchestration/autoskill/config/ADOPTION_PLAN.md
+```
+
+Result summary:
+
+- `spawnSync` appears only for the existing local redaction command `.venv/bin/python scripts/data_guard.py redact_text`.
+- `execFileSync` appears only in the unit test helper that invokes Node scripts.
+- `openai_conversations.jsonl` and `openai_dataset_path` are offline AutoSkill input-contract field names.
+- `Hermes` and `network` matches are documentation references in the task scope and ADOPTION_PLAN.
+- No `fetch`, `axios`, `curl`, `wget`, `anthropic`, or Hermes binary invocation appears in the new scripts.
+
+## npm run validate-release
+
+```text
+> flue-pi-evidence-agent-platform@1.2.0 validate-release
+> ./node_modules/node/bin/node scripts/validate-release.mjs
+
+validate-release:passed
+```
