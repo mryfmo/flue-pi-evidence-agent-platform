@@ -139,6 +139,11 @@ for (const [name, cmd, args] of commands) {
   };
   results.push(result);
   if (completed.status !== 0) {
+    console.error(
+      `validate-release:failed gate=${name} returnCode=${completed.status ?? 1}`,
+    );
+    if ((completed.stderr ?? '').trim()) console.error(completed.stderr.trim());
+    if (stdout.trim()) console.error(stdout.trim());
     writeReport('failed', results);
     process.exit(completed.status ?? 1);
   }
