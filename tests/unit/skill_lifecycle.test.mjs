@@ -1,5 +1,12 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
@@ -32,6 +39,88 @@ test('observe decide and apply create produce lifecycle artifacts', () => {
     assert.match(candidate, /promotion_allowed: false/);
     const triage = readFileSync(join(root, '.orchestration/skills/TRIAGE.md'), 'utf8');
     assert.match(triage, /T1 lifecycle recommendation/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('rejects unsafe task ids before writing artifacts', () => {
+  for (const task of ['../x', 'x/y', '', 'T'.repeat(81)]) {
+    const root = fixtureRoot();
+    try {
+      assert.throws(
+        () => run(lifecycle, ['observe', '--trigger', 'task-completion', '--task', task], root),
+        /invalid task id|--task is required/,
+      );
+      assert.equal(existsSync(join(root, '.orchestration/autoskill/inputs', task)), false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+});
+
+test('observe requires reports validation and acceptance evidence', () => {
+  const root = fixtureRoot();
+  try {
+    assert.throws(
+      () => run(lifecycle, ['observe', '--trigger', 'task-completion', '--task', 'T2'], root),
+      /missing evidence for T2: reports, validation, acceptance/,
+    );
+    writeFixtureEvidence(root, 'T2', ['reports', 'validation']);
+    assert.throws(
+      () => run(lifecycle, ['observe', '--trigger', 'task-completion', '--task', 'T2'], root),
+      /missing evidence for T2: acceptance/,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('decide and apply require a valid manifest with redacted inputs', () => {
+  const root = fixtureRoot();
+  try {
+    assert.throws(() => run(lifecycle, ['decide', '--task', 'T3'], root), /manifest not found/);
+    assert.throws(
+      () => run(lifecycle, ['apply', '--task', 'T3', '--decision', 'discard'], root),
+      /manifest not found/,
+    );
+
+    mkdirSync(join(root, '.orchestration/autoskill/inputs'), { recursive: true });
+    writeFileSync(
+      join(root, '.orchestration/autoskill/inputs/T3.manifest.json'),
+      JSON.stringify({ inputs: [] }),
+    );
+    assert.throws(() => run(lifecycle, ['decide', '--task', 'T3'], root), /manifest has no inputs/);
+
+    writeFileSync(
+      join(root, '.orchestration/autoskill/inputs/T3.manifest.json'),
+      JSON.stringify({ inputs: [{ redacted_path: '../escape.md' }] }),
+    );
+    assert.throws(
+      () => run(lifecycle, ['decide', '--task', 'T3'], root),
+      /redacted_path escapes input directory/,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('apply create rejects duplicate candidates and triage rows', () => {
+  const root = fixtureRoot();
+  try {
+    writeFixtureEvidence(root, 'T4');
+    writePromotedSkill(root);
+    run(lifecycle, ['observe', '--trigger', 'task-completion', '--task', 'T4'], root);
+    run(lifecycle, ['apply', '--task', 'T4', '--decision', 'create'], root);
+
+    assert.throws(
+      () => run(lifecycle, ['apply', '--task', 'T4', '--decision', 'create'], root),
+      /candidate already exists/,
+    );
+    assert.throws(
+      () => run(lifecycle, ['apply', '--task', 'T4', '--decision', 'create', '--overwrite'], root),
+      /triage already has a lifecycle recommendation/,
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -76,8 +165,8 @@ process.stdin.on('end', () => {
   return root;
 }
 
-function writeFixtureEvidence(root, task) {
-  for (const dir of ['reports', 'validation', 'acceptance']) {
+function writeFixtureEvidence(root, task, dirs = ['reports', 'validation', 'acceptance']) {
+  for (const dir of dirs) {
     mkdirSync(join(root, '.orchestration', dir), { recursive: true });
     writeFileSync(
       join(root, '.orchestration', dir, `${task}.${dir}.md`),

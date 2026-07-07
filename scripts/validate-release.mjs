@@ -67,6 +67,11 @@ const commands = [
     ['-lc', 'timeout 180 ./node_modules/.bin/vitest run --pool=forks'],
   ],
   [
+    'skill_lifecycle_node',
+    node,
+    ['--test', 'tests/unit/skill_lifecycle.test.mjs'],
+  ],
+  [
     'llm_contract',
     'bash',
     ['-lc', 'timeout 120 npx vitest run tests/contract --pool=forks'],

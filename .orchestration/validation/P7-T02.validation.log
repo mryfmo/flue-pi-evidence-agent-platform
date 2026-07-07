@@ -1,0 +1,42 @@
+# P7-T02 Validation Log
+
+## npm run test:skill-lifecycle
+
+Result: passed
+
+```text
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+```
+
+The passing tests include:
+
+- `rejects unsafe task ids before writing artifacts`
+- `observe requires reports validation and acceptance evidence`
+- `decide and apply require a valid manifest with redacted inputs`
+- `apply create rejects duplicate candidates and triage rows`
+- Existing valid lifecycle demo: `observe decide and apply create produce lifecycle artifacts`
+
+## npm run validate-release
+
+Result: passed
+
+```text
+validate-release:passed
+```
+
+Gate proof from `artifacts/validation/final_verification_report.md`:
+
+```text
+- skill_lifecycle_node: passed (814ms)
+```
+
+## Forbidden-action Check
+
+No Hermes runtime, LLM calls, network calls, gate weakening, or promotion automation were added. The only release-gate change is additive: `skill_lifecycle_node`.
