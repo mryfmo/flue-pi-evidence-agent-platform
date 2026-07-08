@@ -4,6 +4,8 @@
 
 This implementation is a single-host, release-gated system. It is not a public multi-tenant hosted service by default. The security model prevents the validated workflow from treating an LLM response as execution authority.
 
+The Claude Code versus Flue/Pi integration boundary, including governed-zone routing and acceptance tiers, is defined in `docs/INTEGRATION_BOUNDARY.md`.
+
 ## Control points
 
 1. Route/workflow payloads carry user and tenant information.
