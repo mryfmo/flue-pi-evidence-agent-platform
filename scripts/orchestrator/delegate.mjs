@@ -24,6 +24,23 @@ export function delegate(argv = process.argv.slice(2)) {
   const expiresAt = new Date(
     Date.now() + Number(process.env.ORCHESTRATOR_LEASE_TTL_MS ?? 3600000),
   ).toISOString();
+  const message = [
+    'AGMSG-TASK v1',
+    `task_id=${taskId}`,
+    `repo=${process.cwd()}`,
+    `task_file=${args['task-file']}`,
+    'allowed_files=see-task-file-section-4',
+    'forbidden_actions=see-task-file',
+    `expected_result_file=.orchestration/reports/${taskId}.report.md`,
+    `expected_validation_file=.orchestration/validation/${taskId}.validation.log`,
+    `expected_sandbox_file=.orchestration/sandboxes/${taskId}.sandbox.md`,
+    `expected_learning_file=.orchestration/learning/${taskId}.learning.md`,
+    `expected_autoskill_file=.orchestration/autoskill/runs/${taskId}.autoskill.md`,
+    'done_signal=AGMSG-RESULT',
+  ].join(' ');
+  execFileSync(sendScript, [team, from, args.to, message], {
+    stdio: 'inherit',
+  });
 
   mkdirSync(dirname(leasesPath), { recursive: true });
   const leases = readJson(leasesPath, []);
@@ -47,24 +64,6 @@ export function delegate(argv = process.argv.slice(2)) {
     }),
     { flag: 'a' },
   );
-
-  const message = [
-    'AGMSG-TASK v1',
-    `task_id=${taskId}`,
-    `repo=${process.cwd()}`,
-    `task_file=${args['task-file']}`,
-    'allowed_files=see-task-file-section-4',
-    'forbidden_actions=see-task-file',
-    `expected_result_file=.orchestration/reports/${taskId}.report.md`,
-    `expected_validation_file=.orchestration/validation/${taskId}.validation.log`,
-    `expected_sandbox_file=.orchestration/sandboxes/${taskId}.sandbox.md`,
-    `expected_learning_file=.orchestration/learning/${taskId}.learning.md`,
-    `expected_autoskill_file=.orchestration/autoskill/runs/${taskId}.autoskill.md`,
-    'done_signal=AGMSG-RESULT',
-  ].join(' ');
-  execFileSync(sendScript, [team, from, args.to, message], {
-    stdio: 'inherit',
-  });
   return taskId;
 }
 
@@ -80,7 +79,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     console.log(delegate());
   } catch (error) {
-    console.error(error.message);
+    console.error(`task_not_delegated reason=${error.message}`);
     process.exit(1);
   }
 }

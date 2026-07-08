@@ -41,6 +41,17 @@ cat artifacts/telemetry/traces.jsonl
 4. Fix implementation, tests, or documentation.
 5. Rerun `npm run validate-release`.
 
+## Handle `llm_unavailable`
+
+1. Run `node scripts/orchestrator/platform-health.mjs`.
+2. If `litellm_config` fails, fix the local LiteLLM config before retrying.
+3. Check the LiteLLM Proxy process and approved model aliases
+   (`worker-fast`, `worker-main`, `worker-heavy`).
+4. If the proxy is healthy but upstream Anthropic access is unavailable, keep
+   the task open and record the outage; do not auto-rerun or downgrade to the
+   deterministic local path.
+5. Re-delegate only after the operator confirms the proxy/upstream recovery.
+
 ## Backup
 
 1. Push code, policy, docs, and orchestration evidence to the git remote.
