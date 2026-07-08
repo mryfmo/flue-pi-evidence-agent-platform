@@ -26,6 +26,8 @@ export interface ProductionGatewayRequest extends RoutingInput {
   trace_id: string;
   audit_log_path: string;
   routing_policy_path?: string;
+  task_id?: string;
+  agent_profile?: string;
 }
 
 export interface ProductionGatewaySuccess {
@@ -61,16 +63,27 @@ interface OpenAiCompatibleResponse {
     completion_tokens?: number;
     total_tokens?: number;
   };
+  estimated_cost?: number;
 }
 
 const defaultPolicyPath = 'policy/routing.json';
+const prodPolicyPath = 'policy/routing.prod.json';
 
 function digest(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
-async function loadRoutingPolicy(path = defaultPolicyPath) {
-  return JSON.parse(await readFile(path, 'utf8')) as RoutingPolicyDocument;
+function defaultRoutingPolicyPath(): string {
+  return process.env.PI_PROVIDER === 'prod'
+    ? prodPolicyPath
+    : defaultPolicyPath;
+}
+
+async function loadRoutingPolicy(path = defaultRoutingPolicyPath()) {
+  const document = JSON.parse(await readFile(path, 'utf8')) as
+    | RoutingPolicyDocument
+    | { routing_prod: RoutingPolicyDocument };
+  return 'routing_prod' in document ? document.routing_prod : document;
 }
 
 function providerSecret(
@@ -117,6 +130,7 @@ async function dispatchOpenAiCompatible(
   apiKey: string,
   model: string,
   messages: GatewayMessage[],
+  metadata: Record<string, string | undefined>,
 ): Promise<OpenAiCompatibleResponse> {
   const response = await fetch(
     `${baseUrl.replace(/\/$/, '')}/chat/completions`,
@@ -126,12 +140,17 @@ async function dispatchOpenAiCompatible(
         authorization: `Bearer ${apiKey}`,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ model, messages, stream: false }),
+      body: JSON.stringify({ model, messages, stream: false, metadata }),
       signal: AbortSignal.timeout(2000),
     },
   );
   if (!response.ok) throw new Error(`provider_http_${response.status}`);
-  return (await response.json()) as OpenAiCompatibleResponse;
+  const body = (await response.json()) as OpenAiCompatibleResponse;
+  const cost =
+    response.headers.get('x-litellm-response-cost') ??
+    response.headers.get('x-litellm-cost');
+  if (cost) body.estimated_cost = Number(cost);
+  return body;
 }
 
 function normalizeUsage(response: OpenAiCompatibleResponse) {
@@ -149,6 +168,7 @@ function recordGatewaySpan(
   fallbackIndex: number,
   latencyMs: number,
   usage: ProductionGatewaySuccess['usage'],
+  estimatedCost: number,
 ): void {
   const span = trace
     .getTracer('flue-pi-evidence-platform')
@@ -162,9 +182,11 @@ function recordGatewaySpan(
         'gateway.latency_ms': latencyMs,
         'gateway.input_tokens': usage.input_tokens,
         'gateway.output_tokens': usage.output_tokens,
-        'gateway.estimated_cost': 0,
+        'gateway.estimated_cost': estimatedCost,
         'gateway.data_classification': request.data_classification,
         'gateway.task_kind': request.task_kind,
+        'gateway.task_id': request.task_id ?? '',
+        'gateway.agent_profile': request.agent_profile ?? '',
       },
     });
   span.setStatus({ code: SpanStatusCode.OK });
@@ -180,6 +202,7 @@ async function auditGatewayCall(
   fallbackIndex: number,
   latencyMs: number,
   usage: ProductionGatewaySuccess['usage'],
+  estimatedCost: number,
   redactedMessages: GatewayMessage[],
   responseContent: string,
 ): Promise<void> {
@@ -196,7 +219,9 @@ async function auditGatewayCall(
     input_tokens: usage.input_tokens,
     output_tokens: usage.output_tokens,
     total_tokens: usage.total_tokens,
-    estimated_cost: 0,
+    estimated_cost: estimatedCost,
+    task_id: request.task_id,
+    agent_profile: request.agent_profile,
     request_digest: digest(redactedMessages),
     response_digest: digest(responseContent),
   });
@@ -239,6 +264,7 @@ export async function callProductionGateway(
           fallbackIndex,
           latencyMs,
           usage,
+          0,
         );
         await auditGatewayCall(
           request.audit_log_path,
@@ -249,6 +275,7 @@ export async function callProductionGateway(
           fallbackIndex,
           latencyMs,
           usage,
+          0,
           redactedMessages,
           content,
         );
@@ -266,7 +293,9 @@ export async function callProductionGateway(
       }
 
       const secret = providerSecret(policy, target.provider);
-      if (secret.type !== 'openai_compatible') continue;
+      if (!['openai_compatible', 'litellm_proxy'].includes(secret.type ?? '')) {
+        continue;
+      }
       if (!secret.baseUrl || !secret.apiKey) {
         return {
           ok: false,
@@ -280,9 +309,16 @@ export async function callProductionGateway(
           secret.apiKey,
           target.model_id,
           redactedMessages,
+          {
+            task_id: request.task_id,
+            agent_profile: request.agent_profile,
+            tenant: request.tenant,
+            data_class: request.data_classification,
+          },
         );
         const content = response.choices?.[0]?.message?.content ?? '';
         const usage = normalizeUsage(response);
+        const estimatedCost = response.estimated_cost ?? 0;
         const latencyMs = Date.now() - start;
         recordGatewaySpan(
           decision,
@@ -291,6 +327,7 @@ export async function callProductionGateway(
           fallbackIndex,
           latencyMs,
           usage,
+          estimatedCost,
         );
         await auditGatewayCall(
           request.audit_log_path,
@@ -301,6 +338,7 @@ export async function callProductionGateway(
           fallbackIndex,
           latencyMs,
           usage,
+          estimatedCost,
           redactedMessages,
           content,
         );
@@ -311,7 +349,7 @@ export async function callProductionGateway(
           content,
           usage,
           latency_ms: latencyMs,
-          estimated_cost: 0,
+          estimated_cost: estimatedCost,
           fallback_index: fallbackIndex,
           routing_decision: decision,
         };
@@ -319,7 +357,7 @@ export async function callProductionGateway(
     }
     return {
       ok: false,
-      reason: 'all_fallbacks_failed',
+      reason: 'llm_unavailable',
       routing_decision: decision,
     };
   } catch (error) {

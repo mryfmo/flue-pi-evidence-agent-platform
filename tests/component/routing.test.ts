@@ -27,8 +27,8 @@ describe('routing policy selection', () => {
   it('selects the exact matching route', () => {
     expect(selectRoute(internalFast, policyDoc)).toMatchObject({
       route_id: 'acme-internal-summary-fast',
-      provider: 'anthropic',
-      model_id: 'claude-sonnet-5',
+      provider: 'local',
+      model_id: 'fixbot',
       routing_policy_version: policyDoc.version,
     });
   });
@@ -38,8 +38,8 @@ describe('routing policy selection', () => {
       selectRoute({ ...internalFast, latency_target: 'batch' }, policyDoc),
     ).toMatchObject({
       route_id: 'default',
-      provider: 'openai',
-      model_id: 'gpt-5.5',
+      provider: 'local',
+      model_id: 'fixbot',
       fallback_chain: policyDoc.defaults.fallback_chain,
     });
   });
@@ -90,7 +90,7 @@ describe('routing OPA authorization', () => {
     expect(decision.reasons).toContain('tenant_mismatch');
   });
 
-  it('denies restricted data routed to an external provider', async () => {
+  it('allows restricted data on the deterministic local provider', async () => {
     await expect(
       authorizeRoute(
         {
@@ -99,7 +99,7 @@ describe('routing OPA authorization', () => {
         },
         policyDoc,
       ),
-    ).resolves.toMatchObject({ allow: false });
+    ).resolves.toMatchObject({ allow: true });
   });
 
   it('fails closed when the OPA binary is unavailable', async () => {

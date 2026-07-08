@@ -1,0 +1,110 @@
+# P8-T03 validation
+
+Task file read fully:
+- `.orchestration/tasks/P8-T03.md` (51 lines, updated section 4 allowed `tests/component/routing.test.ts` expectation updates only)
+
+Reference inputs read:
+- `.orchestration/analysis/litellm_claude_code_integration_review.md`
+- `docs/INTEGRATION_BOUNDARY.md`
+- `docs/LITELLM_PROXY.md`
+- `docs/PRODUCTION_GATEWAY_DESIGN.md`
+- `policy/routing.json`
+- `policy/routing.rego`
+- `src/lib/productionGateway.ts`
+- `src/lib/router.ts`
+- `tests/contract/llm_contract.test.ts`
+- `tests/component/routing.test.ts`
+
+Targeted checks:
+
+```text
+$ ./node_modules/.bin/biome format --diagnostic-level=error src/lib/productionGateway.ts tests/contract/llm_contract.test.ts tests/component/routing.test.ts
+Checked 3 files in 6ms. No fixes applied.
+exit=0
+
+$ ./node_modules/.bin/biome lint --diagnostic-level=error src/lib/productionGateway.ts tests/contract/llm_contract.test.ts tests/component/routing.test.ts
+Checked 3 files in 10ms. No fixes applied.
+exit=0
+
+$ ./node_modules/.bin/tsc --noEmit
+exit=0
+
+$ npx vitest run tests/contract/llm_contract.test.ts --pool=forks
+Test Files  1 passed (1)
+Tests  13 passed (13)
+exit=0
+
+$ npx vitest run tests/component/routing.test.ts --pool=forks
+Test Files  1 passed (1)
+Tests  8 passed (8)
+exit=0
+
+$ ./node_modules/node/bin/node scripts/opa-test.mjs
+PASS: 17/17
+exit=0
+```
+
+Static policy checks:
+
+```text
+$ grep -r openai policy/routing.json policy/routing.prod.json
+exit=1
+
+$ grep -E "anthropic|vllm" policy/routing.prod.json policy/routing.json
+exit=1
+```
+
+Interpretation: both grep commands produced no matches.
+
+Crit/review gate check:
+
+```text
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+exit=2
+```
+
+Release validation:
+- Command: `npm run validate-release`
+- Location: `/private/tmp/flue-pi-p8-t03-validate-codex-gpt55-high`
+- Reason for temporary clone: avoid touching pre-existing dirty `artifacts/*` files in the main worktree.
+- Environment notes: used `/private/tmp/p8-t01-bin/timeout` because this macOS environment lacks GNU `timeout`; set `XDG_CACHE_HOME` inside the temporary clone for tldextract cache isolation; copied `node_modules` and `.venv` into the temporary clone.
+- Final result: exit 0, `validate-release:passed`.
+
+Final verification report:
+
+```text
+overall: passed
+
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
+```
+
+Acceptance evidence:
+- PI_PROVIDER=prod policy selection and metadata dispatch are asserted in `tests/contract/llm_contract.test.ts`.
+- Prod outage returns `ok:false, reason=llm_unavailable`.
+- PI_PROVIDER=local uses deterministic local route.
+- `routing.prod.json` static test rejects direct provider references and deterministic fallback in routes.

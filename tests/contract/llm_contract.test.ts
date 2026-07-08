@@ -1,4 +1,5 @@
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { createServer, type IncomingMessage } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -21,7 +22,10 @@ async function startMockProvider(responseText = 'redacted summary') {
   const requests: unknown[] = [];
   const server = createServer(async (req, res) => {
     requests.push(await readJson(req));
-    res.writeHead(200, { 'content-type': 'application/json' });
+    res.writeHead(200, {
+      'content-type': 'application/json',
+      'x-litellm-response-cost': '0.0012',
+    });
     res.end(
       JSON.stringify({
         id: 'chatcmpl-contract',
@@ -93,7 +97,7 @@ async function writePolicy(doc: RoutingPolicyDocument): Promise<string> {
 }
 
 async function baseRequest(
-  routingPolicyPath: string,
+  routingPolicyPath?: string,
 ): Promise<ProductionGatewayRequest> {
   const dir = await mkdtemp(join(tmpdir(), 'llm-contract-audit-'));
   return {
@@ -112,8 +116,12 @@ async function baseRequest(
     audit_id: 'audit-contract',
     trace_id: 'trace-contract',
     audit_log_path: join(dir, 'audit.jsonl'),
-    routing_policy_path: routingPolicyPath,
+    ...(routingPolicyPath ? { routing_policy_path: routingPolicyPath } : {}),
   };
+}
+
+function prodRequest(): Promise<ProductionGatewayRequest> {
+  return baseRequest();
 }
 
 describe('llm_contract production gateway', () => {
@@ -258,5 +266,109 @@ describe('llm_contract production gateway', () => {
     expect(mock.requests).toHaveLength(1);
     await mock.close();
     vi.unstubAllEnvs();
+  });
+
+  it('uses routing.prod.json for PI_PROVIDER=prod and sends correlation metadata', async () => {
+    const mock = await startMockProvider('prod ok');
+    vi.stubEnv('PI_PROVIDER', 'prod');
+    vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+    const request = {
+      ...(await prodRequest()),
+      task_id: 'task-123',
+      agent_profile: 'profile-main',
+    };
+
+    const result = await callProductionGateway(request);
+
+    expect(result).toMatchObject({
+      ok: true,
+      provider: 'litellm',
+      model_id: 'worker-main',
+      content: 'prod ok',
+      estimated_cost: 0.0012,
+      routing_decision: {
+        route_id: 'acme-internal-summary-main',
+        routing_policy_version: '2026-07-08.p8-prod',
+      },
+    });
+    expect(mock.requests).toHaveLength(1);
+    expect(mock.requests[0]).toMatchObject({
+      model: 'worker-main',
+      metadata: {
+        task_id: 'task-123',
+        agent_profile: 'profile-main',
+        tenant: 'acme',
+        data_class: 'internal',
+      },
+    });
+    await mock.close();
+    vi.unstubAllEnvs();
+  });
+
+  it('fails prod provider outages as llm_unavailable without deterministic fallback', async () => {
+    vi.stubEnv('PI_PROVIDER', 'prod');
+    vi.stubEnv('LITELLM_BASE_URL', 'http://127.0.0.1:9/v1');
+    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+
+    const result = await callProductionGateway(await prodRequest());
+
+    expect(result).toMatchObject({
+      ok: false,
+      reason: 'llm_unavailable',
+      routing_decision: { route_id: 'acme-internal-summary-main' },
+    });
+    vi.unstubAllEnvs();
+  });
+
+  it('denies restricted data on the prod external provider path before dispatch', async () => {
+    const mock = await startMockProvider();
+    vi.stubEnv('PI_PROVIDER', 'prod');
+    vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+
+    const result = await callProductionGateway({
+      ...(await prodRequest()),
+      data_classification: 'restricted',
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      reason: expect.stringContaining('restricted_external_provider'),
+    });
+    expect(mock.requests).toHaveLength(0);
+    await mock.close();
+    vi.unstubAllEnvs();
+  });
+
+  it('keeps the default local provider path deterministic when PI_PROVIDER is local', async () => {
+    vi.stubEnv('PI_PROVIDER', 'local');
+
+    const result = await callProductionGateway(await prodRequest());
+
+    expect(result).toMatchObject({
+      ok: true,
+      provider: 'local',
+      model_id: 'fixbot',
+      content: 'deterministic-fallback',
+      routing_decision: { route_id: 'acme-internal-summary-fast' },
+    });
+    vi.unstubAllEnvs();
+  });
+
+  it('keeps routing.prod.json free of direct provider references and local fallback', () => {
+    const prodPolicyText = readFileSync('policy/routing.prod.json', 'utf8');
+    const prodPolicy = JSON.parse(prodPolicyText)
+      .routing_prod as RoutingPolicyDocument;
+
+    expect(prodPolicyText).not.toMatch(/openai|anthropic|vllm/i);
+    expect(JSON.stringify(prodPolicy.routes)).not.toContain(
+      'deterministic-fallback',
+    );
+    expect(prodPolicy.providers).toHaveProperty('litellm');
+    expect(Object.keys(prodPolicy.providers).sort()).toEqual([
+      'litellm',
+      'local',
+    ]);
   });
 });
