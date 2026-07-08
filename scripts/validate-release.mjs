@@ -36,6 +36,7 @@ const commands = [
   ],
   ['typecheck', './node_modules/.bin/tsc', ['--noEmit']],
   ['opa', node, ['scripts/opa-check.mjs']],
+  ['litellm_config', node, ['scripts/check-litellm-config.mjs']],
   [
     'python_compile',
     '.venv/bin/python',
