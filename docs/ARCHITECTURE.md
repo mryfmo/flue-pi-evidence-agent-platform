@@ -21,6 +21,27 @@ Flue workflow
   -> JSONL audit trail
 ```
 
+## Phase 8 Reference Layers
+
+```text
+Claude Code
+  interactive orchestration and acceptance UI
+  -> scripts/orchestrator/*.mjs + agmsg
+       deterministic delegation, status rendering, acceptance, health checks
+       -> Platform Gateway
+            redaction, classification, OPA routing authorization, fail closed,
+            audit and telemetry with task_id / agent_profile
+            -> LiteLLM Proxy
+                 worker-fast | worker-main | worker-heavy alias resolution,
+                 approved fallback and cost metadata
+                 -> Anthropic approved model list
+```
+
+The platform remains orchestrator-independent at the governed boundary. Claude
+Code is the Phase 8 operator surface; policy decisions, traceability, and
+acceptance records are still held in repository scripts, policy, JSONL ledgers,
+and validation artifacts.
+
 ## Core principle
 
 The agent is not allowed to execute arbitrary side effects. The Flue/Pi path summarizes verified evidence. Side effects are performed by typed workflow tools after policy and verification gates.

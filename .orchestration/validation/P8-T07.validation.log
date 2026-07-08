@@ -1,0 +1,83 @@
+# P8-T07 Validation Log
+
+## Targeted checks
+
+```text
+git diff --check -- docs/PRODUCT_REQUIREMENTS.md docs/INTEGRATION_BOUNDARY.md docs/SLO.md docs/TRACEABILITY_MATRIX.md docs/ARCHITECTURE.md
+exit 0
+```
+
+```text
+rg -n "Reference Implementation|モデル階層規約|LLM cost per task|Phase 8 / Review issues|Phase 8 Reference Layers" docs/PRODUCT_REQUIREMENTS.md docs/INTEGRATION_BOUNDARY.md docs/SLO.md docs/TRACEABILITY_MATRIX.md docs/ARCHITECTURE.md
+exit 0
+docs/PRODUCT_REQUIREMENTS.md:25:## Reference Implementation (Phase 8)
+docs/ARCHITECTURE.md:24:## Phase 8 Reference Layers
+docs/SLO.md:16:| LLM cost per task | `llm_gateway_call` audit events and `npm run audit:trace -- <task_id> -- --json` | sum `estimated_cost` for events matching the task id |
+docs/SLO.md:29:| LLM cost per task | TBD | 30 days | Provisional until production volume exists; compute from `estimated_cost` in `llm_gateway_call` events grouped by task id. |
+docs/INTEGRATION_BOUNDARY.md:103:## モデル階層規約
+```
+
+```text
+test -f docs/INTEGRATION_BOUNDARY.md && test -f docs/LITELLM_PROXY.md && test -f docs/ORCHESTRATOR_INTERFACE.md && test -f docs/PRODUCTION_GATEWAY_DESIGN.md && test -f .claude/settings.json && test -f policy/cc_guard.rego && test -f policy/routing.prod.json && test -f config/litellm/config.yaml && test -f scripts/audit-trace.mjs && test -f scripts/orchestrator/delegate.mjs && test -f scripts/orchestrator/status.mjs && test -f scripts/orchestrator/accept.mjs && test -f scripts/orchestrator/platform-health.mjs
+exit 0
+```
+
+```text
+make require-crit-review
+exit 2
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+## Full release validation
+
+Ran in temp clone:
+`/private/tmp/flue-pi-p8-t07-validate-codex-gpt55-high`
+
+Command:
+
+```text
+PATH=/private/tmp/p8-t01-bin:$PATH XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t07-validate-codex-gpt55-high/.cache npm run validate-release
+```
+
+Execution note:
+
+- The command was run with escalation because Flue e2e gates bind localhost.
+- The temp clone used copied `node_modules` and linked `.venv`; generated
+  validation artifacts stayed out of the dirty main worktree.
+
+Result:
+
+```text
+validate-release:passed
+```
+
+Final verification report:
+
+```text
+overall: passed
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
+```

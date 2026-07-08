@@ -99,3 +99,23 @@ The platform sets `acceptance_tier`. Claude Code follows the tier and records th
 
 1. Production LLM path: Anthropic models are used through LiteLLM Proxy behind the platform gateway. The approved model-list pattern is the review document §3.1 model aliases (`worker-fast`, `worker-main`, `worker-heavy`) mapped to approved Anthropic models. LiteLLM is a provider adapter; gateway redaction, classification, audit, and fail-closed checks remain upstream.
 2. Data classification policy: `public`, `internal`, `confidential`, and `restricted` are the Phase 8 routing vocabulary. Existing `public` and `internal` policy entries remain valid; `confidential` and `restricted` are added as documented classes for future policy implementation.
+
+## モデル階層規約
+
+対応: 問題 10
+
+LiteLLM aliases define model tiers; callers must route by alias, not by direct
+provider model names.
+
+| Alias | Current mapped class | Intended use |
+| --- | --- | --- |
+| `worker-fast` | Haiku tier | Routine summaries, deterministic workflow narration, redaction-adjacent assistance after platform redaction, and low-cost batch summaries. |
+| `worker-main` | Sonnet tier | Hypothesis generation, remediation candidate explanation, verified evidence synthesis, and default interactive governed summaries. |
+| `worker-heavy` | Opus tier | Exceptional high-difficulty reasoning only. Prefer handling this in Claude Code before governed delegation to avoid duplicate expensive reasoning across the interactive and governed zones. |
+
+Budget exhaustion, missing aliases, or provider unavailability fail closed.
+Claude Code and the platform must not silently downgrade, silently upgrade, or
+reroute to the deterministic local gateway for production work. Any model-tier
+change is a governed policy/config change and must remain consistent with
+`docs/LITELLM_PROXY.md`, `config/litellm/config.yaml`, and
+`policy/routing.prod.json`.

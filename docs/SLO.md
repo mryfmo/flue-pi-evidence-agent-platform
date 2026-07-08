@@ -13,6 +13,8 @@ These SLOs are provisional until G12 production data exists. They are expressed 
 | Workflow success rate | `artifacts/validation/final_verification_report.json`, audit JSONL | validation `status=passed`; remediation `run_end.status=passed` |
 | Closure rate | `artifacts/demo/hypothesis-ledger.json`, audit JSONL | closure `closed=true`, no `openHypotheses` |
 | Gateway latency p95 | `gateway.call` spans in `artifacts/telemetry/traces.jsonl` or OTLP | `attributes.gateway.latency_ms` |
+| LLM cost per task | `llm_gateway_call` audit events and `npm run audit:trace -- <task_id> -- --json` | sum `estimated_cost` for events matching the task id |
+| Delegation total cost | `llm_gateway_call` audit events correlated by task id | sum gateway `estimated_cost`; Claude Code-side model cost is out of scope until exported by the orchestrator |
 | Heldout non-regression | validation report | `vitest_all`, `python_tests`, `llm_contract`, and E2E artifact gates passed |
 | Gate suite status on main | validation report | top-level `status=passed` and every gate `status=passed` |
 | Audit finding age | validation report timestamps | `npm_audit_prod` and `python_audit` last passed time |
@@ -24,6 +26,8 @@ These SLOs are provisional until G12 production data exists. They are expressed 
 | Workflow success | >= 99% | 30 days | Count deterministic validation and production workflow runs. |
 | Closure | >= 99% | 30 days | Runs with localized hypotheses must close or explicitly return `needs_review`. |
 | Gateway latency | p95 <= 2,000 ms | 30 days | Measured from `gateway.latency_ms`; deterministic local fallback excluded from provider SLO review. |
+| LLM cost per task | TBD | 30 days | Provisional until production volume exists; compute from `estimated_cost` in `llm_gateway_call` events grouped by task id. |
+| Delegation total cost | TBD | 30 days | For Phase 8, includes gateway event cost only. Claude Code-side orchestration cost is explicitly unmeasured and must not be inferred. |
 | Heldout non-regression | always green | every main build | Any heldout regression blocks release. |
 | Gate suite on main | always green | every main build | `npm run validate-release` final report must pass. |
 | Audit posture | no high findings older than 24h | rolling | Applies to `npm_audit_prod` and `python_audit` gates. |
