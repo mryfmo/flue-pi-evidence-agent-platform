@@ -1,10 +1,10 @@
 {
-  "runId": "run-1783296561219",
+  "runId": "run-1783414435111",
   "hypotheses": [
     {
       "id": "HYP-DIVIDE-ZERO-001",
       "title": "division helper does not reject zero divisor before division",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "affectedSymbol": "division helper",
       "evidence": [
         "app.py divides by b without a zero-divisor guard"
@@ -19,7 +19,7 @@
     {
       "id": "HYP-DISCOUNT-VALIDATION-001",
       "title": "integer parser accepts invalid strings through raw int()",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "affectedSymbol": "integer parser",
       "evidence": [
         "app.py contains `return int(value)` without explicit input validation"
@@ -34,7 +34,7 @@
     {
       "id": "HYP-DICT-KEY-GUARD-001",
       "title": "dictionary lookup can raise KeyError for a missing key",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "affectedSymbol": "dictionary lookup",
       "evidence": [
         "app.py contains `return profile[\"region\"]` without a missing-key guard"
@@ -52,7 +52,7 @@
       "id": "EV-CODE-SCAN-001",
       "kind": "source",
       "summary": "Code scan localized 3 hypotheses.",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7",
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e",
       "linkedHypotheses": [
         "HYP-DIVIDE-ZERO-001",
         "HYP-DISCOUNT-VALIDATION-001",
@@ -78,13 +78,13 @@
       "id": "EV-VERIFY-001",
       "kind": "verification",
       "summary": "Verifier python -m pytest -q passed=true",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e"
     },
     {
       "id": "EV-RESCAN-001",
       "kind": "impact",
       "summary": "Rescan remaining hypotheses=0",
-      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7"
+      "location": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e"
     },
     {
       "id": "EV-DATA-PROXY-001",
@@ -96,7 +96,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-MINIMAL",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -104,7 +104,7 @@
     {
       "id": "PATCH-HYP-DIVIDE-ZERO-001-VALIDATION",
       "hypothesisId": "HYP-DIVIDE-ZERO-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
@@ -112,7 +112,7 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-MINIMAL",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Smallest targeted change that satisfies the failing behavior."
@@ -120,7 +120,7 @@
     {
       "id": "PATCH-HYP-DISCOUNT-VALIDATION-001-VALIDATION",
       "hypothesisId": "HYP-DISCOUNT-VALIDATION-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Explicit defensive validation for the affected boundary."
@@ -128,7 +128,7 @@
     {
       "id": "PATCH-HYP-DICT-KEY-GUARD-001-MINIMAL",
       "hypothesisId": "HYP-DICT-KEY-GUARD-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "minimal_guard",
       "status": "applied",
       "rationale": "Use .get() with a safe default for the missing-key case."
@@ -136,7 +136,7 @@
     {
       "id": "PATCH-HYP-DICT-KEY-GUARD-001-VALIDATION",
       "hypothesisId": "HYP-DICT-KEY-GUARD-001",
-      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-41431-57c2b060-1f0a-4921-9fbc-bfa4ac1552c7/app.py",
+      "affectedFile": "/Users/mryfmo/Workspace/flue_pi_ai_agent/artifacts/demo/workspace/local-79137-6175bcae-c698-48a8-ba11-1e4631aeab6e/app.py",
       "strategy": "input_validation",
       "status": "proposed",
       "rationale": "Add an explicit guard branch before indexing the dictionary."
