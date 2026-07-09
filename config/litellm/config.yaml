@@ -1,0 +1,32 @@
+model_list:
+  - model_name: worker-fast
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: worker-main
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: worker-heavy
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+router_settings:
+  fallbacks:
+    - worker-main: ["worker-fast"]
+  num_retries: 2
+
+litellm_settings:
+  turn_off_message_logging: true
+  success_callback: ["platform_audit_forwarder.platform_audit_forwarder"]
+  failure_callback: ["platform_audit_forwarder.platform_audit_forwarder"]
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+server_settings:
+  # Repository validation declaration only. LiteLLM does not consume this key
+  # for bind; runtime must pass --host 127.0.0.1 --port 4000.
+  host: 127.0.0.1
+  port: 4000

@@ -1,0 +1,5 @@
+wrote artifacts/sbom/npm-cyclonedx.json
+Unknown command: "sbom"
+
+To see a list of supported npm commands, run:
+  npm help

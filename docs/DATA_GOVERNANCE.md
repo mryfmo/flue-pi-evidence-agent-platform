@@ -2,6 +2,8 @@
 
 The data path is aggregate-only and governed by SQLGlot, DuckDB, and Presidio.
 
+Integration-boundary routing and outbound model-send rules are defined in `docs/INTEGRATION_BOUNDARY.md`.
+
 Controls:
 - SQLGlot parses and validates exactly one SELECT statement.
 - DML, DDL, engine control statements, multi-statement SQL, and raw PII columns are rejected.

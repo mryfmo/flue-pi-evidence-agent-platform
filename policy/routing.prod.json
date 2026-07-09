@@ -1,0 +1,74 @@
+{
+  "routing_prod": {
+    "version": "2026-07-08.p8-prod",
+    "defaults": {
+      "fallback_chain": [
+        {
+          "provider": "litellm",
+          "model_id": "worker-fast"
+        }
+      ]
+    },
+    "routes": [
+      {
+        "id": "acme-internal-summary-main",
+        "match": {
+          "tenant": "acme",
+          "data_classification": "internal",
+          "task_kind": "verified_evidence_summary",
+          "cost_budget": "standard",
+          "latency_target": "interactive"
+        },
+        "provider": "litellm",
+        "model_id": "worker-main",
+        "fallback_chain": [
+          {
+            "provider": "litellm",
+            "model_id": "worker-fast"
+          }
+        ]
+      },
+      {
+        "id": "acme-public-summary-fast",
+        "match": {
+          "tenant": "acme",
+          "data_classification": "public",
+          "task_kind": "verified_evidence_summary",
+          "cost_budget": "low",
+          "latency_target": "batch"
+        },
+        "provider": "litellm",
+        "model_id": "worker-fast",
+        "fallback_chain": []
+      },
+      {
+        "id": "acme-confidential-summary-heavy",
+        "match": {
+          "tenant": "acme",
+          "data_classification": "confidential",
+          "task_kind": "verified_evidence_summary",
+          "cost_budget": "standard",
+          "latency_target": "interactive"
+        },
+        "provider": "litellm",
+        "model_id": "worker-heavy",
+        "fallback_chain": [
+          {
+            "provider": "litellm",
+            "model_id": "worker-main"
+          }
+        ]
+      }
+    ],
+    "providers": {
+      "litellm": {
+        "type": "litellm_proxy",
+        "base_url_env": "LITELLM_BASE_URL",
+        "api_key_env": "LITELLM_VIRTUAL_KEY"
+      },
+      "local": {
+        "type": "local_gateway"
+      }
+    }
+  }
+}

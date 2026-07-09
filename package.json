@@ -17,6 +17,7 @@
     "opa:check": "node scripts/opa-check.mjs",
     "python:check": "python -m py_compile scripts/data_guard.py",
     "validate-release": "./node_modules/node/bin/node scripts/validate-release.mjs",
+    "audit:trace": "node scripts/audit-trace.mjs",
     "python:test": ".venv/bin/python -m pytest -q tests_py --cov=scripts --cov-report=term-missing --cov-fail-under=85",
     "python:lint": ".venv/bin/ruff check scripts tests_py",
     "python:type": ".venv/bin/mypy scripts/data_guard.py",

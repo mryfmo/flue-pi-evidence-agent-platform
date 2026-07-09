@@ -35,6 +35,24 @@ If the git remote cannot be reached from an offline host, the check prints `warn
 - Validation report: `artifacts/validation/final_verification_report.json`
 - Node SBOM: `artifacts/sbom/npm-cyclonedx.json`
 
+## Audit trace by task
+
+Run:
+
+```bash
+npm run audit:trace -- <task_id>
+```
+
+The command correlates the task spec, orchestrator events, report, validation,
+sandbox, acceptance, leases, platform audit JSONL, and gateway telemetry for the
+given `task_id`. Missing sections are printed as `missing`; absence is never
+treated as successful evidence. Use `-- --json` after the task id when a machine
+readable trace is needed.
+
+The primary ledgers remain the platform JSONL files under `.orchestration/` and
+`artifacts/`. The CLI is a deterministic read-only view over those ledgers and
+redacts body-like fields to digests instead of printing prompt or secret text.
+
 ## OTLP trace export
 
 Set `EAP_OTLP_ENDPOINT` to an OTLP HTTP traces endpoint, for example `http://collector:4318/v1/traces`, to mirror spans to a collector.

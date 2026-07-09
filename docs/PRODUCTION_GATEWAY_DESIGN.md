@@ -49,6 +49,27 @@ Fallback:
 
 The agent loop remains gated. The LLM path summarizes verified evidence only. Tool execution stays in typed workflow tools controlled by OPA, verifiers, the data guard, and closure gates.
 
+## Prod Provider Path: Gateway -> LiteLLM
+
+Phase 8 production routing uses `PI_PROVIDER=prod` to select `policy/routing.prod.json`. That path is:
+
+```text
+Flue/Pi request
+  -> platform gateway
+  -> redaction, classification, OPA route authorization, fail-closed handling, audit primary record
+  -> LiteLLM Proxy on 127.0.0.1
+  -> approved worker aliases only
+```
+
+Responsibility split:
+
+| Layer | Owns | Must not own |
+| --- | --- | --- |
+| Platform gateway | Redaction, data-classification decision, OPA authorization, fail-closed behavior, task correlation metadata, and primary audit records. | Provider fallback policy outside the approved route document or direct upstream provider keys. |
+| LiteLLM Proxy | Approved model alias resolution, in-list fallback, rate limits, virtual-key enforcement, and provider cost/usage reporting. | Raw prompt logging, policy decisions, data classification, or bypass routes around the gateway. |
+
+`PI_PROVIDER=local` or an unset value selects `policy/routing.json`, which is the deterministic validation path. The local path may use the deterministic local gateway for CI and regression validation. The prod path must not include deterministic local fallback; if all approved LiteLLM aliases are unavailable, the gateway returns `ok:false` with `reason=llm_unavailable`.
+
 ## Typed Contracts
 
 The production gateway uses the same provider shape as the deterministic local gateway:

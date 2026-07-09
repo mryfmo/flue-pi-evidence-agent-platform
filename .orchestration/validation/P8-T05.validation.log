@@ -1,0 +1,99 @@
+# P8-T05 Validation Log
+
+## Targeted checks
+
+```text
+./node_modules/.bin/biome format --write scripts/orchestrator/delegate.mjs tests/failure/llm_outage.test.ts tests/unit/orchestrator_fail_closed.test.ts
+exit 0
+Formatted 3 files in 5ms. Fixed 2 files.
+```
+
+```text
+npx vitest run tests/failure/llm_outage.test.ts tests/unit/orchestrator_fail_closed.test.ts --pool=forks
+exit 0
+Test Files  2 passed (2)
+Tests  7 passed (7)
+```
+
+```text
+./node_modules/.bin/tsc --noEmit
+exit 0
+```
+
+```text
+./node_modules/.bin/biome lint --diagnostic-level=error scripts/orchestrator/delegate.mjs tests/failure/llm_outage.test.ts tests/unit/orchestrator_fail_closed.test.ts
+exit 0
+Checked 3 files in 6ms. No fixes applied.
+```
+
+```text
+./node_modules/node/bin/node scripts/opa-test.mjs
+exit 0
+PASS: 21/21
+```
+
+```text
+git diff --check -- scripts/orchestrator/delegate.mjs tests/failure/llm_outage.test.ts tests/unit/orchestrator_fail_closed.test.ts docs/FAILURE_MODE_MATRIX.md docs/RUNBOOK.md
+exit 0
+```
+
+```text
+make require-crit-review
+exit 2
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+## Full release validation
+
+Ran in temp clone:
+`/private/tmp/flue-pi-p8-t05-validate-codex-gpt55-high`
+
+Command:
+
+```text
+PATH=/private/tmp/p8-t01-bin:$PATH XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t05-validate-codex-gpt55-high/.cache npm run validate-release
+```
+
+Execution note:
+
+- The command was run with escalation because Flue and P8-T05 outage tests bind
+  localhost.
+- The temp clone used copied `node_modules` and linked `.venv`; generated
+  validation artifacts stayed out of the dirty main worktree.
+
+Result:
+
+```text
+validate-release:passed
+```
+
+Final verification report:
+
+```text
+overall: passed
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
+```

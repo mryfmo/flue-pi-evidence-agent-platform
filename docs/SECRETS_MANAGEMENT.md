@@ -6,6 +6,8 @@ The validated platform currently requires zero secrets. Release validation uses 
 
 Production provider credentials become required only when external or self-hosted routes are enabled in `policy/routing.json`. Until that point, configured provider entries store environment variable names only.
 
+LiteLLM Proxy custody and virtual-key rules are defined in `docs/LITELLM_PROXY.md`.
+
 This design uses environment-variable injection now. Managed secret store integration is a later step and is not implemented here.
 
 ## Inventory

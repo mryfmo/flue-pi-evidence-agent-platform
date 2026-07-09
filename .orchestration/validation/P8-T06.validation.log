@@ -1,0 +1,138 @@
+# P8-T06 Validation Log
+
+## Targeted checks
+
+```text
+./node_modules/.bin/biome format --write scripts/audit-trace.mjs tests/unit/audit_trace.test.ts package.json docs/OPERATIONS.md
+exit 0
+Formatted 2 files in 25ms. Fixed 2 files.
+```
+
+```text
+npx vitest run tests/unit/audit_trace.test.ts --pool=forks
+exit 0
+Test Files  1 passed (1)
+Tests  4 passed (4)
+```
+
+```text
+./node_modules/.bin/tsc --noEmit
+exit 0
+```
+
+```text
+./node_modules/.bin/biome lint --diagnostic-level=error scripts/audit-trace.mjs tests/unit/audit_trace.test.ts
+exit 0
+Checked 2 files in 30ms. No fixes applied.
+```
+
+```text
+git diff --check -- scripts/audit-trace.mjs package.json tests/unit/audit_trace.test.ts docs/OPERATIONS.md
+exit 0
+```
+
+```text
+make require-crit-review
+exit 2
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+## Real task smoke
+
+```text
+npm run audit:trace -- P8-T01
+exit 0
+# Audit Trace: P8-T01
+
+record_count: 5
+
+## Delegation
+status: present
+task_file: .orchestration/tasks/P8-T01.md
+
+## Policy Decisions
+status: missing
+
+## Sandbox
+status: present
+path: .orchestration/sandboxes/P8-T01.sandbox.md
+
+## Llm Events
+status: missing
+
+## Validation
+status: present
+path: .orchestration/validation/P8-T01.validation.log
+
+## Acceptance
+status: present
+path: .orchestration/acceptance/P8-T01.acceptance.md
+
+## Leases
+status: missing
+
+## Reports
+status: present
+path: .orchestration/reports/P8-T01.report.md
+```
+
+```text
+npm run audit:trace -- __NO_SUCH_TASK__ --json
+exit 1
+record_count: 0
+all sections: missing
+```
+
+## Full release validation
+
+Ran in temp clone:
+`/private/tmp/flue-pi-p8-t06-validate-codex-gpt55-high`
+
+Command:
+
+```text
+PATH=/private/tmp/p8-t01-bin:$PATH XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t06-validate-codex-gpt55-high/.cache npm run validate-release
+```
+
+Execution note:
+
+- The command was run with escalation because Flue e2e gates bind localhost.
+- The temp clone used copied `node_modules` and linked `.venv`; generated
+  validation artifacts stayed out of the dirty main worktree.
+
+Result:
+
+```text
+validate-release:passed
+```
+
+Final verification report:
+
+```text
+overall: passed
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
+```

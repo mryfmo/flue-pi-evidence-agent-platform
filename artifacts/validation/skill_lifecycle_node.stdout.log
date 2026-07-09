@@ -1,0 +1,175 @@
+TAP version 13
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386
+#     throw new Error(`invalid task id: ${task}`);
+#           ^
+# Error: invalid task id: ../x
+#     at safeTaskId (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386:11)
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:37:16)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386
+#     throw new Error(`invalid task id: ${task}`);
+#           ^
+# Error: invalid task id: x/y
+#     at safeTaskId (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386:11)
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:37:16)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:380
+#   if (!options[name]) throw new Error(`--${name} is required`);
+#                             ^
+# Error: --task is required
+#     at required (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:380:29)
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:37:27)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386
+#     throw new Error(`invalid task id: ${task}`);
+#           ^
+# Error: invalid task id: TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+#     at safeTaskId (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:386:11)
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:37:16)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:52
+#     throw new Error(
+#           ^
+# Error: missing evidence for T2: reports, validation, acceptance
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:52:11)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:52
+#     throw new Error(
+#           ^
+# Error: missing evidence for T2: acceptance
+#     at observe (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:52:11)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:30:28
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:327
+#     throw new Error(`manifest not found for ${task}`);
+#           ^
+# Error: manifest not found for T3
+#     at requireManifest (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:327:11)
+#     at decide (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:106:20)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:31:32
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:327
+#     throw new Error(`manifest not found for ${task}`);
+#           ^
+# Error: manifest not found for T3
+#     at requireManifest (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:327:11)
+#     at applyDecision (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:146:20)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:32:31
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:331
+#     throw new Error(`manifest has no inputs for ${task}`);
+#           ^
+# Error: manifest has no inputs for T3
+#     at requireManifest (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:331:11)
+#     at decide (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:106:20)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:31:32
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:340
+#       throw new Error(
+#             ^
+# Error: redacted_path escapes input directory: ../escape.md
+#     at requireManifest (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:340:13)
+#     at decide (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:106:20)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:31:32
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:166
+#       throw new Error(`candidate already exists for ${task}; pass --overwrite`);
+#             ^
+# Error: candidate already exists for T4; pass --overwrite
+#     at applyDecision (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:166:13)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:32:31
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:258
+#     throw new Error(
+#           ^
+# Error: triage already has a lifecycle recommendation for T4
+#     at appendTriageRow (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:258:11)
+#     at applyDecision (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:170:3)
+#     at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/skill-lifecycle.mjs:32:31
+# [90m    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)[39m
+# [90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)[39m
+# [90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)[39m
+# Node.js v22.19.0
+# Subtest: observe decide and apply create produce lifecycle artifacts
+ok 1 - observe decide and apply create produce lifecycle artifacts
+  ---
+  duration_ms: 255.978916
+  type: 'test'
+  ...
+# Subtest: rejects unsafe task ids before writing artifacts
+ok 2 - rejects unsafe task ids before writing artifacts
+  ---
+  duration_ms: 126.36875
+  type: 'test'
+  ...
+# Subtest: observe requires reports validation and acceptance evidence
+ok 3 - observe requires reports validation and acceptance evidence
+  ---
+  duration_ms: 60.658125
+  type: 'test'
+  ...
+# Subtest: decide and apply require a valid manifest with redacted inputs
+ok 4 - decide and apply require a valid manifest with redacted inputs
+  ---
+  duration_ms: 114.820625
+  type: 'test'
+  ...
+# Subtest: apply create rejects duplicate candidates and triage rows
+ok 5 - apply create rejects duplicate candidates and triage rows
+  ---
+  duration_ms: 275.349834
+  type: 'test'
+  ...
+# Subtest: skill activate ranks and prints promoted skill bodies
+ok 6 - skill activate ranks and prints promoted skill bodies
+  ---
+  duration_ms: 56.047416
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 930.4035

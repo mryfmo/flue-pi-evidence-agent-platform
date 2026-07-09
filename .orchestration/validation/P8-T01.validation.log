@@ -1,0 +1,68 @@
+# P8-T01 validation
+
+Task file read fully:
+- `.orchestration/tasks/P8-T01.md` (43 lines)
+
+Reference inputs read:
+- `.orchestration/analysis/litellm_claude_code_integration_review.md`
+- `docs/PRODUCT_REQUIREMENTS.md`
+- `docs/FUNCTIONAL_REQUIREMENTS.md`
+- `docs/NON_FUNCTIONAL_REQUIREMENTS.md`
+- `docs/DATA_GOVERNANCE.md`
+- `docs/SECURITY_MODEL.md`
+- `docs/PRODUCTION_GATEWAY_DESIGN.md`
+- `docs/SKILL_OPTIMIZATION.md`
+- `policy/tenants.json`
+- `policy/routing.json`
+
+Static acceptance checks:
+- `rg -n "対応: 問題 (3|4|11|13|14|15)|^## (2 ゾーンモデル|タスク・ルーティングマトリクス|データ分類 × 送信可否マトリクス|AutoSkill 入力制限|AGMSG-RESULT レンダリング規約|受入 3 層|Decisions)" docs/INTEGRATION_BOUNDARY.md`
+- Result: all required sections and issue markers found.
+
+Crit/review gate check:
+- Command: `make require-crit-review`
+- Result: not available in this repository (`No rule to make target 'require-crit-review'`).
+
+Release validation:
+- Command: `npm run validate-release`
+- Location: `/private/tmp/flue-pi-p8-t01-validate-codex-gpt55-high`
+- Reason for temporary clone: avoid touching pre-existing dirty `artifacts/*` files in the main worktree.
+- Environment notes: used `/private/tmp/p8-t01-bin/timeout` because this macOS environment lacks GNU `timeout`; set `XDG_CACHE_HOME` inside the temporary clone for tldextract cache isolation; copied `node_modules` and `.venv` into the temporary clone.
+- Final result: exit 0, `validate-release:passed`.
+
+Final verification report:
+
+```text
+overall: passed
+
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
+```
+
+Intermediate validation failures before environment isolation:
+- `timeout: command not found` in the temporary clone before adding a temporary `timeout` shim.
+- tldextract cache lock permission error before setting `XDG_CACHE_HOME` to the temporary clone.
+- `listen EPERM 127.0.0.1` under sandboxed execution; rerun with approval for local bind.
+- `npm_sbom_prod` failed when `node_modules` was a symlink; passed after copying dependencies into the temporary clone.

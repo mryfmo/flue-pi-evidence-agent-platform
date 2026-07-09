@@ -3,10 +3,6 @@
   "defaults": {
     "fallback_chain": [
       {
-        "provider": "openai",
-        "model_id": "gpt-5.5"
-      },
-      {
         "provider": "local",
         "model_id": "fixbot",
         "mode": "deterministic-fallback"
@@ -23,13 +19,9 @@
         "cost_budget": "standard",
         "latency_target": "interactive"
       },
-      "provider": "anthropic",
-      "model_id": "claude-sonnet-5",
+      "provider": "local",
+      "model_id": "fixbot",
       "fallback_chain": [
-        {
-          "provider": "openai",
-          "model_id": "gpt-5.5"
-        },
         {
           "provider": "local",
           "model_id": "fixbot",
@@ -46,13 +38,9 @@
         "cost_budget": "low",
         "latency_target": "batch"
       },
-      "provider": "anthropic",
-      "model_id": "claude-haiku-4-5-20251001",
+      "provider": "local",
+      "model_id": "fixbot",
       "fallback_chain": [
-        {
-          "provider": "vllm",
-          "model_id": "tenant-summary-small"
-        },
         {
           "provider": "local",
           "model_id": "fixbot",
@@ -62,19 +50,6 @@
     }
   ],
   "providers": {
-    "anthropic": {
-      "type": "anthropic_api",
-      "api_key_env": "ANTHROPIC_API_KEY"
-    },
-    "openai": {
-      "type": "openai_api",
-      "api_key_env": "OPENAI_API_KEY"
-    },
-    "vllm": {
-      "type": "openai_compatible",
-      "base_url_env": "VLLM_BASE_URL",
-      "api_key_env": "VLLM_API_KEY"
-    },
     "local": {
       "type": "local_gateway"
     }

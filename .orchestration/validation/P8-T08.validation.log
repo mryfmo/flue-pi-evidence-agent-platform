@@ -1,0 +1,57 @@
+P8-T08 validation log
+worker=codex-gpt55-high
+date=2026-07-09
+
+Targeted checks:
+
+PASS ./node_modules/.bin/biome format --write scripts/orchestrator/platform-health.mjs scripts/orchestrator/pretooluse-guard.mjs scripts/orchestrator/status.mjs scripts/orchestrator/delegate.mjs src/lib/productionGateway.ts tests/unit/orchestrator_tools.test.ts tests/unit/orchestrator_fail_closed.test.ts tests/contract/llm_contract.test.ts
+PASS ./node_modules/.bin/biome lint --diagnostic-level=error scripts/orchestrator/platform-health.mjs scripts/orchestrator/pretooluse-guard.mjs scripts/orchestrator/status.mjs scripts/orchestrator/delegate.mjs src/lib/productionGateway.ts tests/unit/orchestrator_tools.test.ts tests/unit/orchestrator_fail_closed.test.ts tests/contract/llm_contract.test.ts
+PASS ./node_modules/.bin/tsc --noEmit
+PASS ./node_modules/node/bin/node scripts/opa-test.mjs
+  PASS: 23/23
+PASS ./node_modules/node/bin/node scripts/check-litellm-config.mjs
+  litellm_config:passed config/litellm/config.yaml
+PASS ./node_modules/node/bin/node scripts/orchestrator/platform-health.mjs
+  agmsg_db: ok /Users/mryfmo/.agents/skills/agmsg/db/messages.db
+  litellm_live: skip use --live to enable HTTP check
+PASS npx vitest run tests/unit/orchestrator_tools.test.ts tests/unit/orchestrator_fail_closed.test.ts tests/contract/llm_contract.test.ts --pool=forks
+  Test Files 3 passed
+  Tests 33 passed
+PASS git diff --check -- <P8-T08 allowed files and artifacts>
+WARN make require-crit-review
+  make: *** No rule to make target `require-crit-review'.  Stop.
+
+Full release validation:
+
+Temp clone: /private/tmp/flue-pi-p8-t08-validate-GsiKf4/repo
+Command: PATH=/private/tmp/p8-t01-bin:$PATH XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t08-validate-GsiKf4/.cache npm run validate-release
+Result: validate-release:passed
+
+Final verification report:
+
+overall: passed
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed
