@@ -1,0 +1,76 @@
+P8-T09 validation log
+worker=codex-gpt55-high
+date=2026-07-09
+
+Focused local checks:
+
+PASS ./node_modules/.bin/biome format --write scripts/orchestrator/pretooluse-guard.mjs scripts/check-litellm-config.mjs tests/unit/orchestrator_tools.test.ts
+PASS .venv/bin/ruff format config/litellm/platform_audit_forwarder.py tests_py/test_platform_audit_forwarder.py
+PASS ./node_modules/.bin/biome lint --diagnostic-level=error scripts/orchestrator/pretooluse-guard.mjs scripts/check-litellm-config.mjs tests/unit/orchestrator_tools.test.ts
+PASS ./node_modules/node/bin/node scripts/check-litellm-config.mjs
+  litellm_config:passed config/litellm/config.yaml
+PASS npx vitest run tests/unit/orchestrator_tools.test.ts --pool=forks
+  Test Files 1 passed
+  Tests 18 passed
+PASS .venv/bin/python -m pytest -q tests_py/test_platform_audit_forwarder.py
+  2 passed
+PASS .venv/bin/ruff check config/litellm/platform_audit_forwarder.py tests_py/test_platform_audit_forwarder.py
+  All checks passed
+WARN .venv/bin/python -m pytest -q tests_py
+  Failed under sandbox because tldextract attempted to lock /Users/mryfmo/.cache.
+PASS XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t09-cache .venv/bin/python -m pytest -q tests_py
+  29 passed
+PASS ./node_modules/.bin/tsc --noEmit
+PASS ./node_modules/node/bin/node scripts/orchestrator/platform-health.mjs
+  agmsg_db: ok /Users/mryfmo/.agents/skills/agmsg/db/messages.db
+  litellm_config: ok litellm_config:passed config/litellm/config.yaml
+  litellm_live: skip use --live to enable HTTP check
+PASS ./node_modules/.bin/biome format --diagnostic-level=error src tests scripts flue.config.ts
+PASS ./node_modules/.bin/biome lint --diagnostic-level=error src tests scripts flue.config.ts
+PASS npx vitest run tests/unit/orchestrator_tools.test.ts tests/unit/orchestrator_fail_closed.test.ts --pool=forks
+  Test Files 2 passed
+  Tests 24 passed
+PASS git diff --check -- <P8-T09 allowed files and artifacts>
+WARN make require-crit-review
+  make: *** No rule to make target `require-crit-review'.  Stop.
+
+Container validation:
+
+NOT RUN bash scripts/container-validate.sh
+Reason: Apple container exists, but Dockerfile build runs npm ci and may perform real registry network access; P8-T09 forbids real-network-calls.
+CI root-cause fix: Dockerfile now installs sqlite3 in the validation image.
+
+Full release validation:
+
+Temp clone: /private/tmp/flue-pi-p8-t09-validate-CFmGic/repo
+Command: PATH=/private/tmp/p8-t01-bin:$PATH XDG_CACHE_HOME=/private/tmp/flue-pi-p8-t09-validate-CFmGic/.cache npm run validate-release
+Result: validate-release:passed
+
+Final verification report:
+
+overall: passed
+- setup_python: passed
+- spec_traceability: passed
+- format: passed
+- lint: passed
+- typecheck: passed
+- opa: passed
+- litellm_config: passed
+- python_compile: passed
+- python_ruff: passed
+- python_mypy: passed
+- python_bandit: passed
+- python_tests: passed
+- vitest_all: passed
+- skill_lifecycle_node: passed
+- llm_contract: passed
+- flue_build: passed
+- e2e_artifacts: passed
+- npm_audit_prod: passed
+- npm_sbom_prod: passed
+- python_sbom: passed
+- python_audit: passed
+- lockfile_registry: passed
+- opa_test: passed
+- opa_bundle: passed
+- skill_registry: passed

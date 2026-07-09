@@ -77,6 +77,69 @@ describe('pretooluse guard', () => {
     expect(result.stderr).toContain('controlled_path:policy/routing.json');
   });
 
+  it('denies controlled paths immediately after output redirects', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: { command: 'printf x >policy/routing.json' },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/routing.json');
+  });
+
+  it('denies controlled paths immediately after input redirects', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: { command: 'cat <policy/routing.json' },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/routing.json');
+  });
+
+  it('allows delegate lease values for controlled paths', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: {
+        command:
+          'node scripts/orchestrator/delegate.mjs --task-id T --task-file .orchestration/tasks/T.md --to worker --lease policy/routing.json',
+      },
+    });
+    expect(result.status).toBe(0);
+  });
+
+  it('denies chained delegate commands that touch controlled paths', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: {
+        command:
+          'node scripts/orchestrator/delegate.mjs --lease policy/x && rm policy/y',
+      },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/x');
+    expect(result.stderr).toContain('controlled_path:policy/y');
+  });
+
+  it('denies non-delegate commands with lease-looking controlled paths', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: { command: 'rm --lease policy/x' },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/x');
+  });
+
+  it('denies delegate commands with redirects', () => {
+    const result = runGuard({
+      tool_name: 'Bash',
+      tool_input: {
+        command:
+          'node scripts/orchestrator/delegate.mjs --task-id T --task-file .orchestration/tasks/T.md --to worker --lease policy/routing.json > artifacts/audit/out.log',
+      },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/routing.json');
+  });
+
   it('allows harmless Bash commands after broad path extraction', () => {
     const dir = tempWorkspace();
     writeFileSync(join(dir, 'README.md'), 'ok\n', 'utf8');

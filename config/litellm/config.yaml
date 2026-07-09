@@ -19,8 +19,8 @@ router_settings:
 
 litellm_settings:
   turn_off_message_logging: true
-  success_callback: ["platform_audit_forwarder"]
-  failure_callback: ["platform_audit_forwarder"]
+  success_callback: ["platform_audit_forwarder.platform_audit_forwarder"]
+  failure_callback: ["platform_audit_forwarder.platform_audit_forwarder"]
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

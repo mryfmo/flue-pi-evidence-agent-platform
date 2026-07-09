@@ -1,9 +1,20 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 const configPath = process.argv[2] ?? 'config/litellm/config.yaml';
 const text = readFileSync(configPath, 'utf8');
 const lines = text.split(/\r?\n/);
 const errors = [];
+const unsafeBodyLogPatterns = [
+  /["']messages["']\s*:/,
+  /\.get\(["']messages["']\)/,
+  /["']prompt["']\s*:/,
+  /\.get\(["']prompt["']\)/,
+  /["']content["']\s*:/,
+  /\.get\(["']content["']\)/,
+  /["']response["']\s*:/,
+  /\.get\(["']response["']\)/,
+];
 
 // ponytail: deliberately validates the fixed LiteLLM config shape without a YAML dependency.
 const modelNames = new Set();
@@ -58,6 +69,26 @@ for (const line of lines) {
 }
 if (!bindSeen) errors.push('missing bind host/address');
 
+for (const callback of callbackRefs(text)) {
+  const [moduleName, instanceName] = callback.split('.');
+  if (!moduleName || !instanceName) {
+    errors.push(`callback must use module.instance form: ${callback}`);
+    continue;
+  }
+  const modulePath = join(dirname(configPath), `${moduleName}.py`);
+  if (!existsSync(modulePath)) {
+    errors.push(`missing callback module: ${modulePath}`);
+    continue;
+  }
+  const moduleText = readFileSync(modulePath, 'utf8');
+  for (const pattern of unsafeBodyLogPatterns) {
+    if (pattern.test(moduleText)) {
+      errors.push(`callback appears to reference body field: ${modulePath}`);
+      break;
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error(errors.join('\n'));
   process.exit(1);
@@ -67,4 +98,19 @@ console.log(`litellm_config:passed ${configPath}`);
 
 function unquote(value) {
   return value.replace(/^["']|["']$/g, '');
+}
+
+function callbackRefs(configText) {
+  const refs = [];
+  for (const match of configText.matchAll(
+    /^\s*(?:success_callback|failure_callback):\s*\[(.*)\]\s*(?:#.*)?$/gm,
+  )) {
+    refs.push(
+      ...match[1]
+        .split(',')
+        .map((item) => unquote(item.trim()))
+        .filter(Boolean),
+    );
+  }
+  return refs;
 }

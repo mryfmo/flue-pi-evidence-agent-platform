@@ -202,6 +202,11 @@ function copyPolicyAndConfig(dir: string) {
     'utf8',
   );
   writeFileSync(
+    join(dir, 'config/litellm/platform_audit_forwarder.py'),
+    readFileSync('config/litellm/platform_audit_forwarder.py', 'utf8'),
+    'utf8',
+  );
+  writeFileSync(
     join(dir, 'scripts/check-litellm-config.mjs'),
     readFileSync('scripts/check-litellm-config.mjs', 'utf8'),
     'utf8',

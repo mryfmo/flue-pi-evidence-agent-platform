@@ -30,8 +30,10 @@ Issue virtual keys per Agent Profile. Each key must carry allowed models, budget
 
 ## Logging
 
-`turn_off_message_logging: true` is mandatory. Success and failure callbacks use `platform_audit_forwarder`, which is reserved for metadata-only forwarding to the platform ledger.
+`turn_off_message_logging: true` is mandatory. Success and failure callbacks use `platform_audit_forwarder.platform_audit_forwarder`, the config-adjacent callback instance in `config/litellm/platform_audit_forwarder.py`.
 
-Production startup requires an implemented `platform_audit_forwarder` custom callback module. Until that callback exists, do not start the proxy for production. Do not remove callbacks to make a temporary bare proxy; that would restore LiteLLM's default message logging behavior outside the platform audit boundary.
+The callback writes metadata-only JSONL events to `LITELLM_AUDIT_FORWARD_PATH`, or `artifacts/audit/llm_gateway_events.jsonl` when unset. Events include model, token counts, cost, latency, status, and approved metadata fields (`task_id`, `agent_profile`, `tenant`, `data_class`). They must not include message, prompt, response, content, or key material.
+
+Production startup requires the implemented callback module to remain adjacent to `config.yaml`. Do not remove callbacks to make a temporary bare proxy; that would restore LiteLLM's default message logging behavior outside the platform audit boundary.
 
 If the LiteLLM Proxy DB is enabled later, release validation must prove message bodies are not persisted before production use.

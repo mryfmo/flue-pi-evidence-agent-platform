@@ -9,7 +9,7 @@ WORKDIR /app
 ENV PYTHON=python3
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 python3-venv \
+  && apt-get install -y --no-install-recommends python3 python3-venv sqlite3 \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./

@@ -36,13 +36,49 @@ export function extractPaths(input, cwd = process.cwd()) {
 
 function extractCommandPaths(command, cwd) {
   const paths = [];
-  const tokenPattern = /(?:^|\s)(?:"([^"]+)"|'([^']+)'|([^\s"'`|;&<>]+))/g;
+  const ignored = delegateOptionValues(command);
+  const tokenPattern =
+    /(?:^|[\s<>|;&])(?:"([^"]+)"|'([^']+)'|([^\s"'`|;&<>]+))/g;
   for (const match of command.matchAll(tokenPattern)) {
     const token = match[1] ?? match[2] ?? match[3];
     const path = cleanToken(token);
+    if (ignored.has(path)) continue;
     if (looksLikePath(path, cwd)) paths.push(path);
   }
   return paths;
+}
+
+function delegateOptionValues(command) {
+  if (!isPlainDelegateCommand(command)) return new Set();
+  const ignored = new Set();
+  const tokens = shellWords(command);
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (token === '--lease' || token === '--task-file') {
+      const value = tokens[index + 1];
+      if (value) ignored.add(cleanToken(value));
+      continue;
+    }
+    for (const option of ['--lease=', '--task-file=']) {
+      if (token.startsWith(option))
+        ignored.add(cleanToken(token.slice(option.length)));
+    }
+  }
+  return ignored;
+}
+
+function isPlainDelegateCommand(command) {
+  if (/[<>|;&]/.test(command)) return false;
+  const tokens = shellWords(command);
+  return (
+    tokens[0] === 'node' && tokens[1] === 'scripts/orchestrator/delegate.mjs'
+  );
+}
+
+function shellWords(command) {
+  return [...command.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map(
+    (match) => match[1] ?? match[2] ?? match[3],
+  );
 }
 
 function normalizePath(filePath, cwd) {
