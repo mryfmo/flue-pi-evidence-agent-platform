@@ -1,10 +1,19 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  realpathSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { isAbsolute, join, relative } from 'node:path';
 
 export function decideGuard(input, cwd = process.cwd()) {
-  const paths = extractPaths(input).map((path) => normalizePath(path, cwd));
+  const paths = extractPaths(input, cwd).map((path) =>
+    normalizePath(path, cwd),
+  );
   const command =
     input?.tool_name === 'Bash' ? (input.tool_input?.command ?? '') : '';
   const activeLeases = readActiveLeases();
@@ -14,37 +23,71 @@ export function decideGuard(input, cwd = process.cwd()) {
   return { allow: denyReasons.length === 0, denyReasons, input: guardInput };
 }
 
-export function extractPaths(input) {
+export function extractPaths(input, cwd = process.cwd()) {
   const toolInput = input?.tool_input ?? {};
   if (typeof toolInput.file_path === 'string') return [toolInput.file_path];
   if (Array.isArray(toolInput.edits) && typeof toolInput.path === 'string') {
     return [toolInput.path];
   }
   if (typeof toolInput.command === 'string')
-    return extractCommandPaths(toolInput.command);
+    return extractCommandPaths(toolInput.command, cwd);
   return [];
 }
 
-function extractCommandPaths(command) {
+function extractCommandPaths(command, cwd) {
   const paths = [];
-  for (const match of command.matchAll(
-    /(?:^|\s)(\.?\.?\/?[A-Za-z0-9_.@/-]+)/g,
-  )) {
-    const token = match[1];
-    if (
-      token.startsWith('policy/') ||
-      token.startsWith('artifacts/audit/') ||
-      token.startsWith('.env')
-    ) {
-      paths.push(token);
-    }
+  const tokenPattern = /(?:^|\s)(?:"([^"]+)"|'([^']+)'|([^\s"'`|;&<>]+))/g;
+  for (const match of command.matchAll(tokenPattern)) {
+    const token = match[1] ?? match[2] ?? match[3];
+    const path = cleanToken(token);
+    if (looksLikePath(path, cwd)) paths.push(path);
   }
   return paths;
 }
 
-function normalizePath(path, cwd) {
-  if (path.startsWith(cwd)) return relative(cwd, path) || '.';
-  return path.replace(/^\.\//, '');
+function normalizePath(filePath, cwd) {
+  if (!isAbsolute(filePath)) return filePath.replace(/^\.\//, '');
+  const cwdCandidates = [cwd];
+  try {
+    cwdCandidates.push(realpathSync(cwd));
+  } catch {}
+  const pathCandidates = [filePath, ...macosVarAliases(filePath)];
+  for (const cwdCandidate of cwdCandidates) {
+    for (const pathCandidate of pathCandidates) {
+      const normalized = relative(cwdCandidate, pathCandidate) || '.';
+      if (!normalized.startsWith('..') && !isAbsolute(normalized)) {
+        return normalized;
+      }
+    }
+  }
+  return relative(cwd, filePath) || '.';
+}
+
+function looksLikePath(token, cwd) {
+  if (!token || token.startsWith('-') || /^[A-Z_]+=/.test(token)) return false;
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(token)) return false;
+  const candidate = isAbsolute(token) ? token : join(cwd, token);
+  return (
+    token.startsWith('/') ||
+    token.startsWith('./') ||
+    token.startsWith('../') ||
+    token.includes('/') ||
+    token.startsWith('policy/') ||
+    token.startsWith('artifacts/audit/') ||
+    token.startsWith('.env') ||
+    existsSync(candidate)
+  );
+}
+
+function cleanToken(token) {
+  return token.replace(/[),.:]+$/g, '');
+}
+
+function macosVarAliases(filePath) {
+  if (filePath.startsWith('/var/')) return [`/private${filePath}`];
+  if (filePath.startsWith('/private/var/'))
+    return [filePath.replace('/private', '')];
+  return [];
 }
 
 function readActiveLeases() {

@@ -30,6 +30,7 @@ export function renderStatus(argv = process.argv.slice(2), options = {}) {
   ];
   for (const key of [
     'status',
+    'outcome',
     'acceptance_tier',
     'report',
     'validation',
@@ -43,7 +44,9 @@ export function renderStatus(argv = process.argv.slice(2), options = {}) {
 
   const evidence = `${result.raw}\n${readIfExists(fields.report)}`;
   if (
-    /(?:blocked|failed)/i.test(fields.status ?? '') &&
+    /(?:blocked|failed)/i.test(
+      `${fields.status ?? ''} ${fields.outcome ?? ''}`,
+    ) &&
     /(?:success|successful|passed all|成功|全.*合格)/i.test(evidence)
   ) {
     lines.push('WARNING: status-text mismatch');

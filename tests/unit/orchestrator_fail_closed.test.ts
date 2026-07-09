@@ -60,6 +60,42 @@ describe('orchestrator fail-closed behavior', () => {
     ).toBe(false);
   });
 
+  it('includes max_turns in delegated task messages', () => {
+    const dir = tempWorkspace();
+    const sendOk = join(dir, 'send-ok.sh');
+    const sent = join(dir, 'sent.txt');
+    writeFileSync(
+      sendOk,
+      `#!/bin/sh\nprintf '%s\\n' "$4" > ${sent}\nexit 0\n`,
+      { mode: 0o755 },
+    );
+
+    const result = spawnSync(
+      node,
+      [
+        delegateScript,
+        '--task-id',
+        'T-send',
+        '--task-file',
+        '.orchestration/tasks/T-send.md',
+        '--to',
+        'worker',
+        '--lease',
+        'docs/owned.md',
+        '--max-turns',
+        '7',
+      ],
+      {
+        cwd: dir,
+        env: { ...process.env, AGMSG_SEND_SH: sendOk },
+        encoding: 'utf8',
+      },
+    );
+
+    expect(result.status).toBe(0);
+    expect(readFileSync(sent, 'utf8')).toContain('max_turns=7');
+  });
+
   it('reports missing RESULT as unknown without suggesting delegated execution', () => {
     const dir = tempWorkspace();
     const history = join(dir, 'history.txt');
@@ -89,9 +125,26 @@ describe('orchestrator fail-closed behavior', () => {
     expect(result.stdout).toContain('litellm_live: skip');
   });
 
+  it('passes platform health with a messages table in the agmsg DB', () => {
+    const dir = tempWorkspace();
+    copyPolicyAndConfig(dir);
+    const db = createMessagesDb(dir);
+
+    const result = spawnSync(node, [healthScript], {
+      cwd: dir,
+      env: { ...process.env, AGMSG_DB: db },
+      encoding: 'utf8',
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('agmsg_db: ok');
+    expect(result.stdout).toContain('litellm_live: skip');
+  });
+
   it('fails platform health when LiteLLM config is invalid', () => {
     const dir = tempWorkspace();
     copyPolicyAndConfig(dir);
+    const db = createMessagesDb(dir);
     writeFileSync(
       join(dir, 'config/litellm/config.yaml'),
       'model_list: []\nlitellm_settings:\n  turn_off_message_logging: false\nhost: 0.0.0.0\n',
@@ -102,7 +155,7 @@ describe('orchestrator fail-closed behavior', () => {
       cwd: dir,
       env: {
         ...process.env,
-        AGMSG_DB: `${process.env.HOME}/.agents/skills/agmsg/db/agmsg.sqlite`,
+        AGMSG_DB: db,
       },
       encoding: 'utf8',
     });
@@ -117,6 +170,16 @@ function tempWorkspace() {
   const dir = mkdtempSync(join(tmpdir(), 'orchestrator-fail-closed-'));
   mkdirSync(join(dir, '.orchestration/orchestrator'), { recursive: true });
   return dir;
+}
+
+function createMessagesDb(dir: string) {
+  const db = join(dir, 'messages.db');
+  const create = spawnSync('sqlite3', [
+    db,
+    'CREATE TABLE messages(id INTEGER PRIMARY KEY);',
+  ]);
+  expect(create.status).toBe(0);
+  return db;
 }
 
 function copyPolicyAndConfig(dir: string) {

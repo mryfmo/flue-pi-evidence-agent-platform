@@ -1,5 +1,11 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { join } from 'node:path';
 
 const checks = [];
@@ -26,8 +32,14 @@ function record(name, status, detail = '') {
 function checkSqlite() {
   const db =
     process.env.AGMSG_DB ??
-    `${process.env.HOME}/.agents/skills/agmsg/db/agmsg.sqlite`;
-  const result = spawnSync('sqlite3', [db, 'SELECT 1;'], { encoding: 'utf8' });
+    `${process.env.HOME}/.agents/skills/agmsg/db/messages.db`;
+  if (!existsSync(db)) {
+    record('agmsg_db', 'fail', `${db} missing`);
+    return;
+  }
+  const result = spawnSync('sqlite3', [db, 'SELECT count(*) FROM messages;'], {
+    encoding: 'utf8',
+  });
   record('agmsg_db', result.status === 0 ? 'ok' : 'fail', db);
 }
 

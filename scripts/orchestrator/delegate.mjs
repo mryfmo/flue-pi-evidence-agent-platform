@@ -17,6 +17,7 @@ export function delegate(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   requireArgs(args, ['task-id', 'task-file', 'to', 'lease']);
   const taskId = args['task-id'];
+  const maxTurns = args['max-turns'] ?? '3';
   const paths = String(args.lease)
     .split(',')
     .map((item) => item.trim())
@@ -37,6 +38,7 @@ export function delegate(argv = process.argv.slice(2)) {
     `expected_learning_file=.orchestration/learning/${taskId}.learning.md`,
     `expected_autoskill_file=.orchestration/autoskill/runs/${taskId}.autoskill.md`,
     'done_signal=AGMSG-RESULT',
+    `max_turns=${maxTurns}`,
   ].join(' ');
   execFileSync(sendScript, [team, from, args.to, message], {
     stdio: 'inherit',

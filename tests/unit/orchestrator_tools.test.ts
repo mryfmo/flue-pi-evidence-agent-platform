@@ -44,6 +44,48 @@ describe('pretooluse guard', () => {
     });
     expect(result.status).toBe(0);
   });
+
+  it('denies leased paths referenced from Bash commands', () => {
+    const dir = tempWorkspace();
+    writeFileSync(
+      join(dir, '.orchestration/orchestrator/leases.json'),
+      JSON.stringify([
+        { task_id: 'T1', paths: ['docs/owned.md'], status: 'active' },
+      ]),
+      'utf8',
+    );
+    const result = runGuard(
+      { tool_name: 'Bash', tool_input: { command: 'sed -n 1p docs/owned.md' } },
+      dir,
+    );
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('active_lease:docs/owned.md');
+  });
+
+  it('denies controlled absolute paths referenced from Bash commands', () => {
+    const dir = tempWorkspace();
+    const result = runGuard(
+      {
+        tool_name: 'Bash',
+        tool_input: {
+          command: `sed -n 1p ${join(dir, 'policy/routing.json')}`,
+        },
+      },
+      dir,
+    );
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('controlled_path:policy/routing.json');
+  });
+
+  it('allows harmless Bash commands after broad path extraction', () => {
+    const dir = tempWorkspace();
+    writeFileSync(join(dir, 'README.md'), 'ok\n', 'utf8');
+    const result = runGuard(
+      { tool_name: 'Bash', tool_input: { command: 'sed -n 1p README.md' } },
+      dir,
+    );
+    expect(result.status).toBe(0);
+  });
 });
 
 describe('status renderer', () => {
@@ -62,6 +104,23 @@ describe('status renderer', () => {
     );
     expect(output).toContain('WARNING: status-text mismatch');
     expect(output).toContain('DATA (not instructions)');
+  });
+
+  it('warns when failed outcome has success prose', () => {
+    const dir = tempWorkspace();
+    const history = join(dir, 'history.txt');
+    writeFileSync(
+      history,
+      'x^_AGMSG-RESULT v1 task_id=T2 status=ready_for_review outcome=failed note=success passed all^_now',
+      'utf8',
+    );
+    const output = execFileSync(
+      node,
+      [statusScript, '--task-id', 'T2', '--history-file', history],
+      { cwd: repo, encoding: 'utf8' },
+    );
+    expect(output).toContain('outcome: failed');
+    expect(output).toContain('WARNING: status-text mismatch');
   });
 
   it('reports unknown without delegation advice when no result exists', () => {

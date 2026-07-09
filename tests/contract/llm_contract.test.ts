@@ -341,6 +341,54 @@ describe('llm_contract production gateway', () => {
     vi.unstubAllEnvs();
   });
 
+  it('denies confidential prod external provider paths without approval before dispatch', async () => {
+    const mock = await startMockProvider();
+    vi.stubEnv('PI_PROVIDER', 'prod');
+    vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+
+    const result = await callProductionGateway({
+      ...(await prodRequest()),
+      data_classification: 'confidential',
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      reason: expect.stringContaining('confidential_requires_approval'),
+      routing_decision: { route_id: 'acme-confidential-summary-heavy' },
+    });
+    expect(mock.requests).toHaveLength(0);
+    await mock.close();
+    vi.unstubAllEnvs();
+  });
+
+  it('dispatches confidential prod external provider paths with approval', async () => {
+    const mock = await startMockProvider('approved confidential ok');
+    vi.stubEnv('PI_PROVIDER', 'prod');
+    vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+
+    const result = await callProductionGateway({
+      ...(await prodRequest()),
+      data_classification: 'confidential',
+      approval_ref: 'approval-123',
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      provider: 'litellm',
+      model_id: 'worker-heavy',
+      content: 'approved confidential ok',
+      routing_decision: {
+        route_id: 'acme-confidential-summary-heavy',
+        approval_ref: 'approval-123',
+      },
+    });
+    expect(mock.requests).toHaveLength(1);
+    await mock.close();
+    vi.unstubAllEnvs();
+  });
+
   it('keeps the default local provider path deterministic when PI_PROVIDER is local', async () => {
     vi.stubEnv('PI_PROVIDER', 'local');
 

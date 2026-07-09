@@ -28,6 +28,7 @@ export interface ProductionGatewayRequest extends RoutingInput {
   routing_policy_path?: string;
   task_id?: string;
   agent_profile?: string;
+  approval_ref?: string;
 }
 
 export interface ProductionGatewaySuccess {
@@ -232,7 +233,11 @@ export async function callProductionGateway(
 ): Promise<ProductionGatewayResult> {
   try {
     const policy = await loadRoutingPolicy(request.routing_policy_path);
-    const decision = selectRoute(routingInput(request), policy);
+    const selectedDecision = selectRoute(routingInput(request), policy);
+    const decision: RouteDecision & { approval_ref?: string } = {
+      ...selectedDecision,
+      ...(request.approval_ref ? { approval_ref: request.approval_ref } : {}),
+    };
     const redactedMessages = await Promise.all(
       request.messages.map(async (message) => ({
         ...message,
