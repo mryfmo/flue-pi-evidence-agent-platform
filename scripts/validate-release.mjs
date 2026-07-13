@@ -7,6 +7,7 @@ import {
   createGateRecord,
   createValidationReport,
   digest,
+  gateOuterWatchdogMs,
   validateGateManifest,
   writeGateRecord,
   writeValidationReport,
@@ -38,10 +39,11 @@ const results = [];
 for (let sequence = 0; sequence < GATES.length; sequence += 1) {
   const gate = GATES[sequence];
   const start = Date.now();
+  const outerTimeout = gateOuterWatchdogMs(gate);
   const completed = spawnSync(gate.executable, gate.args, {
     encoding: 'utf8',
     maxBuffer: 20 * 1024 * 1024,
-    timeout: 120_000,
+    ...(outerTimeout === undefined ? {} : { timeout: outerTimeout }),
   });
   const rawStdout = completed.stdout ?? '';
   const stderr = completed.stderr ?? '';

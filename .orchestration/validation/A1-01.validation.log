@@ -84,6 +84,160 @@ ci_proof_obtained=false
 
 SUBSEQUENT REVISION SECTIONS BELOW ARE ORDERED NEWEST FIRST
 
+A1-01-R3 SECOND COLD REVIEW REVISE — BOUNDED KILL-FAILURE EXIT
+Date: 2026-07-13T18:04:58+09:00
+status=implementation_complete_pending_independent_re_review
+
+pre_fix_injected_eperm_result=parent_spawn_sync_ETIMEDOUT_at_6000ms
+post_fix_injected_eperm_result=wrapper_exit_70_at_approximately_deadline_plus_2000ms
+injected_child_live_before_fixture_cleanup=true
+captured_stdio_encoding=utf8
+captured_stdio_max_buffer_bytes=20971520
+child_output_forwarded_byte_for_byte=true
+fatal_forwarding_detached_before_force_exit=true
+parent_epipe_ignored_for_cleanup_latch=true
+readiness_json_retry_until_valid_nonzero_pid_pgid=true
+all_process_group_fixtures_finally_cleanup=true
+
+$ ./node_modules/.bin/vitest run tests/unit/run_with_timeout.test.ts tests/unit/validation_manifest.test.ts
+Test Files 2 passed (2)
+Tests 16 passed (16)
+Duration 15.30s
+exit_code=0
+
+$ ./node_modules/.bin/biome format --diagnostic-level=error src tests scripts flue.config.ts
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run lint
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run typecheck
+exit_code=0
+
+$ git diff --check
+exit_code=0
+
+timeout_exit=124
+grace_ms=2000
+kill_error_non_esrch_exit=70
+kill_error_exit_bounded=true
+normal_paths_orderly_exit_code=true
+first_latch_preserved=true
+orphan_or_hung_test_process=false
+shared_manifest_regenerated=false
+full_gate_run=false
+ops_check_run=false
+staged=false
+committed=false
+pushed=false
+ready_for_review=false
+
+A1-01-R3 COLD REVIEW REVISE — EXTERNAL SIGNAL CLEANUP
+Date: 2026-07-13T17:51:43+09:00
+status=implementation_complete_pending_independent_re_review
+
+$ ./node_modules/.bin/vitest run tests/unit/run_with_timeout.test.ts
+Test Files 1 passed (1)
+Tests 7 passed (7)
+Duration 10.97s
+exit_code=0
+coverage=prior runner contract; deadline PID/PGID handshake cleanup; leader-close then later-signal first-latch; external SIGINT repeated-handler exit130; real parent spawnSync maxBuffer ENOBUFS cleanup with noisy leader and SIGTERM-ignoring descendant
+
+$ ./node_modules/.bin/vitest run tests/unit/validation_manifest.test.ts
+Test Files 1 passed (1)
+Tests 8 passed (8)
+Duration 12.95s
+exit_code=0
+
+$ ./node_modules/.bin/biome format --diagnostic-level=error src tests scripts flue.config.ts
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run lint
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run typecheck
+exit_code=0
+
+$ git diff --check
+exit_code=0
+
+external_signal_handlers=SIGTERM,SIGINT
+external_signal_first_latch=true
+external_sigterm_exit=143
+external_sigint_exit=130
+deadline_exit=124
+grace_ms=2000
+group_sigkill_always_attempted=true
+kill_error_non_esrch_exit=70
+signal_handler_reentrant=false
+parent_spawn_sync_maxbuffer_test=true
+maxbuffer_test_error=ENOBUFS
+process_group_fixture_finally_cleanup=true
+orphan_or_hung_process=false
+shared_manifest_regenerated=false
+full_gate_run=false
+ops_check_run=false
+staged=false
+committed=false
+pushed=false
+ready_for_review=false
+
+A1-01-R3 PORTABLE TIMEOUT RUNNER — IMPLEMENTATION COMPLETE
+Date: 2026-07-13T17:43:26+09:00
+status=implementation_complete_pending_independent_cold_review
+
+$ ./node_modules/.bin/vitest run tests/unit/run_with_timeout.test.ts
+Test Files 1 passed (1)
+Tests 5 passed (5)
+Duration 6.58s
+exit_code=0
+coverage=success/stdout; numeric failure; invalid 0,01,decimal,sign,nonnumeric,10000; missing executable; spawn failure; known signal; timeout latch; exact 2000ms grace; POSIX descendant group kill after leader close
+
+$ ./node_modules/.bin/vitest run tests/unit/validation_manifest.test.ts
+Test Files 1 passed (1)
+Tests 8 passed (8)
+Duration 12.65s
+exit_code=0
+coverage=25 names/order; four literal timeout tuples; npm_sbom stdout artifact; exact outer-watchdog discriminator; lookalike watchdog and consumer rejection; all prior A1 adversarial coverage
+
+$ ./node_modules/.bin/biome format --diagnostic-level=error src tests scripts flue.config.ts
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run lint
+Checked 66 files. No fixes applied.
+exit_code=0
+
+$ npm run typecheck
+exit_code=0
+
+$ git diff --check
+exit_code=0
+
+gate_manifest_count=25
+gate_names_or_order_changed=false
+portable_runner_tuples=vitest_all:180,llm_contract:120,npm_audit_prod:60,npm_sbom_prod:60
+npm_sbom_stdout_artifact=artifacts/sbom/npm-cyclonedx.json
+shell_false=true
+posix_detached_group=true
+timeout_grace_ms=2000
+timeout_latch_one_way=true
+outer_watchdog_nonrunner_ms=120000
+outer_watchdog_exact_runner=omitted
+orphan_or_hung_process=false
+dependency_added=false
+shared_manifest_regenerated=false
+full_gate_run=false
+ops_check_run=false
+staged=false
+committed=false
+pushed=false
+ready_for_review=false
+
 STAGE 2B REAL VALIDATION — BLOCKED AT FORMAT GATE 3/25
 Date: 2026-07-13T17:13:00+09:00
 status=blocked_by_committed_format_conformance_failure

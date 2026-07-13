@@ -23,6 +23,8 @@ const {
   createGateRecord,
   createValidationReport,
   digest,
+  gateOuterWatchdogMs,
+  isCanonicalTimeoutGate,
   writeGateRecord,
   writeValidationReport,
 } = validationManifest;
@@ -78,6 +80,93 @@ describe('validation evidence binding', () => {
       );
       expect(runOps(fixture).status).toBe(1);
     }
+  });
+
+  it('binds the four portable timeout tuples and exact outer watchdog', () => {
+    const expected = {
+      vitest_all: {
+        executable: './node_modules/node/bin/node',
+        args: [
+          'scripts/run-with-timeout.mjs',
+          '180',
+          './node_modules/.bin/vitest',
+          'run',
+          '--pool=forks',
+        ],
+      },
+      llm_contract: {
+        executable: './node_modules/node/bin/node',
+        args: [
+          'scripts/run-with-timeout.mjs',
+          '120',
+          './node_modules/.bin/vitest',
+          'run',
+          'tests/contract',
+          '--pool=forks',
+        ],
+      },
+      npm_audit_prod: {
+        executable: './node_modules/node/bin/node',
+        args: [
+          'scripts/run-with-timeout.mjs',
+          '60',
+          'npm',
+          'audit',
+          '--audit-level=high',
+          '--omit=dev',
+        ],
+      },
+      npm_sbom_prod: {
+        executable: './node_modules/node/bin/node',
+        args: [
+          'scripts/run-with-timeout.mjs',
+          '60',
+          'npm',
+          'sbom',
+          '--omit=dev',
+          '--sbom-format=cyclonedx',
+          '--json',
+        ],
+        stdoutArtifact: 'artifacts/sbom/npm-cyclonedx.json',
+      },
+    };
+    expect(GATES).toHaveLength(25);
+    for (const [name, tuple] of Object.entries(expected)) {
+      const gate = GATES.find((item: { name: string }) => item.name === name);
+      expect(gate).toEqual({ name, ...tuple });
+      expect(isCanonicalTimeoutGate({ ...gate })).toBe(true);
+      expect(gateOuterWatchdogMs({ ...gate })).toBeUndefined();
+      expect(canonicalJson(gate)).not.toMatch(/bash|-lc|timeout |npx/);
+    }
+
+    const canonical = GATES.find(
+      (item: { name: string }) => item.name === 'vitest_all',
+    );
+    for (const lookalike of [
+      { ...canonical, name: 'vitest_lookalike' },
+      { ...canonical, executable: 'node' },
+      { ...canonical, args: [...canonical.args, '--lookalike'] },
+      { ...canonical, stdoutArtifact: 'artifacts/lookalike' },
+    ]) {
+      expect(isCanonicalTimeoutGate(lookalike)).toBe(false);
+      expect(gateOuterWatchdogMs(lookalike)).toBe(120_000);
+    }
+    expect(gateOuterWatchdogMs(GATES[0])).toBe(120_000);
+
+    const fixture = cleanFixture();
+    const reportPath = join(
+      fixture,
+      'artifacts/validation/final_verification_report.json',
+    );
+    const report = JSON.parse(readFileSync(reportPath, 'utf8'));
+    report.results[12] = {
+      ...report.results[12],
+      args: [...report.results[12].args, '--lookalike'],
+    };
+    delete report.evidenceDigest;
+    report.evidenceDigest = digest(canonicalJson(report));
+    writeValidationReport(report, fixture);
+    expect(runOps(fixture).stdout).toContain('gate order or command mismatch');
   });
 
   it('verifies release file digests', () => {

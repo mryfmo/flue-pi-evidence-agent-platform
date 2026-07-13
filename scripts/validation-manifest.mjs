@@ -61,17 +61,24 @@ export const GATES = Object.freeze([
     '--cov-report=term-missing',
     '--cov-fail-under=85',
   ]),
-  gate('vitest_all', 'bash', [
-    '-lc',
-    'timeout 180 ./node_modules/.bin/vitest run --pool=forks',
+  gate('vitest_all', './node_modules/node/bin/node', [
+    'scripts/run-with-timeout.mjs',
+    '180',
+    './node_modules/.bin/vitest',
+    'run',
+    '--pool=forks',
   ]),
   gate('skill_lifecycle_node', './node_modules/node/bin/node', [
     '--test',
     'tests/unit/skill_lifecycle.test.mjs',
   ]),
-  gate('llm_contract', 'bash', [
-    '-lc',
-    'timeout 120 npx vitest run tests/contract --pool=forks',
+  gate('llm_contract', './node_modules/node/bin/node', [
+    'scripts/run-with-timeout.mjs',
+    '120',
+    './node_modules/.bin/vitest',
+    'run',
+    'tests/contract',
+    '--pool=forks',
   ]),
   gate('flue_build', './node_modules/node/bin/node', [
     './node_modules/@flue/cli/bin/flue.mjs',
@@ -82,14 +89,26 @@ export const GATES = Object.freeze([
   gate('e2e_artifacts', './node_modules/node/bin/node', [
     'scripts/assert-e2e-artifacts.mjs',
   ]),
-  gate('npm_audit_prod', 'bash', [
-    '-lc',
-    'timeout 60 npm audit --audit-level=high --omit=dev',
+  gate('npm_audit_prod', './node_modules/node/bin/node', [
+    'scripts/run-with-timeout.mjs',
+    '60',
+    'npm',
+    'audit',
+    '--audit-level=high',
+    '--omit=dev',
   ]),
   gate(
     'npm_sbom_prod',
-    'bash',
-    ['-lc', 'timeout 60 npm sbom --omit=dev --sbom-format=cyclonedx --json'],
+    './node_modules/node/bin/node',
+    [
+      'scripts/run-with-timeout.mjs',
+      '60',
+      'npm',
+      'sbom',
+      '--omit=dev',
+      '--sbom-format=cyclonedx',
+      '--json',
+    ],
     'artifacts/sbom/npm-cyclonedx.json',
   ),
   gate(
@@ -164,6 +183,27 @@ export function gateManifestDigest() {
   return digest(
     canonicalJson({ schemaVersion: GATE_MANIFEST_VERSION, gates: GATES }),
   );
+}
+
+const TIMEOUT_GATE_NAMES = new Set([
+  'vitest_all',
+  'llm_contract',
+  'npm_audit_prod',
+  'npm_sbom_prod',
+]);
+
+export function isCanonicalTimeoutGate(candidate) {
+  const expected = GATES.find(
+    (gate) =>
+      TIMEOUT_GATE_NAMES.has(gate.name) && gate.name === candidate?.name,
+  );
+  return Boolean(
+    expected && canonicalJson(candidate) === canonicalJson(expected),
+  );
+}
+
+export function gateOuterWatchdogMs(gate) {
+  return isCanonicalTimeoutGate(gate) ? undefined : 120_000;
 }
 
 export function writeReleaseFileManifest(repo = '.') {

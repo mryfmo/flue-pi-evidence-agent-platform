@@ -9,7 +9,7 @@
 - revision source SHA-256: `8d05d48bf050acd2e987729e5788b23bf287f2d45f00cf76a24becba42df4764`
 - gap addendum: `plans/000-gap-register-addendum.md` covering `GAP-055` through `GAP-061`
 - gap addendum SHA-256: `a4ed70d563d1b39edf7560e7327d1a0293276120f2f5b9cd5071ea02f7535e8a`
-- plan revision: `P9-T02-v10`
+- plan revision: `P9-T02-v11`
 - **Priority**: P0/P1/P2 closure
 - **Effort**: L (44 independently dispatchable work units)
 - **Risk**: HIGH; production, policy, credential, and real-data boundaries are decision-gated
@@ -262,10 +262,10 @@ Phase A0 and Phase A can execute in parallel. Every Phase B, C, D, and E WU is b
 - **WU-ID**: `A1-01`; **Phase**: A; **対応 GAP**: `GAP-034`, `GAP-056`
 - **Preconditions**: command: `test -f scripts/validate-release.mjs && test -f scripts/ops-check.mjs && test -f artifacts/validation/final_verification_report.json`; expected exit code: `0`. Nonzero means 着手禁止.
 - **依存 WU**: none. **並行可否**: parallel with `A2-01` is allowed; every other parallel pairing is forbidden.
-- **allowed_files**: `scripts/validate-release.mjs`, `scripts/ops-check.mjs`, `scripts/validation-manifest.mjs`, `scripts/ci-evidence-check.mjs`, `tests/unit/validation_manifest.test.ts`, `docs/VALIDATION_PLAN.md`, `docs/PRODUCTION_GATES.md`, `RELEASE_MANIFEST.md`, `RELEASE_FILE_MANIFEST.json`, `artifacts/validation/final_verification_report.json`, `.orchestration/{reports,validation}/A1-01*`, `.agents/worklog/**`.
+- **allowed_files**: `scripts/validate-release.mjs`, `scripts/ops-check.mjs`, `scripts/validation-manifest.mjs`, `scripts/ci-evidence-check.mjs`, `scripts/run-with-timeout.mjs`, `tests/unit/validation_manifest.test.ts`, `tests/unit/run_with_timeout.test.ts`, `docs/VALIDATION_PLAN.md`, `docs/PRODUCTION_GATES.md`, `RELEASE_MANIFEST.md`, `RELEASE_FILE_MANIFEST.json`, `artifacts/validation/final_verification_report.json`, `.orchestration/{reports,validation}/A1-01*`, `.agents/worklog/**`.
 - **forbidden_actions**: dependency changes; product runtime changes; deleting shared artifacts; weakening any existing gate; accepting a dirty or mismatched source identity.
 - **実装内容**: create one canonical ordered gate manifest; generate `RELEASE_FILE_MANIFEST.json` from the current release file set and reject every missing, extra, or digest-mismatched file; record source revision, source tree digest, dirty state, validation-script digest, gate-manifest digest, and release-file-manifest digest in the final report; make ops-check reject missing, extra, reordered, stale, or mismatched evidence; add a CI evidence checker that binds repository, workflow, job, commit SHA, source-tree digest, and artifact digest.
-- **決定を要する点**: none. **ワーカー裁量**: none.
+- **決定を要する点**: A1-01-R3 replaces every GNU-only `timeout` shell dependency in the canonical gate manifest with the exact dependency-free Node runner contract in `.orchestration/plan/revisions/A1-01-R3-timeout-runner-v1.md`; gate names/order, time limits, executable argv, output capture, and fail-closed exit semantics remain bound. **ワーカー裁量**: none beyond that revision.
 - **DoD**:
   - [ ] Canonical manifest contains exactly the commands executed by validate-release — command: `./node_modules/node/bin/node scripts/validation-manifest.mjs --check`; expected exit code: `0`.
   - [ ] A report generated from a changed source file is rejected — command: `./node_modules/.bin/vitest run tests/unit/validation_manifest.test.ts -t 'rejects source drift'`; expected exit code: `0`.
