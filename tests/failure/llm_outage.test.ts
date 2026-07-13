@@ -8,6 +8,7 @@ import {
   type ProductionGatewayRequest,
 } from '../../src/lib/productionGateway.ts';
 import type { RoutingPolicyDocument } from '../../src/lib/router.ts';
+import { listenLoopback } from '../helpers/loopback-server.ts';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -34,9 +35,7 @@ async function request(
 
 async function hangingBaseUrl() {
   const server = createServer((_req, _res) => {});
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const address = server.address();
-  if (!address || typeof address === 'string') throw new Error('no address');
+  const address = await listenLoopback(server);
   return {
     baseUrl: `http://127.0.0.1:${address.port}/v1`,
     close: () => new Promise<void>((resolve) => server.close(() => resolve())),
@@ -69,21 +68,24 @@ describe('llm outage fail-closed behavior', () => {
 
   it('times out a hanging LiteLLM proxy as llm_unavailable without success audit', async () => {
     const hang = await hangingBaseUrl();
-    vi.stubEnv('PI_PROVIDER', 'prod');
-    vi.stubEnv('LITELLM_BASE_URL', hang.baseUrl);
-    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
-    const gatewayRequest = await request();
+    try {
+      vi.stubEnv('PI_PROVIDER', 'prod');
+      vi.stubEnv('LITELLM_BASE_URL', hang.baseUrl);
+      vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+      const gatewayRequest = await request();
 
-    const result = await callProductionGateway(gatewayRequest);
+      const result = await callProductionGateway(gatewayRequest);
 
-    expect(result).toMatchObject({
-      ok: false,
-      reason: 'llm_unavailable',
-    });
-    expect(readAudit(gatewayRequest.audit_log_path)).not.toContain(
-      'llm_gateway_call',
-    );
-    await hang.close();
+      expect(result).toMatchObject({
+        ok: false,
+        reason: 'llm_unavailable',
+      });
+      expect(readAudit(gatewayRequest.audit_log_path)).not.toContain(
+        'llm_gateway_call',
+      );
+    } finally {
+      await hang.close();
+    }
   });
 
   it('keeps routing_decision and machine-readable reason when fallback chain is exhausted', async () => {
