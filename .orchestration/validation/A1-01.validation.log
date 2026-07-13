@@ -82,6 +82,50 @@ releaseFileManifestDigest=e0d556a9c8371c348fed3cbf619e6da8e3d40eef1f53ca39dfa435
 full_gate_run=false
 ci_proof_obtained=false
 
+SUBSEQUENT REVISION SECTIONS BELOW ARE ORDERED NEWEST FIRST
+
+POST-CHECKPOINT EOF NORMALIZATION MANIFEST REFRESH
+Date: 2026-07-13T16:19:37+09:00
+status=manifest_refreshed_and_verified_pending_orchestrator_next_step
+
+$ git rev-parse HEAD
+e9966de226122f113d406a8780a5045c131213d2
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --write-release-files
+validation-manifest:wrote files=262
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --check
+validation-manifest:passed gates=25
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --source-identity
+revision=e9966de226122f113d406a8780a5045c131213d2
+treeDigest=f6c037ce1a68dc61de57810c8a3b448fa84a94ce2c3b390a1f425164361b6f02
+dirty=true
+dirtyDigest=b60fa9fd11203c940c7dcfdd656e1c87098ba80d5578ca3d1f58e6f02ff80d7c
+validationScriptDigest=32bc94f4f3b6c590c1cea43ff74323f541f992ffd9e429443112a437e04d0113
+gateManifestDigest=88404b72919d80b8f13dbc73ca9649acfbf42917dee7b7804d090633c4b45859
+releaseFileManifestDigest=77e89b6f886857361f57716248fe0d6e0f6218bdf4d78fcf96f685782c87ee7d
+releaseFileCount=262
+exit_code=0
+
+normalized_path=policy/tests/conformance_test.rego
+normalized_bytes=36679
+normalized_last_byte=LF
+normalized_manifest_sha256=d860cc44fcde861e55a370e3f327f37da9642e283a4c722ffb45d48b9e3c2492
+normalized_observed_sha256=d860cc44fcde861e55a370e3f327f37da9642e283a4c722ffb45d48b9e3c2492
+release_relevant_tracked_changes=RELEASE_FILE_MANIFEST.json
+release_relevant_untracked_changes=none
+staged_changes=none
+manifest_diff_check=passed
+full_gate_run=false
+ops_check_run=false
+staged=false
+committed=false
+ci_proof_obtained=false
+
 ORCHESTRATOR REVISION 1 — STAGE 2A MANIFEST HANDOFF
 Date: 2026-07-13T16:12:25+09:00
 status=manifest_generated_and_verified_pending_audited_clean_checkpoint
