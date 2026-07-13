@@ -90,10 +90,12 @@ function fixture() {
     ]),
   );
   for (const path of paths) {
+    const source = join(repo, path);
+    if (!existsSync(source)) continue;
     const target = join(root, path);
     if (existsSync(target)) continue;
     mkdirSync(dirname(target), { recursive: true });
-    copyFileSync(join(repo, path), target);
+    copyFileSync(source, target);
   }
   return root;
 }
@@ -314,6 +316,16 @@ describe('authoritative requirement catalog CLI', () => {
 
   it('rejects filename-only evidence that lacks a canonical A1 report', () => {
     const root = fixture();
+    const catalog = json(root, 'requirements.json');
+    for (const path of new Set(
+      catalog.requirements.flatMap((item: any) =>
+        item.evidence.map((record: { path: string }) => record.path),
+      ),
+    )) {
+      const target = join(root, path as string);
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, '');
+    }
     reject(root, /final_verification_report|final_report/, [
       '--check-evidence-links',
     ]);

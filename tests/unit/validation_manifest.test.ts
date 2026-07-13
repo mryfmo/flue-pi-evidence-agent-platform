@@ -29,6 +29,10 @@ const {
 
 const repo = resolve('.');
 const node = resolve(repo, 'node_modules/node/bin/node');
+const revisionSourcePaths = [
+  '.orchestration/plan/revisions/A2-01-R1-baseline.json',
+  '.orchestration/plan/revisions/A2-01-R2-contract.json',
+];
 
 describe('validation evidence binding', () => {
   it('rejects source drift', () => {
@@ -149,6 +153,68 @@ describe('validation evidence binding', () => {
       (entry: { path: string }) => entry.path,
     );
     expect(paths.indexOf('a.txt')).toBeLessThan(paths.indexOf('a/x'));
+  });
+
+  it('binds only the two executable revision sources', () => {
+    const fixture = cleanFixture();
+    const manifest = JSON.parse(
+      readFileSync(join(fixture, 'RELEASE_FILE_MANIFEST.json'), 'utf8'),
+    );
+    expect(
+      manifest.files.filter(
+        (entry: { path: string }) =>
+          entry.path === '.orchestration/skills/a',
+      ),
+    ).toHaveLength(1);
+    for (const path of revisionSourcePaths) {
+      expect(
+        manifest.files.filter((entry: { path: string }) => entry.path === path),
+      ).toHaveLength(1);
+
+      const changed = cleanFixture();
+      const before = JSON.parse(
+        runManifest(changed, ['--source-identity']).stdout,
+      );
+      writeFileSync(join(changed, path), '{"changed":true}\n');
+      expect(runManifest(changed, ['--check']).stderr).toContain(
+        'byte digest mismatch',
+      );
+      expect(runManifest(changed, ['--source-identity']).status).toBe(1);
+      expect(runManifest(changed, ['--write-release-files']).status).toBe(0);
+      git(changed, ['add', 'RELEASE_FILE_MANIFEST.json']);
+      git(changed, ['commit', '-qm', 'rebind changed revision source']);
+      const after = JSON.parse(
+        runManifest(changed, ['--source-identity']).stdout,
+      );
+      expect(after.dirty).toBe(true);
+      expect(after.treeDigest).not.toBe(before.treeDigest);
+
+      const removed = cleanFixture();
+      const oldManifest = readFileSync(
+        join(removed, 'RELEASE_FILE_MANIFEST.json'),
+        'utf8',
+      );
+      rmSync(join(removed, path));
+      expect(runManifest(removed, ['--check']).stderr).toContain(
+        `missing path=${path}`,
+      );
+      expect(runManifest(removed, ['--source-identity']).status).toBe(1);
+      const rewrite = runManifest(removed, ['--write-release-files']);
+      expect(rewrite.status).toBe(1);
+      expect(rewrite.stderr).toContain(`missing path=${path}`);
+      expect(
+        readFileSync(join(removed, 'RELEASE_FILE_MANIFEST.json'), 'utf8'),
+      ).toBe(oldManifest);
+    }
+
+    const before = JSON.parse(runManifest(fixture, ['--source-identity']).stdout);
+    mkdirSync(join(fixture, '.orchestration/plan'), { recursive: true });
+    mkdirSync(join(fixture, '.agents/worklog'), { recursive: true });
+    writeFileSync(join(fixture, '.orchestration/plan/unrelated.md'), 'ignored\n');
+    writeFileSync(join(fixture, '.agents/worklog/unrelated.md'), 'ignored\n');
+    expect(runManifest(fixture, ['--check']).status).toBe(0);
+    const after = JSON.parse(runManifest(fixture, ['--source-identity']).stdout);
+    expect(after).toEqual(before);
   });
 
   it('rejects hidden worktree and index drift', () => {
@@ -493,6 +559,10 @@ function cleanFixture() {
   mkdirSync(join(directory, 'scripts'), { recursive: true });
   mkdirSync(join(directory, 'src'), { recursive: true });
   mkdirSync(join(directory, 'artifacts/validation'), { recursive: true });
+  mkdirSync(join(directory, '.orchestration/plan/revisions'), {
+    recursive: true,
+  });
+  mkdirSync(join(directory, '.orchestration/skills'), { recursive: true });
   for (const file of [
     'validation-manifest.mjs',
     'validate-release.mjs',
@@ -505,6 +575,10 @@ function cleanFixture() {
   writeFileSync(join(directory, 'RELEASE_MANIFEST.md'), '# Release\n');
   writeFileSync(join(directory, 'package.json'), '{"name":"fixture"}\n');
   writeFileSync(join(directory, 'src/app.ts'), 'export const value = 1;\n');
+  for (const path of revisionSourcePaths) {
+    writeFileSync(join(directory, path), `${JSON.stringify({ path })}\n`);
+  }
+  writeFileSync(join(directory, '.orchestration/skills/a'), 'promoted skill\n');
   git(directory, ['init', '-q']);
   git(directory, ['config', 'user.name', 'A1 Test']);
   git(directory, ['config', 'user.email', 'a1@example.invalid']);

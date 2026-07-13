@@ -135,6 +135,10 @@ const NON_RELEASE_PREFIXES = Object.freeze([
   'node_modules/',
   'plans/',
 ]);
+const RELEASE_REVISION_PATHS = Object.freeze([
+  '.orchestration/plan/revisions/A2-01-R1-baseline.json',
+  '.orchestration/plan/revisions/A2-01-R2-contract.json',
+]);
 const RELEASE_MANIFEST_PATH = 'RELEASE_FILE_MANIFEST.json';
 const REPORT_PATH = 'artifacts/validation/final_verification_report.json';
 const REPORT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -915,7 +919,9 @@ function gate(name, executable, args, stdoutArtifact) {
 }
 
 function currentReleaseFiles(root) {
-  const listed = enumerateReleasePaths(root);
+  const listed = [
+    ...new Set([...enumerateReleasePaths(root), ...RELEASE_REVISION_PATHS]),
+  ].sort(comparePathsByBytes);
   return listed.map((path) => {
     assertCanonicalPath(path);
     const absolute = resolve(root, path);
@@ -1094,7 +1100,14 @@ function isReleasePath(path) {
     return false;
   }
   if (path.startsWith('.orchestration/')) {
-    return path.startsWith('.orchestration/skills/');
+    return (
+      path === '.orchestration/skills' ||
+      path.startsWith('.orchestration/skills/') ||
+      RELEASE_REVISION_PATHS.some(
+        (releasePath) =>
+          path === releasePath || releasePath.startsWith(`${path}/`),
+      )
+    );
   }
   return !NON_RELEASE_PREFIXES.some(
     (prefix) => path === prefix.slice(0, -1) || path.startsWith(prefix),

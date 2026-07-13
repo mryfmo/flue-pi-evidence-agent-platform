@@ -1,43 +1,55 @@
 A2-01 validation status: BLOCKED
-revision: A2-01-R3-v1
+revision: A2-01-R4-v1
 blocker: pending-clean-checkpoint-and-A1-full-run
+
+PASS exit=0  precondition file checks from task section 3
+
+PASS exact file-byte digests
+  baseline: sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392
+  contract: sha256:36ce9416e47115eae5b88f1aa44659508c224b745565cc5751173204587c0aa8
 
 PASS exit=0  ./node_modules/node/bin/node scripts/spec-check.mjs --check-id-bijection
   spec-check:passed
 PASS exit=0  ./node_modules/node/bin/node scripts/spec-check.mjs
   spec-check:passed
+
+INITIAL TEST-HARNESS FAILURE exit=1  ./node_modules/.bin/vitest run tests/unit/spec_check.test.ts --no-file-parallelism
+  Tests 18 failed before CLI execution with ENOENT copying artifacts/validation/vitest_all.stdout.log.
+  Cause: A1 correctly cleared physical validation evidence; the fixture helper still assumed historical repo logs existed.
+INTERMEDIATE TEST-HARNESS FAILURE exit=1
+  Tests 17 passed, 1 failed: filename-only case reached missing evidence before missing canonical report.
+  Repair: structural fixtures skip absent source artifacts; filename-only fixture creates its own untrusted stdout files.
 PASS exit=0  ./node_modules/.bin/vitest run tests/unit/spec_check.test.ts --no-file-parallelism
-  Test Files 1 passed (1); Tests 18 passed (18).
-  Covers all R2 cases plus six unsupported block starts and fenced/non-normative controls.
-  Covers canonical A1 post-run evidence, authentic empty streams, and all R3 tamper cases.
+  Test Files 1 passed (1); Tests 18 passed (18); Duration 41.71s.
+  Canonical explicit evidence and all report/record/log/source tamper fixtures remain active.
+  Baseline-file and contract-file byte mutations remain independently rejected.
+
 PASS exit=0  ./node_modules/.bin/vitest run tests/component/request_contract.test.ts tests/e2e/remediate_e2e.test.ts --no-file-parallelism
-  Test Files 2 passed (2); Tests 12 passed (12).
-  First sandbox run was denied loopback bind with EPERM; targeted rerun with approved loopback access passed.
-EXPECTED NONZERO exit=1  old flat private workflow payload through scripts/run-flue-workflow.mjs
-  Cannot read properties of undefined (reading 'workspace').
+  Test Files 2 passed (2); Tests 12 passed (12); Duration 12.77s.
+EXPECTED SPEC-20 NONZERO exit=1  ./node_modules/node/bin/node --test tests/unit/spec_check.test.mjs
+  Tests 7; pass 6; fail 1.
+  The sole failure is the accepted SPEC-20 current-source stale digest `3de78612b99c777ff6d9ccc70f04a021b3e8b31258eb52b78be1b55826bd29a1`; every other register/decision/request-schema check passes.
 PASS exit=0  npm run typecheck
   tsc --noEmit
 PASS exit=0  npm run lint
   Checked 64 files. No fixes applied.
 PASS exit=0  git diff --check
-UNAVAILABLE exit=2  make require-crit-review
-  Repository Makefile has no require-crit-review target. No browser Crit was launched;
-  the blocked result remains at acceptance_tier review for orchestrator inspection.
 
 EXPECTED STAGE-1 NONZERO exit=1  ./node_modules/node/bin/node scripts/spec-check.mjs --check-evidence-links
-  final_report: noncanonical JSON encoding
-  The current repository does not yet contain the required clean-checkpoint A1 canonical full-run evidence.
-  The isolated canonical fixture proves the explicit success path; current-repository success is reserved for Stage 2.
+  FR-001 evidence does not exist: artifacts/validation/vitest_all.stdout.log
+  This is solely pending the next clean-checkpoint A1 canonical full run.
 
-EXPECTED SPEC-20 NONZERO exit=1  ./node_modules/node/bin/node --test tests/unit/spec_check.test.mjs
-  Tests 7; pass 6; fail 1. Only the full-register path reaches the accepted stale SPEC-20 source vector.
 EXPECTED SPEC-20 NONZERO exit=1  ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-20
-  SPEC-20 complete fixture is stale: expected 6fbc258bf274487c4097352fb1dfff27ab79349e7978c2c0389f4c9d8afd5eab sha256:6fbc258bf274487c4097352fb1dfff27ab79349e7978c2c0389f4c9d8afd5eab
+  SPEC-20 complete fixture is stale: expected 3de78612b99c777ff6d9ccc70f04a021b3e8b31258eb52b78be1b55826bd29a1 sha256:3de78612b99c777ff6d9ccc70f04a021b3e8b31258eb52b78be1b55826bd29a1
   Signed evidence was not refreshed, resigned, suppressed, or bypassed.
 
+UNAVAILABLE exit=2  make require-crit-review
+  Repository Makefile has no require-crit-review target. No browser Crit was launched;
+  blocked acceptance remains with the orchestrator.
+
 INTEGRITY
-  required/current post digest: sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91
-  FR-001 implementation: schemas/remediation-request.schema.json, src/app.ts, src/workflows/remediate.ts
-  FR-001 test: tests/component/request_contract.test.ts
-  FR-001 gate/evidence retained: vitest_all / artifacts/validation/vitest_all.stdout.log
-  runtime/policy/schema/dependency/signed-evidence files changed by A2-01-R3: none
+  baseline tuple digest unchanged: sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a
+  required/current post digest unchanged: sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91
+  contract semantic delta: baselineFileDigest only
+  checker semantic delta: revisionContractDigest and revisionBaselineDigest only
+  product runtime/policy/schema/dependency/signed evidence changes: none

@@ -216,9 +216,9 @@ const idCandidate = /^(?:PR|FR|NFR|SPEC|REQ)-[A-Z0-9-]+$/;
 const revisionContractPath =
   '.orchestration/plan/revisions/A2-01-R2-contract.json';
 const revisionContractDigest =
-  'sha256:ffccfdf5fd33097713b25b737125b3987ecb3775a45767b6b2defb7172e63b3b';
+  'sha256:36ce9416e47115eae5b88f1aa44659508c224b745565cc5751173204587c0aa8';
 const revisionBaselineDigest =
-  'sha256:4623c22183a61d1a4be9756cc3cc68ea0dedc29d9e6a0023d69a432027c972d3';
+  'sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392';
 const revisionBaselineTupleDigest =
   'sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a';
 const revisionPostDigest =
