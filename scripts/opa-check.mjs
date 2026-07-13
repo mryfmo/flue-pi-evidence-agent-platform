@@ -1,7 +1,26 @@
 import { evaluatePolicy } from '../src/lib/opa.ts';
 
+const validInput = {
+  identity_context: {
+    subject_id: 'sub-123',
+    principal_type: 'authenticated',
+    tenant_memberships: ['acme'],
+    roles: ['software_engineer'],
+    issuer: 'flue-pi-identity-authority',
+    audience: 'flue-pi-agent-policy',
+    verification: { status: 'verified', owner: 'flue-pi-platform-gateway' },
+    request_binding: { id: 'req-123' },
+  },
+  request_context: { tenant: 'acme', binding_id: 'req-123' },
+  tool: 'apply_patch',
+  risk: 'medium',
+  resource: 'repo',
+};
+
 const cases = [
+  ['canonical gateway context', validInput, true, ['ok']],
   [
+    'body-only identity spoof',
     {
       user: 'engineer',
       tenant: 'acme',
@@ -9,45 +28,70 @@ const cases = [
       risk: 'medium',
       resource: 'repo',
     },
-    true,
+    false,
+    [
+      'body_identity_forbidden',
+      'missing_identity_context',
+      'missing_request_context',
+    ],
   ],
   [
+    'unknown role',
     {
-      user: 'guest',
-      tenant: 'acme',
-      tool: 'apply_patch',
-      risk: 'medium',
-      resource: 'repo',
+      ...validInput,
+      identity_context: { ...validInput.identity_context, roles: ['unknown'] },
     },
     false,
+    ['insufficient_role', 'unknown_role'],
   ],
   [
+    'insufficient role',
     {
-      user: 'engineer',
-      tenant: 'other',
-      tool: 'apply_patch',
-      risk: 'medium',
-      resource: 'repo',
+      ...validInput,
+      identity_context: {
+        ...validInput.identity_context,
+        roles: ['data_analyst'],
+      },
     },
     false,
+    ['insufficient_role'],
   ],
   [
+    'tenant mismatch',
     {
-      user: 'engineer',
-      tenant: 'acme',
-      tool: 'shell',
-      risk: 'medium',
-      resource: 'repo',
+      ...validInput,
+      request_context: { tenant: 'other', binding_id: 'req-123' },
     },
     false,
+    ['tenant_mismatch'],
+  ],
+  [
+    'shell tool',
+    { ...validInput, tool: 'shell' },
+    false,
+    ['dangerous_shell', 'insufficient_role', 'unknown_tool'],
+  ],
+  [
+    'unknown tool',
+    { ...validInput, tool: 'unknown' },
+    false,
+    ['insufficient_role', 'unknown_tool'],
   ],
 ];
-for (const [input, expected] of cases) {
+
+for (const [name, input, allow, reasons] of cases) {
   const decision = await evaluatePolicy(input);
-  if (decision.allow !== expected) {
+  const actualReasons = [...decision.reasons].sort();
+  const expectedReasons = [...reasons].sort();
+  if (
+    decision.allow !== allow ||
+    decision.requires_approval ||
+    JSON.stringify(actualReasons) !== JSON.stringify(expectedReasons)
+  ) {
     throw new Error(
-      `unexpected OPA decision for ${JSON.stringify(input)}: ${JSON.stringify(decision)}`,
+      `unexpected OPA decision for ${name}: ${JSON.stringify(decision)}`,
     );
   }
 }
+
 console.log('opa:ok');
