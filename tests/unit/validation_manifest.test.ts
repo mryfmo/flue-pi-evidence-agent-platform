@@ -162,8 +162,7 @@ describe('validation evidence binding', () => {
     );
     expect(
       manifest.files.filter(
-        (entry: { path: string }) =>
-          entry.path === '.orchestration/skills/a',
+        (entry: { path: string }) => entry.path === '.orchestration/skills/a',
       ),
     ).toHaveLength(1);
     for (const path of revisionSourcePaths) {
@@ -207,13 +206,20 @@ describe('validation evidence binding', () => {
       ).toBe(oldManifest);
     }
 
-    const before = JSON.parse(runManifest(fixture, ['--source-identity']).stdout);
+    const before = JSON.parse(
+      runManifest(fixture, ['--source-identity']).stdout,
+    );
     mkdirSync(join(fixture, '.orchestration/plan'), { recursive: true });
     mkdirSync(join(fixture, '.agents/worklog'), { recursive: true });
-    writeFileSync(join(fixture, '.orchestration/plan/unrelated.md'), 'ignored\n');
+    writeFileSync(
+      join(fixture, '.orchestration/plan/unrelated.md'),
+      'ignored\n',
+    );
     writeFileSync(join(fixture, '.agents/worklog/unrelated.md'), 'ignored\n');
     expect(runManifest(fixture, ['--check']).status).toBe(0);
-    const after = JSON.parse(runManifest(fixture, ['--source-identity']).stdout);
+    const after = JSON.parse(
+      runManifest(fixture, ['--source-identity']).stdout,
+    );
     expect(after).toEqual(before);
   });
 

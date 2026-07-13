@@ -84,6 +84,56 @@ ci_proof_obtained=false
 
 SUBSEQUENT REVISION SECTIONS BELOW ARE ORDERED NEWEST FIRST
 
+STAGE 2B REAL VALIDATION — BLOCKED AT FORMAT GATE 3/25
+Date: 2026-07-13T17:13:00+09:00
+status=blocked_by_committed_format_conformance_failure
+
+$ node scripts/validate-release.mjs
+validate-release:failed gate=format returnCode=1 logs=artifacts/validation/format.{stdout,stderr}.log
+exit_code=1
+passed_before_failure=setup_python,spec_traceability
+failed_report_run_id=6a020ad2-c5f3-4135-9842-8b7b071488be
+source_revision=798dd95e596c673760c994f7fb1c70c8d1049439
+source_tree_digest=84c0145d860ac2029bab09399d535b5f9b6fa46cd32d3979cfca8e666d0c9f62
+source_dirty=false
+source_dirty_digest=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+validation_script_digest=32bc94f4f3b6c590c1cea43ff74323f541f992ffd9e429443112a437e04d0113
+gate_manifest_digest=88404b72919d80b8f13dbc73ca9649acfbf42917dee7b7804d090633c4b45859
+release_file_manifest_digest=c05a71588a4a72e0af79ca9a7f367edde59ed3e09a579424c037a35c92e2f572
+release_file_count=283
+
+format_error_1=scripts/opa-test.mjs execFileSync call requires Biome wrapping
+format_error_2=tests/unit/validation_manifest.test.ts requires Biome line wrapping
+format_checked_files=64
+format_fixes_applied=0
+environmental_failure=false
+sandbox_failure=false
+network_failure=false
+loopback_failure=false
+escalation_attempted=false
+
+$ node scripts/validation-manifest.mjs --verify-report
+final_report: status=failed
+exit_code=1
+
+$ node scripts/ops-check.mjs
+git_remote=warn_offline
+final_report=fail status_failed
+opa_bundle=ok revision=1f6a676
+promoted_skill=ok version=1.1.0
+exit_code=1
+
+full_gate_run=false
+full_gate_completion=3_of_25_attempted
+ops_check_passed=false
+source_edited=false
+manifest_edited=false
+report_hand_edited=false
+staged=false
+committed=false
+pushed=false
+ready_for_review=false
+
 ORCHESTRATOR REVISION 2 — COLD REVIEW REVISE COMPLETE
 Date: 2026-07-13T17:00:37+09:00
 status=fail_closed_implementation_complete_pending_canonical_manifest_regeneration_and_checkpoint
