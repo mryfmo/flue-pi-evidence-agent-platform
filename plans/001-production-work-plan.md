@@ -9,7 +9,7 @@
 - revision source SHA-256: `8d05d48bf050acd2e987729e5788b23bf287f2d45f00cf76a24becba42df4764`
 - gap addendum: `plans/000-gap-register-addendum.md` covering `GAP-055` through `GAP-061`
 - gap addendum SHA-256: `a4ed70d563d1b39edf7560e7327d1a0293276120f2f5b9cd5071ea02f7535e8a`
-- plan revision: `P9-T02-v11`
+- plan revision: `P9-T02-v12`
 - **Priority**: P0/P1/P2 closure
 - **Effort**: L (44 independently dispatchable work units)
 - **Risk**: HIGH; production, policy, credential, and real-data boundaries are decision-gated
@@ -206,10 +206,10 @@ Phase A0 and Phase A can execute in parallel. Every Phase B, C, D, and E WU is b
 - **WU-ID**: `A0-07`; **Phase**: A0; **対応 SPEC**: `SPEC-14`, `SPEC-17`, `SPEC-18`, `SPEC-19`
 - **Preconditions**: command: `grep -q 'status: accepted' .orchestration/acceptance/A0-02.acceptance.md && grep -q 'status: accepted' .orchestration/acceptance/A0-05.acceptance.md`; expected exit code: `0`. Nonzero means 着手禁止.
 - **依存 WU**: `A0-02`, `A0-05`. **並行可否**: parallel with `A0-06` is allowed; every other parallel pairing is forbidden.
-- **allowed_files**: `policy/sandbox.rego`, `policy/cc_guard.rego`, `policy/cc_guard_test.rego`, `policy/tests/sandbox_test.rego`, `tests/fixtures/policy/spec17_*.json`, `docs/POLICY_MODEL.md`, `docs/INTEGRATION_BOUNDARY.md`, `docs/DATA_GOVERNANCE.md`, `docs/OPERATIONS.md`, `docs/requirements.json`, `docs/traceability.json`, `schemas/persistent-artifact.schema.json`, `scripts/spec-check.mjs`, `.orchestration/{reports,validation}/A0-07*`, `.agents/worklog/**`.
+- **allowed_files**: `policy/sandbox.rego`, `policy/cc_guard.rego`, `policy/cc_guard_test.rego`, `policy/tests/sandbox_test.rego`, `tests/fixtures/policy/spec17_*.json`, `tests/component/sandbox_policy.test.ts`, `docs/POLICY_MODEL.md`, `docs/INTEGRATION_BOUNDARY.md`, `docs/DATA_GOVERNANCE.md`, `docs/OPERATIONS.md`, `docs/requirements.json`, `docs/traceability.json`, `schemas/persistent-artifact.schema.json`, `scripts/spec-check.mjs`, `.orchestration/{reports,validation}/A0-07*`, `.agents/worklog/**`. Revision `A0-07-R3` permits only the component-test correction defined in `.orchestration/plan/revisions/A0-07-R3-sandbox-negative-fixtures-v1.md`; it does not authorize any policy, schema, source, or fixture edit.
 - **forbidden_actions**: shared tenant path without tenant identity; undocumented retention/deletion/DSAR; dead egress or approval outputs; incomplete policy inventory; duplicate normative glossary.
 - **実装内容**: specify tenant-scoped ledger/audit/evidence identity, retention, deletion, PII class, DSAR, and access isolation; make sandbox egress allowlist and approval outputs reachable only through explicit authorized rules; inventory cc_guard and its non-tenant command boundary accurately; define one normative glossary and one controlled-resource catalog referenced by every document.
-- **決定を要する点**: none. Retention values remain user-owned F1-05; this WU defines required fields and fail-closed behavior. **ワーカー裁量**: none.
+- **決定を要する点**: none. Retention values remain user-owned F1-05; this WU defines required fields and fail-closed behavior. The accepted A0-07 closed-catalog contract supersedes the stale component assertion based on removed `policy_id` / `egress_not_denied` semantics. **ワーカー裁量**: none.
 - **DoD**:
   - [ ] Tenant persistence and lifecycle requirements contain identity, isolation, retention, deletion, PII, DSAR, and access controls — command: `./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-14`; expected exit code: `0`.
   - [ ] Sandbox egress/approval rules are reachable, tested, and default-deny — command: `./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-17 && ./node_modules/node/bin/node scripts/opa-test.mjs`; expected exit code: `0`.

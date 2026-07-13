@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -6,6 +7,12 @@ import { evaluatePolicy } from '../../src/lib/opa.ts';
 
 const policyPath = 'policy/sandbox.rego';
 const query = 'data.eap.sandbox';
+
+function validOpenEgressInput() {
+  return JSON.parse(
+    readFileSync('tests/fixtures/policy/spec17_allowed_egress.json', 'utf8'),
+  ) as { egress_request: { destination: string } };
+}
 
 describe('eap.sandbox policy', () => {
   it('allows acme tenants with denied egress and no environment variables', async () => {
@@ -20,7 +27,6 @@ describe('eap.sandbox policy', () => {
               'sha256:133a3c1720dd52291a019740c2987e7164ea6de79e23d8198798e58950ae2e6e',
           },
           egress: 'deny',
-          policy_id: '',
           env_keys: [],
         },
         policyPath,
@@ -43,7 +49,6 @@ describe('eap.sandbox policy', () => {
           digest: 'sha256:test',
         },
         egress: 'deny',
-        policy_id: '',
         env_keys: [],
       },
       policyPath,
@@ -73,7 +78,6 @@ describe('eap.sandbox policy', () => {
           digest: 'sha256:test',
         },
         egress: 'deny',
-        policy_id: '',
         env_keys: [],
       },
       policyPath,
@@ -85,25 +89,27 @@ describe('eap.sandbox policy', () => {
     expect(decision.reasons).toContain('tenant_mismatch');
   });
 
-  it('denies open egress without an allowlisted policy', async () => {
-    const decision = await evaluatePolicy(
-      {
-        tenant: 'acme',
-        image: {
-          name: 'opensandbox/code-interpreter',
-          tag: 'v1.1.0',
-          digest: 'sha256:test',
-        },
-        egress: 'allow',
-        policy_id: 'not-allowlisted',
-        env_keys: [],
-      },
-      policyPath,
-      query,
-    );
+  it('allows open egress for an exact valid non-approval catalog tuple', async () => {
+    await expect(
+      evaluatePolicy(validOpenEgressInput(), policyPath, query),
+    ).resolves.toEqual({
+      allow: true,
+      requires_approval: false,
+      reasons: ['ok'],
+    });
+  });
 
-    expect(decision.allow).toBe(false);
-    expect(decision.reasons).toContain('egress_not_denied');
+  it('denies a requested destination outside the valid catalog', async () => {
+    const input = validOpenEgressInput();
+    input.egress_request.destination = 'not-allowlisted.example';
+    const decision = await evaluatePolicy(input, policyPath, query);
+
+    expect(decision).toEqual({
+      allow: false,
+      requires_approval: false,
+      reasons: ['destination_not_cataloged'],
+    });
+    expect(decision.reasons).not.toContain('catalog_invalid');
   });
 
   it('denies environment variables that are not allowlisted', async () => {
@@ -116,7 +122,6 @@ describe('eap.sandbox policy', () => {
           digest: 'sha256:test',
         },
         egress: 'deny',
-        policy_id: '',
         env_keys: ['SECRET_TOKEN'],
       },
       policyPath,
@@ -133,7 +138,6 @@ describe('eap.sandbox policy', () => {
         {
           tenant: 'acme',
           egress: 'deny',
-          policy_id: '',
           env_keys: [],
         },
         'policy/missing-sandbox.rego',
