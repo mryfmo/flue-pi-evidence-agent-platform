@@ -84,6 +84,50 @@ ci_proof_obtained=false
 
 SUBSEQUENT REVISION SECTIONS BELOW ARE ORDERED NEWEST FIRST
 
+POST-MERGE RELEASE MANIFEST REFRESH
+Date: 2026-07-13T16:30:18+09:00
+status=post_merge_manifest_generated_and_verified_pending_clean_checkpoint
+
+$ git rev-parse HEAD
+9b9ea5355cfeef77ab9496c61ae73b24f9a142f2
+exit_code=0
+
+$ git diff --name-status HEAD^1 HEAD
+A  Flue_Pi_Evidence_Agent_Platform_サマリー_開発一般業務版 (1).pptx
+A  github_contents.zip
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --write-release-files
+validation-manifest:wrote files=264
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --check
+validation-manifest:passed gates=25
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/validation-manifest.mjs --source-identity
+revision=9b9ea5355cfeef77ab9496c61ae73b24f9a142f2
+treeDigest=b0c48483dfa7211179f382b428b2b10b97c30188950ae3675f10b4d2b30b5be7
+dirty=true
+dirtyDigest=b60fa9fd11203c940c7dcfdd656e1c87098ba80d5578ca3d1f58e6f02ff80d7c
+validationScriptDigest=32bc94f4f3b6c590c1cea43ff74323f541f992ffd9e429443112a437e04d0113
+gateManifestDigest=88404b72919d80b8f13dbc73ca9649acfbf42917dee7b7804d090633c4b45859
+releaseFileManifestDigest=1847e5b47f4763a385eb08da8b74e837ccca054a5ab7a0ed9b1928d2c12993e0
+releaseFileCount=264
+exit_code=0
+
+included=github_contents.zip bytes=5451024 sha256=5098a7bb8dd2226c48a3466d1bd91a2e119a52e4d60e12cf816f5d922a26e8f7 observed_match=true
+included=Flue_Pi_Evidence_Agent_Platform_サマリー_開発一般業務版 (1).pptx bytes=814512 sha256=6ed5bad49b6985a54b1c84e465435b393fbb9dbad032dfe794a671364a88b201 observed_match=true
+release_relevant_tracked_changes=RELEASE_FILE_MANIFEST.json
+release_relevant_untracked_changes=none
+staged_changes=none
+manifest_diff_check=passed
+full_gate_run=false
+ops_check_run=false
+staged=false
+committed=false
+ci_proof_obtained=false
+
 POST-CHECKPOINT EOF NORMALIZATION MANIFEST REFRESH
 Date: 2026-07-13T16:19:37+09:00
 status=manifest_refreshed_and_verified_pending_orchestrator_next_step
