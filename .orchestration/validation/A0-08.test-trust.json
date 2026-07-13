@@ -1,0 +1,66 @@
+{
+  "eap": {
+    "conformance_trust": {
+      "contract_version": "spec20-conformance-trust-v1",
+      "status": "active",
+      "environment": "test",
+      "producer": "test-vector:local-machine",
+      "verifier": "test-vector:opa-rs256-verifier",
+      "audience": "test:spec20-conformance",
+      "active_key": {
+        "id": "spec20-test-vector-rs256-v5",
+        "algorithm": "RS256",
+        "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2sUAK/isrgCuF+PPmjQQ\nidFOTQxc6Tc+nYFd4cJJXlGb64XxyeuD28RX6DX5B556DKkaModxfqMd/avQaMQs\n/h24h9mBOJzIAa+lLE1javloEr/sbEn49RDfJwsZqlXd23z6hAmEyhVMFqRuM24v\nc0wZI/3IXAUFox9D/01ckrSRXR/LWD+peRZiGnZ10Q/ySXachGU45VyC5yWgMlw/\nNwWcImPpPeZ4111xY7kgwGRjEf5sW8TGLAuEV900D2+rQ3S+GEWXJiu6VMbP0u2Y\nvcXoQFhOXRMU72AETUAbWlIDQidFoeB3asLQtHyt3vjMx36gl5ZGzqAyM64MU9N7\nMwIDAQAB\n-----END PUBLIC KEY-----\n",
+        "status": "active",
+        "usage": "test_only",
+        "not_before": "2026-07-13T00:00:00Z",
+        "expires_at": "2027-07-13T00:00:00Z"
+      },
+      "expected": {
+        "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+        "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+        "run_id": "run-spec20-test-vector-007",
+        "not_before": "2026-07-13T01:00:00Z",
+        "not_after": "2026-07-14T00:00:00Z",
+        "artifacts": [
+          {
+            "requirement_id": "REQ-PI-001",
+            "test_id": "pi_behavior",
+            "path": ".orchestration/validation/A0-08.artifacts/pi_behavior.json",
+            "digest": "sha256:0f1e439c4578737f7003df19bea4c888f3e695800e0d53fd57b46bfc9ca5e8e3"
+          },
+          {
+            "requirement_id": "REQ-PI-001",
+            "test_id": "pi_negative",
+            "path": ".orchestration/validation/A0-08.artifacts/pi_negative.json",
+            "digest": "sha256:26a92801c9935eb93bb930f8f21d5b125d5b377105aa7685eb56cc3d101048c7"
+          },
+          {
+            "requirement_id": "REQ-PI-001",
+            "test_id": "pi_fail_closed",
+            "path": ".orchestration/validation/A0-08.artifacts/pi_fail_closed.json",
+            "digest": "sha256:ea1f69d3ddd29e4f3ffec1235c1eccd856e224b44a3dd880b041d7a17dd84511"
+          },
+          {
+            "requirement_id": "REQ-DATA-001",
+            "test_id": "data_behavior",
+            "path": ".orchestration/validation/A0-08.artifacts/data_behavior.json",
+            "digest": "sha256:b4ca9c1eeead82590b9058d559841c5f6adcf93617fa82a473e4174cf87c83c7"
+          },
+          {
+            "requirement_id": "REQ-DATA-001",
+            "test_id": "data_negative",
+            "path": ".orchestration/validation/A0-08.artifacts/data_negative.json",
+            "digest": "sha256:7dd9ccc72944e67c522afc1c9f25a0d56e03a725b7725607ce2075f7dbf29a5c"
+          },
+          {
+            "requirement_id": "REQ-DATA-001",
+            "test_id": "data_fail_closed",
+            "path": ".orchestration/validation/A0-08.artifacts/data_fail_closed.json",
+            "digest": "sha256:44743d915067c81a1e5227a47f7f0ea2425f2ef34fdb4c5b6d51cb80d436a1bc"
+          }
+        ]
+      }
+    }
+  }
+}

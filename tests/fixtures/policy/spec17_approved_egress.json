@@ -1,0 +1,20 @@
+{
+  "now": "2026-07-13T12:00:00Z",
+  "egress": "allow",
+  "identity_context": { "subject_id": "reviewer-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["security_reviewer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-sandbox-policy", "verification": { "status": "verified", "owner": "flue-pi-platform-gateway" }, "request_binding": { "id": "binding-1" } },
+  "request_context": { "tenant": "acme", "task_id": "task-1", "run_id": "run-1", "binding_id": "binding-1", "source": { "revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }, "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "production_data_access" },
+  "egress_request": { "destination": "security.example", "protocol": "https", "port": 443, "action": "production_data_access", "binding_id": "binding-1" },
+  "egress_catalog": [{ "tenant_id": "acme", "destination": "security.example", "protocol": "https", "port": 443, "action": "production_data_access", "enabled": true, "requires_approval": true, "allowed_roles": ["security_reviewer"] }],
+  "record_context": { "persisted": true, "immutable": true, "integrity_verified": true },
+  "approval": {
+    "schema_version": "1.0", "approval_id": "approval-1", "tenant_id": "acme", "task_id": "task-1", "run_id": "run-1",
+    "source": { "revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "production_data_access",
+    "requester_identity": { "subject_id": "requester-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["software_engineer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-agent-policy", "verification": { "status": "verified", "owner": "flue-pi-platform-gateway" }, "request_binding": { "id": "binding-1" } },
+    "created_at": "2026-07-13T10:00:00Z", "expires_at": "2026-07-14T12:00:00Z", "state": "approved",
+    "decision": { "outcome": "approved", "decided_at": "2026-07-13T11:00:00Z", "idempotency_key": "approve-key", "request_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "approver_identity": { "subject_id": "approver-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["security_reviewer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-agent-policy", "verification": { "status": "verified", "owner": "flue-pi-platform-gateway" }, "request_binding": { "id": "approver-binding" } } },
+    "resume": { "status": "not_resumed" }
+  },
+  "egress_authorization_context": { "approval_id": "approval-1", "approval_action": "production_data_access", "tenant_id": "acme", "task_id": "task-1", "run_id": "run-1", "source": { "revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }, "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "request_binding_id": "binding-1", "destination": "security.example", "protocol": "https", "port": 443, "action": "production_data_access" },
+  "env_keys": []
+}

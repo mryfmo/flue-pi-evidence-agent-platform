@@ -4,7 +4,7 @@ This catalog is an input to the final release judgment. It records gates that al
 
 ## Local Release Gates
 
-`npm run validate-release` runs these 23 gates and writes `artifacts/validation/final_verification_report.json`.
+`npm run validate-release` runs every gate in the ordered machine manifest exported by `scripts/validation-manifest.mjs` and writes `artifacts/validation/final_verification_report.json`. The manifest, not this table or a hard-coded count, is authoritative for gate names, executables, arguments, and order.
 
 | Gate | What it proves | Evidence location | Runs | §14-3 mapping |
 | --- | --- | --- | --- | --- |
@@ -14,12 +14,14 @@ This catalog is an input to the final release judgment. It records gates that al
 | `lint` | Biome lint rules pass. | `artifacts/validation/lint.*.log` | local, CI validate-release | release governance |
 | `typecheck` | Strict TypeScript contracts compile. | `artifacts/validation/typecheck.*.log` | local, CI validate-release | release governance |
 | `opa` | Agent policy allows/denies expected operations through the runtime adapter. | `artifacts/validation/opa.*.log` | local, CI validate-release | release governance |
+| `litellm_config` | The governed LiteLLM configuration contract is internally valid. | `artifacts/validation/litellm_config.*.log` | local, CI validate-release | release governance |
 | `python_compile` | Python data guard syntax compiles. | `artifacts/validation/python_compile.*.log` | local, CI validate-release | additional supply-chain/data governance |
 | `python_ruff` | Python lint rules pass. | `artifacts/validation/python_ruff.*.log` | local, CI validate-release | additional supply-chain/data governance |
 | `python_mypy` | Python data guard types pass. | `artifacts/validation/python_mypy.*.log` | local, CI validate-release | additional supply-chain/data governance |
 | `python_bandit` | Python static security scan has no blocking findings. | `artifacts/validation/python_bandit.*.log` | local, CI validate-release | additional supply-chain validation |
 | `python_tests` | SQLGlot, DuckDB, Presidio, and data guard behavior pass with coverage. | `artifacts/validation/python_tests.*.log` | local, CI validate-release | additional supply-chain/data governance |
 | `vitest_all` | Unit, component, system, E2E, failure, security, and regression tests pass. | `artifacts/validation/vitest_all.*.log` | local, CI validate-release | release governance |
+| `skill_lifecycle_node` | Node skill-lifecycle contracts pass. | `artifacts/validation/skill_lifecycle_node.*.log` | local, CI validate-release | release governance |
 | `llm_contract` | Production gateway contract, redaction, audit digests, fail-closed, and fallback behavior pass. | `artifacts/validation/llm_contract.*.log` | local, CI validate-release | real LLM / mock contract test |
 | `flue_build` | Flue Node target builds. | `artifacts/validation/flue_build.*.log` | local, CI validate-release | release governance |
 | `e2e_artifacts` | Ledger, audit, telemetry, and validation artifacts exist after E2E. | `artifacts/validation/e2e_artifacts.*.log` | local, CI validate-release | release governance |
@@ -36,7 +38,7 @@ This catalog is an input to the final release judgment. It records gates that al
 
 | Gate | What it proves | Evidence location | Runs | §14-3 mapping |
 | --- | --- | --- | --- | --- |
-| `validate-release` job | Linux CI can run all 23 local release gates and retain evidence. | `.github/workflows/validate-release.yml`, uploaded `validate-release-evidence` artifact | CI | CI automation / release governance |
+| `validate-release` job | Linux CI can run every canonical local release gate and retain evidence. | `.github/workflows/validate-release.yml`, uploaded `validate-release-evidence` artifact | CI | CI automation / release governance |
 | `container-validate` job | Release validation image builds and runs validation in a container. | `.github/workflows/validate-release.yml`, `artifacts/container-validation/validation/final_verification_report.json` | CI | container build validation |
 | `deploy-smoke` step | Built container runs deterministic smoke and `/health` returns HTTP 200. | `.github/workflows/validate-release.yml`, `scripts/deploy-smoke.sh`, `.orchestration/acceptance/P2-T08.acceptance.md` | CI | deploy smoke |
 | `opensandbox-integration` job | Pinned OpenSandbox server and sandbox image pass create, file transfer, exec, artifact cap, env isolation, egress deny, and audit tests. | `.github/workflows/validate-release.yml`, `tests/integration/opensandbox.test.ts`, `.orchestration/acceptance/P2-T06c.acceptance.md` | CI | sandbox execution isolation log |
@@ -68,6 +70,10 @@ This catalog is an input to the final release judgment. It records gates that al
 
 ## Release Judgment Inputs
 
-- Local releasability: `artifacts/validation/final_verification_report.json` must contain `"status": "passed"` with all 23 local gates passed.
+- Local integrity readiness: in a trusted clean workspace, `scripts/ops-check.mjs` must verify a current, schema-closed `artifacts/validation/final_verification_report.json` whose ordered results exactly match every command in `scripts/validation-manifest.mjs` and whose source/report/manifest/log/artifact digests match current bytes. This detects drift and replay but does not authenticate execution against a hostile local writer.
 - CI releasability: GitHub Actions `validate-release`, `container-validate`, and `opensandbox-integration` jobs must be green.
 - Process releasability: agmsg history and acceptance records must cover delegated productionization tasks; promoted skills must cite validation evidence and rollback metadata.
+
+CI green status is not inferred from local metadata. `scripts/ci-evidence-check.mjs --run-id-file FILE --workflow NAME --job JOB_KEY --require-current-source` performs authenticated GitHub Actions run/job/log/artifact API lookups itself. It ties each selected workflow job or static-matrix leg to its exact uploaded Artifact ID/name, verifies every downloaded ZIP SHA-256, and requires either the complete canonical release report/records/logs/SBOM set or a complete job-specific `ci-source-binding.json` file manifest bound to the current source. It derives static matrix cardinality from the committed workflow and rejects missing legs. Handwritten API captures, artifact-only green status, and dynamic/include/exclude matrices without a later explicit contract are rejected. Existing job artifacts without that source-binding record are not current proof.
+
+`ops-check --evidence-only` is deliberately not listed as CI or release authentication: its local hashes establish consistency only within the trusted-workspace boundary. Production authenticity requires the live authenticated GitHub binding above (plus repository access/branch-protection controls operated outside this codebase); a local writer cannot promote its own internally consistent evidence to CI proof.

@@ -1,0 +1,48 @@
+{
+  "decision": {
+    "tenant": "acme",
+    "route_id": "split-route",
+    "provider": "litellm",
+    "model_id": "worker-main",
+    "classification": {
+      "value": "internal",
+      "trust_proof": {
+        "producer": "flue-pi-data-guard",
+        "verified_by": "flue-pi-platform-gateway",
+        "evidence_kind": "presidio-sqlglot-redaction-v1"
+      }
+    }
+  },
+  "policy": {
+    "classification": {
+      "producer": "flue-pi-data-guard",
+      "verified_by": "flue-pi-platform-gateway",
+      "evidence_kind": "presidio-sqlglot-redaction-v1",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "providers": {
+      "litellm": { "type": "litellm_proxy" },
+      "local": { "type": "local_gateway" }
+    },
+    "routes": [
+      {
+        "id": "split-route",
+        "match": { "data_classification": "public" },
+        "provider": "litellm",
+        "model_id": "other-model"
+      },
+      {
+        "id": "split-route",
+        "match": { "data_classification": "public" },
+        "provider": "local",
+        "model_id": "worker-main"
+      },
+      {
+        "id": "split-route",
+        "match": { "data_classification": "internal" },
+        "provider": "local",
+        "model_id": "other-model"
+      }
+    ]
+  }
+}

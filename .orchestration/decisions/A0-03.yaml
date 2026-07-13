@@ -1,0 +1,22 @@
+# User-owned decision record. Workers must not edit.
+spec_id: "SPEC-05"
+status: accepted
+accepted_by: user
+accepted_at: "2026-07-11T17:00:00+09:00"
+
+canonical_rule: production_fallback_prohibited
+synthetic_evidence_status: explicitly_marked_non_evidence
+
+runtime_contract:
+  exhausted_chain_result: "ok:false, reason=llm_unavailable"
+  workflow_outcome: typed_failure_no_summary
+  production_local_gateway_reachable: false
+  synthetic_output_scope: local_validation_only
+
+superseded_locations:
+  - path: docs/PRODUCTION_GATEWAY_DESIGN.md
+    locator: fallback chain and deterministic-fallback success passages
+  - path: policy/routing.prod.json
+    locator: production local_gateway provider declaration
+  - path: src/lib/productionGateway.ts
+    locator: production deterministic-fallback success branch

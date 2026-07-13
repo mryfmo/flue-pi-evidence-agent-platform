@@ -1,0 +1,317 @@
+A0-01-R1 final validation
+
+===== spec_positive =====
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-01,SPEC-02,SPEC-03
+spec-check:passed
+exit_code=0
+
+===== opa_test =====
+$ ./node_modules/node/bin/node scripts/opa-test.mjs
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (409.125µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (219.791µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (134.542µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (94.417µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (954.583µs)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (294.042µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (3.13625ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (867.75µs)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (174.917µs)
+data.eap.agent_test.test_guest_denied: PASS (108.25µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (122.375µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (144µs)
+data.eap.agent_test.test_shell_denied: PASS (101.167µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (107.667µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (112.25µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (208.167µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (2.797792ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (2.036583ms)
+data.eap.routing_test.test_missing_classification_denied: PASS (1.142625ms)
+data.eap.routing_test.test_forged_trust_denied: PASS (863.292µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (1.98025ms)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (602.083µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (473.791µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (426.625µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (315.292µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (578.667µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (1.704875ms)
+data.eap.routing_test.test_unknown_route_denied: PASS (871.417µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (644µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (653.875µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (753.834µs)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (2.40325ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (1.153958ms)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (152.375µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (118.125µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (135.25µs)
+data.eap.sandbox_test.test_egress_denied: PASS (121.75µs)
+data.eap.sandbox_test.test_env_denied: PASS (106.292µs)
+--------------------------------------------------------------------------------
+PASS: 38/38
+exit_code=0
+
+===== missing_classification =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== default_unknown =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_default_unknown.json 'data.eap.routing.deny_reason[_] == "unknown_route"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"unknown_route\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== legacy_shape =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && printf '%s\n' '{"decision":{"tenant":"acme","route_id":"route-1","provider":"external","data_classification":"confidential","approval_ref":"approval-123"},"policy":{"providers":{"external":{"type":"hosted"}},"routes":[{"id":"route-1"}]}}' | "$OPA_BIN" eval --fail --stdin-input --data policy 'not data.eap.routing.allow'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== unknown_spec =====
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec UNKNOWN-SPEC
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67
+  if (!reqIds.has(id)) throw new Error(`unknown spec: ${id}`);
+                             ^
+
+Error: unknown spec: UNKNOWN-SPEC
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67:30
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.19.0
+exit_code=1
+
+===== missing_spec =====
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec=
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:14
+  if (specs.some((id) => id.length === 0)) throw new Error('missing spec id');
+                                                 ^
+
+Error: missing spec id
+    at requestedSpecs (file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:14:50)
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:18:15
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.19.0
+exit_code=1
+
+===== happy_fixture =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_happy.json 'data.eap.routing.allow'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== forged_producer =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_forged_trust.json 'data.eap.routing.deny_reason[_] == "untrusted_classification"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"untrusted_classification\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== unknown_classification =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_unknown_classification.json 'data.eap.routing.deny_reason[_] == "unknown_classification"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"unknown_classification\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== provider_mismatch =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_provider_mismatch.json 'data.eap.routing.deny_reason[_] == "provider_mismatch"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"provider_mismatch\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== model_mismatch =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_model_mismatch.json 'data.eap.routing.deny_reason[_] == "model_mismatch"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"model_mismatch\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== classification_mismatch =====
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_classification_mismatch.json 'data.eap.routing.deny_reason[_] == "classification_mismatch"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"classification_mismatch\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+===== json_parse =====
+$ ./node_modules/node/bin/node -e "for (const f of ['policy/routing.prod.json','schemas/routing-input.schema.json','docs/requirements.json','docs/traceability.json']) JSON.parse(require('node:fs').readFileSync(f)); console.log('json-parse:passed')"
+json-parse:passed
+exit_code=0
+
+===== diff_check =====
+$ git diff --check
+exit_code=0
+
+===== required_crit_gate =====
+$ make require-crit-review
+make: *** No rule to make target `require-crit-review'.  Stop.
+exit_code=2
+
+===== crit_status_before_fallback =====
+$ crit status --json
+{
+  "branch": "main",
+  "daemon": {
+    "running": false
+  },
+  "review_file": "/Users/mryfmo/.crit/reviews/38c1b28ec435/review.json",
+  "review_file_exists": false,
+  "vcs": "git"
+}
+exit_code=0
+
+===== crit_browser_fallback =====
+$ crit --no-open
+Started crit daemon at http://localhost:54844 (session 38c1b28ec435, PID 27702)
+No Finish Review action was received after repeated waits. The foreground review was interrupted; no review receipt was created.
+
+===== crit_status_after_fallback =====
+$ crit status --json
+{
+  "branch": "main",
+  "daemon": {
+    "running": false
+  },
+  "review_file": "/Users/mryfmo/.crit/reviews/38c1b28ec435/review.json",
+  "review_file_exists": false,
+  "vcs": "git"
+}
+$ crit comments --all --json
+null
+exit_code=0

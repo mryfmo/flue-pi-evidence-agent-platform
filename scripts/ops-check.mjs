@@ -1,12 +1,25 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
+import { verifyValidationReport } from './validation-manifest.mjs';
 
-const rows = [
-  checkGitRemote(),
-  checkFinalVerification(),
-  checkBundleRevision(),
-  checkPromotedSkill(),
-];
+const evidenceOnly = process.argv.slice(2).includes('--evidence-only');
+if (
+  process.argv.slice(2).some((argument) => argument !== '--evidence-only') ||
+  process.argv.slice(2).filter((argument) => argument === '--evidence-only')
+    .length > 1
+) {
+  console.error('usage: ops-check.mjs [--evidence-only]');
+  process.exit(2);
+}
+
+const rows = evidenceOnly
+  ? [checkFinalVerification()]
+  : [
+      checkGitRemote(),
+      checkFinalVerification(),
+      checkBundleRevision(),
+      checkPromotedSkill(),
+    ];
 
 const widths = [12, 24, 70];
 console.log(`| ${pad('status', 12)} | ${pad('check', 24)} | details |`);
@@ -33,11 +46,11 @@ function checkGitRemote() {
         stdio: ['ignore', 'pipe', 'ignore'],
         timeout: 3000,
       });
-      return ok('git remote', `origin reachable: ${remote}`);
+      return ok('git remote', `origin reachable: ${sanitizeRemote(remote)}`);
     } catch {
       return warn(
         'git remote',
-        `origin configured but reachability offline: ${remote}`,
+        `origin configured but reachability offline: ${sanitizeRemote(remote)}`,
       );
     }
   } catch {
@@ -48,11 +61,18 @@ function checkGitRemote() {
 function checkFinalVerification() {
   const path = 'artifacts/validation/final_verification_report.json';
   if (!existsSync(path)) return fail('final report', `${path} missing`);
-  const report = JSON.parse(readFileSync(path, 'utf8'));
-  if (report.status !== 'passed') {
-    return fail('final report', `latest status=${report.status ?? 'missing'}`);
+  try {
+    const report = verifyValidationReport('.', path);
+    return ok(
+      'final report',
+      `status=passed revision=${report.source.revision} tree=${report.source.treeDigest}`,
+    );
+  } catch (error) {
+    return fail(
+      'final report',
+      error instanceof Error ? error.message : 'verification failed',
+    );
   }
-  return ok('final report', `status=passed generatedAt=${report.generatedAt}`);
 }
 
 function checkBundleRevision() {
@@ -124,4 +144,8 @@ function fail(check, details) {
 
 function pad(value, width) {
   return value.padEnd(width).slice(0, width);
+}
+
+function sanitizeRemote(remote) {
+  return remote.replace(/^(https?:\/\/)[^/@]+@/, '$1');
 }

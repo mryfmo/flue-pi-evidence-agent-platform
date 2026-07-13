@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/acceptance.schema.json",
+  "title": "Canonical acceptance tier decision",
+  "oneOf": [
+    { "$ref": "#/$defs/autoDecision" },
+    { "$ref": "#/$defs/confirmDecision" },
+    { "$ref": "#/$defs/reviewDecision" }
+  ],
+  "$defs": {
+    "riskInputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_risk",
+        "controlled_resource",
+        "all_evidence_green",
+        "deterministic_checks_passed",
+        "unresolved_policy_warning",
+        "policy_denied",
+        "side_effect",
+        "publishable_result",
+        "restricted_data",
+        "release_decision",
+        "skill_promotion"
+      ],
+      "properties": {
+        "task_risk": { "enum": ["low", "moderate", "high"] },
+        "controlled_resource": { "type": "boolean" },
+        "all_evidence_green": { "type": "boolean" },
+        "deterministic_checks_passed": { "type": "boolean" },
+        "unresolved_policy_warning": { "type": "boolean" },
+        "policy_denied": { "type": "boolean" },
+        "side_effect": { "type": "boolean" },
+        "publishable_result": { "type": "boolean" },
+        "restricted_data": { "type": "boolean" },
+        "release_decision": { "type": "boolean" },
+        "skill_promotion": { "type": "boolean" }
+      }
+    },
+    "decisionBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "task_id", "acceptance_tier", "risk_inputs"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "task_id": { "type": "string", "minLength": 1 },
+        "acceptance_tier": { "enum": ["auto", "confirm", "review"] },
+        "risk_inputs": { "$ref": "#/$defs/riskInputs" }
+      }
+    },
+    "autoRisk": {
+      "allOf": [
+        { "$ref": "#/$defs/riskInputs" },
+        {
+          "type": "object",
+          "properties": {
+            "task_risk": { "const": "low" },
+            "controlled_resource": { "const": false },
+            "all_evidence_green": { "const": true },
+            "deterministic_checks_passed": { "const": true },
+            "unresolved_policy_warning": { "const": false },
+            "policy_denied": { "const": false },
+            "side_effect": { "const": false },
+            "publishable_result": { "const": false },
+            "restricted_data": { "const": false },
+            "release_decision": { "const": false },
+            "skill_promotion": { "const": false }
+          }
+        }
+      ]
+    },
+    "confirmRisk": {
+      "allOf": [
+        { "$ref": "#/$defs/riskInputs" },
+        {
+          "type": "object",
+          "properties": {
+            "task_risk": { "enum": ["low", "moderate"] },
+            "controlled_resource": { "const": false },
+            "all_evidence_green": { "const": true },
+            "deterministic_checks_passed": { "const": true },
+            "unresolved_policy_warning": { "const": false },
+            "policy_denied": { "const": false },
+            "restricted_data": { "const": false },
+            "release_decision": { "const": false },
+            "skill_promotion": { "const": false }
+          },
+          "anyOf": [
+            { "type": "object", "properties": { "task_risk": { "const": "moderate" } } },
+            { "type": "object", "properties": { "side_effect": { "const": true } } },
+            { "type": "object", "properties": { "publishable_result": { "const": true } } }
+          ]
+        }
+      ]
+    },
+    "autoDecision": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionBase" },
+        {
+          "type": "object",
+          "properties": {
+            "acceptance_tier": { "const": "auto" },
+            "risk_inputs": { "$ref": "#/$defs/autoRisk" }
+          }
+        }
+      ]
+    },
+    "confirmDecision": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionBase" },
+        {
+          "type": "object",
+          "properties": {
+            "acceptance_tier": { "const": "confirm" },
+            "risk_inputs": { "$ref": "#/$defs/confirmRisk" }
+          }
+        }
+      ]
+    },
+    "reviewDecision": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionBase" },
+        {
+          "type": "object",
+          "properties": {
+            "acceptance_tier": { "const": "review" },
+            "risk_inputs": {
+              "allOf": [
+                { "$ref": "#/$defs/riskInputs" },
+                { "not": { "anyOf": [{ "$ref": "#/$defs/autoRisk" }, { "$ref": "#/$defs/confirmRisk" }] } }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "operation": "resume",
+  "now": "2026-07-13T12:00:00Z",
+  "identity_context": {
+    "subject_id": "reviewer-1", "principal_type": "authenticated", "tenant_memberships": ["acme"],
+    "roles": ["security_reviewer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-agent-policy",
+    "verification": {"status": "verified", "owner": "flue-pi-platform-gateway"}, "request_binding": {"id": "req-1"}
+  },
+  "request_context": {"tenant": "acme", "binding_id": "req-1"},
+  "record_context": {"persisted": true, "immutable": true, "integrity_verified": true},
+  "approval": {
+    "schema_version": "1.0", "approval_id": "approval-1", "tenant_id": "acme", "task_id": "task-1", "run_id": "run-1",
+    "source": {"revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "apply_patch",
+    "requester_identity": {
+      "subject_id": "requester-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["software_engineer"],
+      "issuer": "flue-pi-identity-authority", "audience": "flue-pi-agent-policy", "verification": {"status": "verified", "owner": "flue-pi-platform-gateway"},
+      "request_binding": {"id": "requester-binding"}
+    },
+    "created_at": "2026-07-13T10:00:00Z", "expires_at": "2026-07-14T10:00:00Z", "state": "approved",
+    "decision": {
+      "outcome": "approved", "decided_at": "2026-07-13T11:00:00Z", "idempotency_key": "approve-key",
+      "request_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "approver_identity": {
+        "subject_id": "reviewer-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["security_reviewer"],
+        "issuer": "flue-pi-identity-authority", "audience": "flue-pi-agent-policy", "verification": {"status": "verified", "owner": "flue-pi-platform-gateway"},
+        "request_binding": {"id": "approve-binding"}
+      }
+    },
+    "resume": {"status": "not_resumed"}
+  },
+  "current": {
+    "tenant_id": "acme", "task_id": "task-1", "run_id": "run-1",
+    "source": {"revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "apply_patch"
+  },
+  "idempotency": {"key": "resume-key", "request_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+}

@@ -1,0 +1,179 @@
+A0-03 revision 1 validation — 2026-07-12
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-decision .orchestration/decisions/A0-03.yaml
+OUTPUT:
+spec-check:passed
+EXIT=0
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-05
+OUTPUT:
+spec-check:passed
+EXIT=0
+
+COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs
+OUTPUT:
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS
+data.eap.cc_guard.test_deny_active_lease_path: PASS
+data.eap.cc_guard.test_allow_normal_path: PASS
+data.eap.cc_guard.test_deny_release_branch_operation: PASS
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS
+data.eap.agent_test.test_missing_identity_denied: PASS
+data.eap.agent_test.test_malformed_identity_denied: PASS
+data.eap.agent_test.test_anonymous_denied: PASS
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS
+data.eap.agent_test.test_unverified_denied: PASS
+data.eap.agent_test.test_tenant_mismatch_denied: PASS
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS
+data.eap.agent_test.test_missing_role_denied: PASS
+data.eap.agent_test.test_absent_role_denied: PASS
+data.eap.agent_test.test_unknown_role_denied: PASS
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS
+data.eap.agent_test.test_insufficient_role_denied: PASS
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS
+data.eap.agent_test.test_body_identity_denied: PASS
+data.eap.agent_test.test_shell_denied: PASS
+data.eap.agent_test.test_raw_sql_denied: PASS
+data.eap.agent_test.test_unknown_tool_denied: PASS
+data.eap.agent_test.test_high_risk_requires_approval: PASS
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS
+data.eap.routing_test.test_missing_classification_denied: PASS
+data.eap.routing_test.test_forged_trust_denied: PASS
+data.eap.routing_test.test_forged_verifier_denied: PASS
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS
+data.eap.routing_test.test_missing_proof_denied: PASS
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS
+data.eap.routing_test.test_legacy_body_classification_denied: PASS
+data.eap.routing_test.test_unknown_classification_denied: PASS
+data.eap.routing_test.test_malformed_classification_denied: PASS
+data.eap.routing_test.test_unknown_route_denied: PASS
+data.eap.routing_test.test_provider_mismatch_denied: PASS
+data.eap.routing_test.test_model_mismatch_denied: PASS
+data.eap.routing_test.test_classification_mismatch_denied: PASS
+data.eap.routing_test.test_split_route_witnesses_denied: PASS
+data.eap.routing_test.test_confidential_external_requires_approval: PASS
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS
+data.eap.routing_test.test_production_local_fallback_denied: PASS
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS
+data.eap.routing_test.test_missing_execution_environment_denied: PASS
+data.eap.routing_test.test_malformed_execution_denied: PASS
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS
+data.eap.routing_test.test_production_local_gateway_denied: PASS
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS
+data.eap.routing_test.test_synthetic_evidence_denied: PASS
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS
+data.eap.sandbox_test.test_egress_denied: PASS
+data.eap.sandbox_test.test_env_denied: PASS
+--------------------------------------------------------------------------------
+PASS: 72/72
+EXIT=0
+
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/spec05_unmarked_synthetic.json 'not data.eap.routing.allow'
+OUTPUT:
+{"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-decision .orchestration/validation/A0-03.malformed.yaml
+OUTPUT:
+Error: decision does not exactly match the accepted SPEC-05 contract
+EXIT=1
+The temporary malformed decision changed canonical_rule to production_fallback_required and superseded_locations to an empty list; it was removed after this proof.
+
+DIRECT REPRODUCED COUNTEREXAMPLES:
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_unknown_environment.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_deterministic_local_fallback.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_exhausted_false.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+DIRECT GENERAL FAIL-CLOSED PROBES:
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_missing_environment.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_malformed_execution.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_missing_exhaustion.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+DIRECT ORIGINAL ADVERSARIAL EVALUATIONS:
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_production_local_fallback.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_exhausted_ok.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_exhausted_summary.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_unmarked_synthetic.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_synthetic_evidence.json 'not data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"not data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: opa eval --fail --data policy --input tests/fixtures/policy/spec05_local_validation_non_evidence.json 'data.eap.routing.allow'
+OUTPUT: {"result":[{"expressions":[{"value":true,"text":"data.eap.routing.allow","location":{"row":1,"col":1}}]}]}
+EXIT=0
+
+COMMAND: git diff --check
+OUTPUT: <empty>
+EXIT=0
+
+REVIEW GATE:
+
+COMMAND: make require-crit-review
+OUTPUT: make: *** No rule to make target `require-crit-review'.  Stop.
+EXIT=2
+
+COMMAND: crit status --json
+OUTPUT:
+{"branch":"main","daemon":{"running":false},"review_file":"/Users/mryfmo/.crit/reviews/38c1b28ec435/review.json","review_file_exists":false,"vcs":"git"}
+EXIT=0
+Browser Crit was not used.

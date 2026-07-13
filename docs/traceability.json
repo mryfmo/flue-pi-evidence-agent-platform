@@ -1,12 +1,221 @@
 {
+  "schemaVersion": 1,
   "links": [
-    {"requirement":"PR-001","implementation":["src/agents/remediator.ts","src/lib/localGateway.ts"],"tests":["tests/system/flue_pi.test.ts","tests/e2e/remediate_e2e.test.ts"]},
-    {"requirement":"PR-002","implementation":["src/lib/ledger.ts","src/lib/code.ts"],"tests":["tests/unit/ledger.test.ts","tests/component/code.test.ts"]},
-    {"requirement":"PR-003","implementation":["src/lib/opa.ts","policy/agent.rego"],"tests":["tests/component/opa.test.ts"]},
-    {"requirement":"PR-004","implementation":["src/lib/ledger.ts"],"tests":["tests/regression/regression_closure.test.ts"]},
-    {"requirement":"PR-005","implementation":["scripts/data_guard.py","src/lib/dataProxy.ts"],"tests":["tests/component/data_proxy.test.ts","tests_py/test_data_guard.py"]},
-    {"requirement":"PR-006","implementation":["scripts/data_guard.py","policy/agent.rego"],"tests":["tests/failure/failure_security.test.ts","tests/security/policy_security.test.ts"]},
-    {"requirement":"PR-007","implementation":["src/lib/telemetry.ts","src/lib/audit.ts"],"tests":["tests/e2e/remediate_e2e.test.ts"]},
-    {"requirement":"PR-008","implementation":["scripts/validate-release.mjs"],"tests":["artifacts/validation/final_verification_report.json"]}
+    {
+      "requirement": "FR-001"
+    },
+    {
+      "requirement": "FR-002"
+    },
+    {
+      "requirement": "FR-003"
+    },
+    {
+      "requirement": "FR-004"
+    },
+    {
+      "requirement": "FR-005"
+    },
+    {
+      "requirement": "FR-006"
+    },
+    {
+      "requirement": "FR-007"
+    },
+    {
+      "requirement": "FR-008"
+    },
+    {
+      "requirement": "FR-009"
+    },
+    {
+      "requirement": "FR-010"
+    },
+    {
+      "requirement": "FR-011"
+    },
+    {
+      "requirement": "FR-012"
+    },
+    {
+      "requirement": "FR-013"
+    },
+    {
+      "requirement": "NFR-001"
+    },
+    {
+      "requirement": "NFR-002"
+    },
+    {
+      "requirement": "NFR-003"
+    },
+    {
+      "requirement": "NFR-004"
+    },
+    {
+      "requirement": "NFR-005"
+    },
+    {
+      "requirement": "NFR-006"
+    },
+    {
+      "requirement": "NFR-007"
+    },
+    {
+      "requirement": "NFR-008"
+    },
+    {
+      "requirement": "NFR-009"
+    },
+    {
+      "requirement": "NFR-010"
+    },
+    {
+      "requirement": "NFR-011"
+    },
+    {
+      "requirement": "PR-001"
+    },
+    {
+      "requirement": "PR-002"
+    },
+    {
+      "requirement": "PR-003"
+    },
+    {
+      "requirement": "PR-004"
+    },
+    {
+      "requirement": "PR-005"
+    },
+    {
+      "requirement": "PR-006"
+    },
+    {
+      "requirement": "PR-007"
+    },
+    {
+      "requirement": "PR-008"
+    },
+    {
+      "requirement": "REQ-AUDIT-002"
+    },
+    {
+      "requirement": "REQ-DATA-001"
+    },
+    {
+      "requirement": "REQ-EVIDENCE-001"
+    },
+    {
+      "requirement": "REQ-FAILCLOSED-002"
+    },
+    {
+      "requirement": "REQ-FLUE-001"
+    },
+    {
+      "requirement": "REQ-GATEWAY-001"
+    },
+    {
+      "requirement": "REQ-HTTP-REQUEST-001"
+    },
+    {
+      "requirement": "REQ-MEASURE-001"
+    },
+    {
+      "requirement": "REQ-OBS-001"
+    },
+    {
+      "requirement": "REQ-OPA-001"
+    },
+    {
+      "requirement": "REQ-PATCH-001"
+    },
+    {
+      "requirement": "REQ-PI-001"
+    },
+    {
+      "requirement": "REQ-REDACTION-002"
+    },
+    {
+      "requirement": "REQ-RELEASE-001"
+    },
+    {
+      "requirement": "REQ-ROUTING-001"
+    },
+    {
+      "requirement": "REQ-SANDBOX-001"
+    },
+    {
+      "requirement": "REQ-SANDBOX-002"
+    },
+    {
+      "requirement": "REQ-SANDBOX-003"
+    },
+    {
+      "requirement": "REQ-SANDBOX-004"
+    },
+    {
+      "requirement": "REQ-VALIDATION-001"
+    },
+    {
+      "requirement": "SPEC-01"
+    },
+    {
+      "requirement": "SPEC-02"
+    },
+    {
+      "requirement": "SPEC-03"
+    },
+    {
+      "requirement": "SPEC-04"
+    },
+    {
+      "requirement": "SPEC-05"
+    },
+    {
+      "requirement": "SPEC-06"
+    },
+    {
+      "requirement": "SPEC-07"
+    },
+    {
+      "requirement": "SPEC-08"
+    },
+    {
+      "requirement": "SPEC-09"
+    },
+    {
+      "requirement": "SPEC-10"
+    },
+    {
+      "requirement": "SPEC-11"
+    },
+    {
+      "requirement": "SPEC-12"
+    },
+    {
+      "requirement": "SPEC-13"
+    },
+    {
+      "requirement": "SPEC-14"
+    },
+    {
+      "requirement": "SPEC-15"
+    },
+    {
+      "requirement": "SPEC-16"
+    },
+    {
+      "requirement": "SPEC-17"
+    },
+    {
+      "requirement": "SPEC-18"
+    },
+    {
+      "requirement": "SPEC-19"
+    },
+    {
+      "requirement": "SPEC-20"
+    }
   ]
 }

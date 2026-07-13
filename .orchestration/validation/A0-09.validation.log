@@ -1,0 +1,216 @@
+A0-09 Revision 2 validation
+Date: 2026-07-13 Asia/Tokyo
+
+PRECONDITION
+COMMAND: grep -q 'status: accepted' .orchestration/acceptance/A0-02.acceptance.md && grep -q 'status: accepted' .orchestration/acceptance/A0-06.acceptance.md
+OUTPUT: (none)
+EXIT_CODE=0
+
+TEST-FIRST REVISION 2 PROOF
+Before correction, the focused suite reproduced two failures:
+- default private dispatch: expected 200, received 500 because the injected private app was not used;
+- double-percent encoded raw route: expected canonical 404, received the mounted Flue handler's 500.
+OUTPUT SUMMARY: Test Files 1 failed (1); Tests 2 failed | 9 passed (11)
+EXIT_CODE=1
+
+REQUIRED COMMAND 1
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-15 --check-request-schema schemas/remediation-request.schema.json
+OUTPUT:
+spec-check:passed
+EXIT_CODE=0
+
+REQUIRED COMMAND 2
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  13:03:54
+   Duration  617ms (transform 38ms, setup 0ms, import 467ms, tests 52ms, environment 0ms)
+EXIT_CODE=0
+
+REQUIRED COMMAND 3
+COMMAND: npm run typecheck
+OUTPUT:
+> flue-pi-evidence-agent-platform@1.2.0 typecheck
+> tsc --noEmit
+EXIT_CODE=0
+
+REQUIRED COMMAND 4
+COMMAND: npm run lint
+OUTPUT:
+> flue-pi-evidence-agent-platform@1.2.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 60 files in 29ms. No fixes applied.
+EXIT_CODE=0
+
+REQUIRED COMMAND 5
+COMMAND: git diff --check
+OUTPUT: (none)
+EXIT_CODE=0
+
+NAMED DOD TEST 1
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'accepts one valid versioned request'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:10
+   Duration  672ms (transform 45ms, setup 0ms, import 541ms, tests 21ms, environment 0ms)
+EXIT_CODE=0
+
+NAMED DOD TEST 2
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'rejects invalid requests before side effects'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:10
+   Duration  677ms (transform 47ms, setup 0ms, import 542ms, tests 30ms, environment 0ms)
+EXIT_CODE=0
+
+NAMED DOD TEST 3
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'rejects body identity forgery'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:10
+   Duration  681ms (transform 45ms, setup 0ms, import 543ms, tests 28ms, environment 0ms)
+EXIT_CODE=0
+
+REVISION 2: DEFAULT PRIVATE DISPATCH EXACTLY ONCE
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'dispatches one valid request through the default private Flue app'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:10
+   Duration  671ms (transform 47ms, setup 0ms, import 542ms, tests 19ms, environment 0ms)
+EXIT_CODE=0
+
+REVISION 2: RAW ROUTE VARIANTS AND CANONICAL NOTFOUND
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'does not expose the unvalidated Flue workflow route'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:22
+   Duration  422ms (transform 44ms, setup 0ms, import 313ms, tests 17ms, environment 0ms)
+EXIT_CODE=0
+
+Covered paths:
+- /workflows/remediate
+- /workflows/remediate/
+- /workflows/remediate/suffix
+- /workflows/remediate-suffix
+- /workflows/%72emediate
+- /workflows/%2572emediate
+- /workflows%2Fremediate
+- /workflows//remediate
+- /not-public
+Each asserted canonical `404 not_found`, zero workflow calls, and zero private Flue calls.
+
+REVISION 1: DUPLICATE CONTENT-TYPE PARAMETERS
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'rejects duplicate Content-Type parameter names'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:22
+   Duration  419ms (transform 43ms, setup 0ms, import 312ms, tests 16ms, environment 0ms)
+EXIT_CODE=0
+
+REVISION 1: INDEPENDENT UNICODE EXPECTATIONS AND SCHEMA/RUNTIME MATRIX
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'uses Unicode code points and agrees with the JSON Schema matrix'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:22
+   Duration  445ms (transform 45ms, setup 0ms, import 312ms, tests 47ms, environment 0ms)
+EXIT_CODE=0
+
+ADVERSARIAL: EXACT RAW BYTE LIMITS
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'enforces actual raw byte limits even when Content-Length understates'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:22
+   Duration  422ms (transform 46ms, setup 0ms, import 312ms, tests 18ms, environment 0ms)
+EXIT_CODE=0
+
+ADVERSARIAL: NO BODY READ BEFORE HEADER REJECTION
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'does not read a body before media-type or declared-size rejection'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:35
+   Duration  380ms (transform 39ms, setup 0ms, import 285ms, tests 12ms, environment 0ms)
+EXIT_CODE=0
+
+ADVERSARIAL: TRUSTED IDENTITY TUPLE
+COMMAND: ./node_modules/.bin/vitest run tests/component/request_contract.test.ts -t 'denies every incomplete or forged trusted identity tuple'
+OUTPUT:
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 10 skipped (11)
+   Start at  13:04:35
+   Duration  381ms (transform 41ms, setup 0ms, import 280ms, tests 15ms, environment 0ms)
+EXIT_CODE=0
+
+PUBLIC MOUNT / FINITE DECODE GUARD ABSENCE
+COMMAND: if rg -n "app\\.route|app\\.use\\('/workflows|decodeURIComponent" src/app.ts; then exit 1; else echo 'public-flue-mount-and-decode-guard:absent'; fi
+OUTPUT:
+public-flue-mount-and-decode-guard:absent
+EXIT_CODE=0
+
+ACCEPTED SPEC REGRESSION
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-12,SPEC-15,SPEC-16 --check-request-schema schemas/remediation-request.schema.json
+OUTPUT:
+spec-check:passed
+EXIT_CODE=0
+
+INSPECTION CONCLUSION
+The public Hono app does not mount or forward to the private Flue app for unknown URLs. The private app is captured only by the default validated invocation closure. The valid-route test proves one private call; every raw/unknown-path test proves zero workflow and private calls.
+
+CRIT GATE AVAILABILITY
+COMMAND: make require-crit-review
+OUTPUT:
+make: *** No rule to make target `require-crit-review'.  Stop.
+EXIT_CODE=2 (expected repository state; browser Crit not launched)
+
+FINAL AGGREGATE RERUN
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-15 --check-request-schema schemas/remediation-request.schema.json && ./node_modules/.bin/vitest run tests/component/request_contract.test.ts && npm run typecheck && npm run lint && git diff --check && test -f .orchestration/reports/A0-09.report.md && test -f .orchestration/validation/A0-09.validation.log && test -f .orchestration/sandboxes/A0-09.sandbox.md && test -f .orchestration/learning/A0-09.learning.md && test -f .orchestration/autoskill/runs/A0-09.autoskill.md
+OUTPUT:
+spec-check:passed
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  13:06:15
+   Duration  804ms (transform 61ms, setup 0ms, import 610ms, tests 62ms, environment 0ms)
+
+> flue-pi-evidence-agent-platform@1.2.0 typecheck
+> tsc --noEmit
+
+> flue-pi-evidence-agent-platform@1.2.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 60 files in 40ms. No fixes applied.
+EXIT_CODE=0

@@ -1,184 +1,142 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  GATES,
+  collectSourceIdentity,
+  createGateRecord,
+  createValidationReport,
+  digest,
+  validateGateManifest,
+  writeGateRecord,
+  writeValidationReport,
+} from './validation-manifest.mjs';
 
 const validationDir = 'artifacts/validation';
+const runId = randomUUID();
+let identity;
+try {
+  validateGateManifest();
+  identity = collectSourceIdentity();
+  if (identity.dirty) throw new Error('dirty state rejected');
+} catch (error) {
+  if (identity) {
+    mkdirSync(validationDir, { recursive: true });
+    writeReport('failed', [], identity);
+  }
+  console.error(
+    `validate-release:failed binding=${error instanceof Error ? error.message : 'source identity'}`,
+  );
+  process.exit(1);
+}
+
 rmSync(validationDir, { recursive: true, force: true });
 mkdirSync(validationDir, { recursive: true });
 mkdirSync('artifacts/sbom', { recursive: true });
 
-const node = './node_modules/node/bin/node';
-const commands = [
-  ['setup_python', node, ['scripts/setup-python.mjs']],
-  ['spec_traceability', node, ['scripts/spec-check.mjs']],
-  [
-    'format',
-    './node_modules/.bin/biome',
-    [
-      'format',
-      '--diagnostic-level=error',
-      'src',
-      'tests',
-      'scripts',
-      'flue.config.ts',
-    ],
-  ],
-  [
-    'lint',
-    './node_modules/.bin/biome',
-    [
-      'lint',
-      '--diagnostic-level=error',
-      'src',
-      'tests',
-      'scripts',
-      'flue.config.ts',
-    ],
-  ],
-  ['typecheck', './node_modules/.bin/tsc', ['--noEmit']],
-  ['opa', node, ['scripts/opa-check.mjs']],
-  ['litellm_config', node, ['scripts/check-litellm-config.mjs']],
-  [
-    'python_compile',
-    '.venv/bin/python',
-    ['-m', 'py_compile', 'scripts/data_guard.py'],
-  ],
-  ['python_ruff', '.venv/bin/ruff', ['check', 'scripts', 'tests_py']],
-  ['python_mypy', '.venv/bin/mypy', ['scripts/data_guard.py']],
-  [
-    'python_bandit',
-    '.venv/bin/bandit',
-    ['-q', '-r', 'scripts', '-x', 'scripts/__pycache__'],
-  ],
-  [
-    'python_tests',
-    '.venv/bin/python',
-    [
-      '-m',
-      'pytest',
-      '-q',
-      'tests_py',
-      '--cov=scripts',
-      '--cov-report=term-missing',
-      '--cov-fail-under=85',
-    ],
-  ],
-  [
-    'vitest_all',
-    'bash',
-    ['-lc', 'timeout 180 ./node_modules/.bin/vitest run --pool=forks'],
-  ],
-  [
-    'skill_lifecycle_node',
-    node,
-    ['--test', 'tests/unit/skill_lifecycle.test.mjs'],
-  ],
-  [
-    'llm_contract',
-    'bash',
-    ['-lc', 'timeout 120 npx vitest run tests/contract --pool=forks'],
-  ],
-  [
-    'flue_build',
-    node,
-    ['./node_modules/@flue/cli/bin/flue.mjs', 'build', '--target', 'node'],
-  ],
-  ['e2e_artifacts', node, ['scripts/assert-e2e-artifacts.mjs']],
-  [
-    'npm_audit_prod',
-    'bash',
-    ['-lc', 'timeout 60 npm audit --audit-level=high --omit=dev'],
-  ],
-  [
-    'npm_sbom_prod',
-    'bash',
-    ['-lc', 'timeout 60 npm sbom --omit=dev --sbom-format=cyclonedx --json'],
-  ],
-  [
-    'python_sbom',
-    '.venv/bin/python',
-    [
-      '-c',
-      "import importlib.metadata as m, json, uuid, datetime; print(json.dumps({'bomFormat':'CycloneDX','specVersion':'1.4','serialNumber':'urn:uuid:'+str(uuid.uuid4()),'version':1,'metadata':{'timestamp':datetime.datetime.now(datetime.UTC).isoformat()},'components':[{'type':'library','name':d.metadata['Name'],'version':d.version,'purl':'pkg:pypi/'+d.metadata['Name'].lower().replace('_','-')+'@'+d.version} for d in sorted(m.distributions(), key=lambda d: d.metadata['Name'].lower())]}))",
-    ],
-  ],
-  [
-    'python_audit',
-    '.venv/bin/pip-audit',
-    ['--local', '--progress-spinner', 'off'],
-  ],
-  ['lockfile_registry', node, ['scripts/check-lockfile-registry.mjs']],
-  ['opa_test', node, ['scripts/opa-test.mjs']],
-  ['opa_bundle', node, ['scripts/opa-bundle.mjs']],
-  ['skill_registry', node, ['scripts/check-skill-registry.mjs']],
-];
-
 const results = [];
-for (const [name, cmd, args] of commands) {
+for (let sequence = 0; sequence < GATES.length; sequence += 1) {
+  const gate = GATES[sequence];
   const start = Date.now();
-  const completed = spawnSync(cmd, args, {
+  const completed = spawnSync(gate.executable, gate.args, {
     encoding: 'utf8',
     maxBuffer: 20 * 1024 * 1024,
     timeout: 120_000,
   });
-  let stdout = completed.stdout ?? '';
-  if (name === 'npm_sbom_prod') {
-    mkdirSync('artifacts/sbom', { recursive: true });
-    writeFileSync('artifacts/sbom/npm-cyclonedx.json', stdout, 'utf8');
-    stdout = `wrote artifacts/sbom/npm-cyclonedx.json\n${stdout.slice(0, 500)}`;
+  const rawStdout = completed.stdout ?? '';
+  const stderr = completed.stderr ?? '';
+  let stdout = rawStdout;
+  const artifactDigests = {};
+  if (gate.stdoutArtifact) {
+    writeFileSync(gate.stdoutArtifact, rawStdout, 'utf8');
+    artifactDigests[gate.stdoutArtifact] = digest(
+      readFileSync(gate.stdoutArtifact),
+    );
+    stdout = `wrote ${gate.stdoutArtifact}\n${rawStdout.slice(0, 500)}`;
   }
-  if (name === 'python_sbom') {
-    mkdirSync('artifacts/sbom', { recursive: true });
-    writeFileSync('artifacts/sbom/python-cyclonedx.json', stdout, 'utf8');
-    stdout = `wrote artifacts/sbom/python-cyclonedx.json\n${stdout.slice(0, 500)}`;
-  }
-  writeFileSync(`${validationDir}/${name}.stdout.log`, stdout, 'utf8');
-  writeFileSync(
-    `${validationDir}/${name}.stderr.log`,
-    completed.stderr ?? '',
-    'utf8',
-  );
+  writeFileSync(`${validationDir}/${gate.name}.stdout.log`, stdout, 'utf8');
+  writeFileSync(`${validationDir}/${gate.name}.stderr.log`, stderr, 'utf8');
   const result = {
-    name,
+    name: gate.name,
+    executable: gate.executable,
+    args: gate.args,
     status: completed.status === 0 ? 'passed' : 'failed',
-    returnCode: completed.status,
+    returnCode: completed.status ?? 1,
     durationMs: Date.now() - start,
   };
+  const record = createGateRecord({
+    gate,
+    result,
+    identity,
+    runId,
+    sequence,
+    stdoutDigest: digest(
+      readFileSync(`${validationDir}/${gate.name}.stdout.log`),
+    ),
+    stderrDigest: digest(
+      readFileSync(`${validationDir}/${gate.name}.stderr.log`),
+    ),
+    artifactDigests,
+  });
+  result.recordDigest = writeGateRecord(record);
   results.push(result);
   if (completed.status !== 0) {
     console.error(
-      `validate-release:failed gate=${name} returnCode=${completed.status ?? 1}`,
+      `validate-release:failed gate=${gate.name} returnCode=${completed.status ?? 1} logs=${validationDir}/${gate.name}.{stdout,stderr}.log`,
     );
-    if ((completed.stderr ?? '').trim()) console.error(completed.stderr.trim());
-    if (stdout.trim()) console.error(stdout.trim());
-    writeReport('failed', results);
+    writeReport('failed', results, identity);
     process.exit(completed.status ?? 1);
   }
 }
-writeReport('passed', results);
-console.log('validate-release:passed');
-process.exit(0);
 
-function writeReport(status, results) {
-  const report = {
-    status,
-    generatedAt: new Date().toISOString(),
-    node: execFileSync(node, ['--version'], { encoding: 'utf8' }).trim(),
-    results,
-  };
-  writeFileSync(
-    `${validationDir}/final_verification_report.json`,
-    JSON.stringify(report, null, 2),
-    'utf8',
+try {
+  const current = collectSourceIdentity();
+  if (
+    current.dirty ||
+    current.revision !== identity.revision ||
+    current.treeDigest !== identity.treeDigest ||
+    current.dirtyDigest !== identity.dirtyDigest ||
+    current.validationScriptDigest !== identity.validationScriptDigest ||
+    current.gateManifestDigest !== identity.gateManifestDigest ||
+    current.releaseFileManifestDigest !== identity.releaseFileManifestDigest
+  ) {
+    throw new Error('source identity changed during validation');
+  }
+} catch (error) {
+  console.error(
+    `validate-release:failed binding=${error instanceof Error ? error.message : 'source identity'}`,
   );
-  const md = [
+  writeReport('failed', results, identity);
+  process.exit(1);
+}
+
+writeReport('passed', results, identity);
+console.log('validate-release:passed');
+
+function writeReport(status, gateResults, sourceIdentity) {
+  const report = createValidationReport({
+    status,
+    results: gateResults,
+    identity: sourceIdentity,
+    runId,
+  });
+  writeValidationReport(report);
+  const markdown = [
     '# Final verification report',
     '',
     `overall: ${status}`,
+    `run_id: ${report.runId}`,
+    `source_revision: ${report.source.revision}`,
+    `source_tree_digest: ${report.source.treeDigest}`,
     '',
-    ...results.map(
+    ...gateResults.map(
       (item) => `- ${item.name}: ${item.status} (${item.durationMs}ms)`,
     ),
     '',
   ].join('\n');
-  writeFileSync(`${validationDir}/final_verification_report.md`, md, 'utf8');
+  writeFileSync(
+    `${validationDir}/final_verification_report.md`,
+    markdown,
+    'utf8',
+  );
 }

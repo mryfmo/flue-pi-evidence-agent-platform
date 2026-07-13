@@ -1,0 +1,13 @@
+{
+  "contract_version": "spec20-capability-artifact-v1",
+  "producer": "test-vector:local-machine",
+  "run_id": "run-spec20-test-vector-007",
+  "requirement_id": "REQ-PI-001",
+  "test_id": "pi_fail_closed",
+  "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "command": "OPA_BIN=\"$(./node_modules/node/bin/node --input-type=module -e \"import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())\")\" && \"$OPA_BIN\" test policy/agent.rego policy/tenants.json policy/tests/agent_test.rego --run 'test_(missing_identity_denied|malformed_identity_denied|unverified_denied)' -v",
+  "outcome": "passed",
+  "exit_code": 0,
+  "machine_output": "policy/tests/agent_test.rego:\ndata.eap.agent_test.test_missing_identity_denied: PASS (1.658292ms)\ndata.eap.agent_test.test_malformed_identity_denied: PASS (251.25µs)\ndata.eap.agent_test.test_unverified_denied: PASS (525.667µs)\n--------------------------------------------------------------------------------\nPASS: 3/3"
+}

@@ -1,0 +1,235 @@
+openapi: 3.1.0
+info:
+  title: Flue/Pi governed acceptance API
+  version: 1.0.0
+  description: Contract only; no HTTP runtime is implemented by SPEC-15 or SPEC-16.
+servers:
+  - url: https://gateway.example.invalid
+paths:
+  /v1/acceptance/evaluations:
+    post:
+      operationId: evaluateAcceptance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AcceptanceEvaluationRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/AcceptanceEvaluated' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/AuthenticationError' }
+        '403': { $ref: '#/components/responses/AuthorizationError' }
+        '429': { $ref: '#/components/responses/RateLimitError' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /v1/approvals:
+    post:
+      operationId: createPendingApproval
+      description: Atomically persists the pending record before returning the needs_review outcome.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateApprovalRequest' }
+      responses:
+        '201': { $ref: '#/components/responses/ApprovalCreated' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/AuthenticationError' }
+        '403': { $ref: '#/components/responses/AuthorizationError' }
+        '409': { $ref: '#/components/responses/ConflictError' }
+        '429': { $ref: '#/components/responses/RateLimitError' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /v1/approvals/{approval_id}:
+    parameters:
+      - $ref: '#/components/parameters/ApprovalId'
+    get:
+      operationId: getApproval
+      responses:
+        '200': { $ref: '#/components/responses/ApprovalReturned' }
+        '401': { $ref: '#/components/responses/AuthenticationError' }
+        '403': { $ref: '#/components/responses/AuthorizationError' }
+        '404': { $ref: '#/components/responses/NotFoundError' }
+        '429': { $ref: '#/components/responses/RateLimitError' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /v1/approvals/{approval_id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: approveApproval
+      requestBody: { $ref: '#/components/requestBodies/TransitionRequest' }
+      responses: &transitionResponses
+        '200': { $ref: '#/components/responses/ApprovalTransitioned' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/AuthenticationError' }
+        '403': { $ref: '#/components/responses/AuthorizationError' }
+        '404': { $ref: '#/components/responses/NotFoundError' }
+        '409': { $ref: '#/components/responses/ConflictError' }
+        '410': { $ref: '#/components/responses/ExpiredError' }
+        '429': { $ref: '#/components/responses/RateLimitError' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /v1/approvals/{approval_id}/reject:
+    parameters:
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: rejectApproval
+      requestBody: { $ref: '#/components/requestBodies/TransitionRequest' }
+      responses: *transitionResponses
+  /v1/approvals/{approval_id}/expire:
+    parameters:
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: expireApproval
+      requestBody: { $ref: '#/components/requestBodies/TransitionRequest' }
+      responses: *transitionResponses
+  /v1/approvals/{approval_id}/resume:
+    parameters:
+      - $ref: '#/components/parameters/ApprovalId'
+    post:
+      operationId: resumeApproval
+      description: Executes resume at most once; an identical replay returns the stored terminal representation without executing again.
+      requestBody: { $ref: '#/components/requestBodies/TransitionRequest' }
+      responses: *transitionResponses
+components:
+  parameters:
+    ApprovalId:
+      name: approval_id
+      in: path
+      required: true
+      schema: { type: string, minLength: 1 }
+  schemas:
+    AcceptanceDecision:
+      $ref: ../schemas/acceptance.schema.json
+    ApprovalRecord:
+      $ref: ../schemas/approval-state.schema.json
+    AcceptanceEvaluationRequest:
+      type: object
+      additionalProperties: false
+      required: [schema_version, task_id, risk_inputs]
+      properties:
+        schema_version: { const: '1.0' }
+        task_id: { type: string, minLength: 1 }
+        risk_inputs: { $ref: '../schemas/acceptance.schema.json#/$defs/riskInputs' }
+    SourceBinding:
+      type: object
+      additionalProperties: false
+      required: [revision, digest]
+      properties:
+        revision: { type: string, minLength: 1 }
+        digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+    CurrentBinding:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, task_id, run_id, source, evidence_digest, action]
+      properties:
+        tenant_id: { type: string, minLength: 1 }
+        task_id: { type: string, minLength: 1 }
+        run_id: { type: string, minLength: 1 }
+        source: { $ref: '#/components/schemas/SourceBinding' }
+        evidence_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        action: { enum: [apply_patch, release_acceptance, policy_edit, skill_promotion, credential_use, production_data_access] }
+    CreateApprovalRequest:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, task_id, run_id, source, evidence_digest, action, expires_at, idempotency_key, request_digest]
+      properties:
+        tenant_id: { type: string, minLength: 1 }
+        task_id: { type: string, minLength: 1 }
+        run_id: { type: string, minLength: 1 }
+        source: { $ref: '#/components/schemas/SourceBinding' }
+        evidence_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        action: { enum: [apply_patch, release_acceptance, policy_edit, skill_promotion, credential_use, production_data_access] }
+        expires_at: { type: string, format: date-time }
+        idempotency_key: { type: string, minLength: 1 }
+        request_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+    ApprovalTransitionRequest:
+      type: object
+      additionalProperties: false
+      required: [current, idempotency_key, request_digest]
+      properties:
+        current: { $ref: '#/components/schemas/CurrentBinding' }
+        idempotency_key: { type: string, minLength: 1 }
+        request_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+    RunOutcome:
+      type: object
+      additionalProperties: false
+      required: [outcome, approval]
+      properties:
+        outcome: { const: needs_review }
+        approval:
+          allOf:
+            - $ref: '#/components/schemas/ApprovalRecord'
+            - type: object
+              properties:
+                state: { const: pending }
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message, request_id]
+          properties:
+            code:
+              enum: [validation_error, authentication_required, authorization_denied, not_found, idempotency_conflict, approval_expired, rate_limited, internal_error, invalid_transition, stale_binding]
+            message: { type: string, minLength: 1 }
+            request_id: { type: string, minLength: 1 }
+  requestBodies:
+    TransitionRequest:
+      required: true
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApprovalTransitionRequest' }
+  responses:
+    AcceptanceEvaluated:
+      description: Canonical tier derived by the platform.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/AcceptanceDecision' }
+    ApprovalCreated:
+      description: Pending approval persisted before needs_review is returned.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/RunOutcome' }
+    ApprovalReturned:
+      description: Current persisted representation.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApprovalRecord' }
+    ApprovalTransitioned:
+      description: New or idempotently replayed persisted representation.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApprovalRecord' }
+    ValidationError: { $ref: '#/components/responses/Error400' }
+    AuthenticationError: { $ref: '#/components/responses/Error401' }
+    AuthorizationError: { $ref: '#/components/responses/Error403' }
+    NotFoundError: { $ref: '#/components/responses/Error404' }
+    ConflictError: { $ref: '#/components/responses/Error409' }
+    ExpiredError: { $ref: '#/components/responses/Error410' }
+    RateLimitError: { $ref: '#/components/responses/Error429' }
+    InternalError: { $ref: '#/components/responses/Error500' }
+    Error400: &error400
+      description: Validation failure.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error401: &error401
+      description: Authentication failure.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error403: &error403
+      description: Authorization failure.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error404: &error404
+      description: Approval not found.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error409: &error409
+      description: State or idempotency conflict.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error410: &error410
+      description: Approval expired.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error429: &error429
+      description: Rate limit exceeded.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+    Error500: &error500
+      description: Internal failure.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }

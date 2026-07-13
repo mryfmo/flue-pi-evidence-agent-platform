@@ -1,0 +1,1 @@
+{"fixture_base":"approval_approved_resume.json","mutation":{"approval":{"state":"resumed","resume":{"status":"resumed","resumed_at":"2026-07-13T12:00:00Z","idempotency_key":"resume-key","request_digest":"sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}}}

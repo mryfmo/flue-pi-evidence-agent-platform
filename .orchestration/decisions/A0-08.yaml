@@ -1,0 +1,18 @@
+# User-owned decision record. Workers must not edit.
+spec_id: "SPEC-20"
+status: accepted
+accepted_by: user
+accepted_at: "2026-07-11T17:00:00+09:00"
+
+requirement_abstraction: capability_level
+conformance_evidence: machine_verifiable_capability_tests
+
+superseded_locations:
+  - path: docs/SPECIFICATION.md
+    requirement_id: REQ-PI-001
+    locator: deterministic local gateway as normative mechanism
+  - path: docs/SPECIFICATION.md
+    requirement_id: REQ-DATA-001
+    locator: SQLGlot, DuckDB, and Presidio as normative tool identities
+
+tool_inventory_disposition: non_normative_design_record

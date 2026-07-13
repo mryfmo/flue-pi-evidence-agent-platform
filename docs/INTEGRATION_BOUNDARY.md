@@ -13,7 +13,11 @@ The platform uses two zones:
 | Interactive development zone | Claude Code | Exploratory coding, debugging, design discussion, repository reading, and HITL presentation. | Native Claude Code execution is explicitly outside platform governance unless the task touches a controlled resource or operation. |
 | Governed zone | Flue/Pi platform | Evidence-led remediation, governed data analysis, release decisions, skill promotion, policy changes, and audit-sensitive workflows. | Must run through platform workflow, policy, redaction, audit, and validation gates. |
 
-Controlled resources and operations are deny-enumerated. A task enters the governed zone if it touches any of these:
+Controlled resources and operations are defined only in the [canonical controlled-resource catalog](#canonical-controlled-resource-catalog-normative). A task that touches one enters the governed zone. Ambiguous tasks fail closed: delegate to the governed zone before editing, running, or accepting the task.
+
+## Canonical controlled-resource catalog (normative)
+
+This is the repository's only normative controlled-resource catalog:
 
 - Production DB credentials or provider keys.
 - Release branches or release acceptance decisions.
@@ -22,7 +26,22 @@ Controlled resources and operations are deny-enumerated. A task enters the gover
 - `policy/` content.
 - `artifacts/audit/` content.
 
-Ambiguous tasks fail closed: delegate to the governed zone before editing, running, or accepting the task.
+Other documents and prompts reference this section and must not reproduce or extend this list.
+
+## Canonical glossary (normative)
+
+This is the repository's only normative glossary for governed operations:
+
+| Term | Definition |
+| --- | --- |
+| tenant | The single authorization and storage-isolation identity bound to a governed request or persistent artifact. |
+| persistent artifact | A ledger, audit, or evidence record satisfying `schemas/persistent-artifact.schema.json` and bound to exactly one tenant. |
+| gateway/PEP-owned input | Authorization input constructed after authentication by the platform gateway and protected from caller insertion or overwrite; provenance strings alone are metadata, not proof. |
+| controlled resource | A resource or operation listed in the canonical controlled-resource catalog above. |
+| egress catalog row | One complete tenant, destination, protocol, port, action, approval requirement, and role tuple; values from separate rows never combine. |
+| approval | A persisted, immutable, unconsumed, unexpired decision bound to one tenant, task, run, source, evidence digest, action, request binding, and egress tuple. |
+
+All other documents reference this glossary and must not publish alternate normative definitions.
 
 ## タスク・ルーティングマトリクス
 
@@ -53,7 +72,25 @@ Ambiguous tasks fail closed: delegate to the governed zone before editing, runni
 | confidential | Tenant-sensitive evidence, unreleased security findings, non-public business data. | Yes, with explicit classification metadata. | Yes only after redaction and human confirmation. | Yes. | Yes when derived from customer data or PII-adjacent records. |
 | restricted | Raw PII, secrets, credentials, production customer records, unredacted logs. | Redaction is mandatory before any model path; raw restricted content must not be sent externally. | No. Only redacted or aggregated derivatives may leave the governed boundary. | Review tier required. | Yes. Raw row-level data must be blocked; only aggregate outputs can proceed. |
 
-Routing is decided by the platform gateway from `{tenant, data_classification, task_kind, cost_budget, latency_target}`. LiteLLM resolves only approved aliases after the gateway has completed classification, redaction, and policy checks.
+Routing is decided by the platform gateway from `{tenant, data_classification, task_kind, cost_budget, latency_target}`. The request-body `data_classification` value is an input to the gateway classification flow, not an OPA authorization fact. OPA routing accepts only gateway/PEP-constructed input containing `decision.classification.value` produced by `flue-pi-data-guard`; `producer`, `verified_by`, and `evidence_kind` are provenance metadata, not a cryptographic authenticity mechanism. The integration must prevent callers from invoking OPA directly or supplying or overwriting these authorization fields. LiteLLM resolves only approved aliases after the gateway has completed classification, redaction, and policy checks.
+
+For SPEC-05, the sole production rule is `production_fallback_prohibited`. The production local gateway is unreachable. Exhausting the approved provider chain returns exactly `ok:false, reason=llm_unavailable` and the workflow records `typed_failure_no_summary` with no summary content. Synthetic output is authorized only for `local_validation_only` when explicitly tagged `evidence_status=explicitly_marked_non_evidence`; it is never evidence. Missing or different tags fail closed, and the complete normal routing tuple remains mandatory.
+
+The production routing document has exactly the flat shape in `schemas/routing-policy.schema.json` and is supplied directly as `input.policy`; a `routing_prod` wrapper is invalid. Governed workflow results use the closed `passed | needs_review | failed` enum in `schemas/run-outcome.schema.json`. Missing, unknown, or malformed outcomes fail validation, and audit sink, telemetry emission, sandbox lifecycle, or sandbox evidence failure must be a typed `failed` outcome, never success.
+
+Production gateway SLI evidence uses only the `gateway.call` span and correlates audit and span records by exact equality of both emitted `audit_id` and `trace_id` fields under `schemas/telemetry-event.schema.json`. Missing IDs, mismatches, and any other span name are invalid evidence; `task_id` is not a correlation key.
+
+## 認証済み identity 境界
+
+The gateway/PEP is the verification owner for agent identity input. After an authentication mechanism verifies a principal, the gateway constructs immutable `identity_context` and bound `request_context` objects matching `schemas/identity-context.schema.json`; callers cannot submit, overwrite, or directly pass either object to OPA. The authentication vendor and middleware implementation are intentionally deferred.
+
+`identity_context` carries subject ID, authenticated principal type, tenant memberships, roles, issuer, audience, verification status/owner, and request-binding ID. `request_context` carries the authorized request tenant and the matching binding ID. Request-body identity fields are untrusted application data and are never copied into these authorization objects. Constant issuer, audience, status, and verifier strings do not authenticate caller-controlled JSON; the enforced gateway/PEP input-origin isolation is the authenticity boundary.
+
+Sandbox egress uses the same gateway/PEP-owned trust boundary and the canonical terms above. `data.eap.sandbox.allow` remains false unless exactly one complete closed and typed enabled egress catalog row matches the verified identity role, request tenant, destination, HTTPS protocol, numeric port, and action. `requires_approval` is an explicit boolean; missing, malformed, extra-field, malformed-role, duplicate, ambiguous, or incomplete catalog rows deny with a closed reason.
+
+When the selected row requires approval, sandbox policy consumes the canonical A0-06 persisted approval record and its `policy/approval.rego` integrity decision. The record must retain its approval ID, requester identity, authorized verified same-tenant approver, consistent approved state and decision, `created_at <= decided_at <= now < expires_at`, and `resume.status=not_resumed`. A closed `egress_authorization_context` binds that canonical approval ID and approved action to the selected destination/protocol/port/action tuple and the same tenant, task, run, source revision and digest, evidence digest, and request binding. Record-context booleans or caller-shaped tuple fields alone are never proof. Missing, schema-invalid, chronology-invalid, unknown, mixed-row, foreign-tenant, stale, expired, resumed/consumed, body-forged, tuple-mismatched, or unapproved inputs deny.
+
+Tenant persistence uses `schemas/persistent-artifact.schema.json`. Authorization must compare the gateway-owned tenant to `tenant_id`, `owner.tenant_id`, `source.tenant_id`, and `access.tenant_id`; storage must use only `tenants/<tenant_id>/<artifact-type>/...`. Shared or unscoped paths are forbidden.
 
 ## AutoSkill 入力制限
 
@@ -87,18 +124,48 @@ Rendering rules:
 
 対応: 問題 14
 
-| acceptance_tier | Conditions | Required action |
-| --- | --- | --- |
-| auto | Low-risk task, no controlled resource, all evidence green, deterministic checks passed, no unresolved policy warning. | Platform may accept automatically and record evidence. |
-| confirm | Moderate risk, side effect or publishable result, evidence green, no policy denial, user confirmation needed. | Claude Code presents evidence and waits for explicit user approval. |
-| review | High-risk task, controlled resource, failed or missing gate, policy denial, restricted data, release decision, or skill promotion. | Human review is mandatory. Claude Code must not auto-accept. |
+The closed risk inputs, exact tier predicates, and contradiction handling are
+defined only in `schemas/acceptance.schema.json`. This document and
+`docs/ORCHESTRATOR_INTERFACE.md` reference that canonical schema instead of
+copying its predicates. The platform validates the complete record, sets
+`acceptance_tier`, and records the decision path. Claude Code follows the
+validated tier and never recalculates or downgrades it. Invalid or incomplete
+records cannot authorize auto acceptance.
 
-The platform sets `acceptance_tier`. Claude Code follows the tier and records the user-facing decision path; it does not recalculate or downgrade the tier.
+## 承認・再開境界
+
+The gateway persists a `schemas/approval-state.schema.json` pending record
+before returning `needs_review`. The record binds tenant, task and run, source
+revision and digest, evidence digest, action, immutable requester identity,
+expiry, decision, immutable approver identity, and resume state.
+
+`policy/approval.rego` authorizes the closed pending-to-approved,
+pending-to-rejected, pending-to-expired, and approved-to-resumed transitions.
+Approval and resume use the verified gateway/PEP-owned identity context from
+SPEC-04, require an authorized same-tenant approver, and revalidate every bound
+value and expiry. Resume is exactly once. Same-key/same-digest retries return
+the stored terminal representation without re-execution; same-key/different-
+digest retries conflict.
+
+Approval storage and policy input construction are gateway-owned trust
+boundaries. Callers cannot submit or overwrite identity, `record_context`, or
+persisted approval objects. Provenance strings, manually edited files, stale
+approvals, and duplicate resume requests cannot authorize a transition. The
+HTTP contract is `docs/openapi.yaml`; the authentication vendor remains
+deferred.
+
+Storage integrity flags are necessary metadata, not authorization proof. Policy
+revalidates the complete stored tuple: requester verification, known roles and
+same-tenant membership; decision chronology from creation through expiry; and,
+for resumed records, decision-before-resume chronology before expiry. These
+checks also gate idempotent replay and idempotency-conflict representations.
 
 ## Decisions
 
 1. Production LLM path: Anthropic models are used through LiteLLM Proxy behind the platform gateway. The approved model-list pattern is the review document §3.1 model aliases (`worker-fast`, `worker-main`, `worker-heavy`) mapped to approved Anthropic models. LiteLLM is a provider adapter; gateway redaction, classification, audit, and fail-closed checks remain upstream.
-2. Data classification policy: `public`, `internal`, `confidential`, and `restricted` are the Phase 8 routing vocabulary. Existing `public` and `internal` policy entries remain valid; `confidential` and `restricted` are added as documented classes for future policy implementation.
+2. Data classification policy: `public`, `internal`, `confidential`, and `restricted` are the closed Phase 8 routing vocabulary. Existing `public` and `internal` policy entries remain valid; `confidential` and `restricted` are added as documented classes. Missing, unknown, malformed, or unverified classifications fail closed before external provider use.
+3. Agent identity policy: only verified, gateway/PEP-owned identity and request contexts can authorize tools. Anonymous or malformed identities, tenant/role/binding mismatch, and caller-body identity fields fail closed; high-risk requests remain human-approved.
+4. Production fallback policy: `production_fallback_prohibited`; provider-chain exhaustion is a typed failure, never a local or synthetic summary success.
 
 ## モデル階層規約
 

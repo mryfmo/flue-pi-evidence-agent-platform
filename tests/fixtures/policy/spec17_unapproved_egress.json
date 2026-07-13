@@ -1,0 +1,9 @@
+{
+  "now": "2026-07-13T12:00:00Z",
+  "egress": "allow",
+  "identity_context": { "subject_id": "reviewer-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["security_reviewer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-sandbox-policy", "verification": { "status": "verified", "owner": "flue-pi-platform-gateway" }, "request_binding": { "id": "binding-1" } },
+  "request_context": { "tenant": "acme", "task_id": "task-1", "run_id": "run-1", "binding_id": "binding-1", "source": { "revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }, "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "upload_evidence" },
+  "egress_request": { "destination": "security.example", "protocol": "https", "port": 443, "action": "upload_evidence", "binding_id": "binding-1" },
+  "egress_catalog": [{ "tenant_id": "acme", "destination": "security.example", "protocol": "https", "port": 443, "action": "upload_evidence", "enabled": true, "requires_approval": true, "allowed_roles": ["security_reviewer"] }],
+  "env_keys": []
+}

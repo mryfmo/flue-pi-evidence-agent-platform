@@ -1,0 +1,19 @@
+FORMAT-POLICY-CONFORMANCE validation status: READY_FOR_REVIEW
+
+PASS exit=0  git diff --check -- policy/tests/conformance_test.rego
+
+PASS exit=0  staged/working non-whitespace SHA-256 comparison
+  staged:  60c6fe202975153eccecaaea2446697656d9f079f74038dd362f3efd55fe13c8
+  working: 60c6fe202975153eccecaaea2446697656d9f079f74038dd362f3efd55fe13c8
+
+PASS exit=0  git diff --numstat -- policy/tests/conformance_test.rego
+  0 additions, 5 deletions; word diff contains only blank-line markers.
+
+PASS exit=0  tail -c 8 policy/tests/conformance_test.rego | od -An -tx1c
+  final bytes: 72 75 73 74 29 0a 7d 0a (`rust)\n}\n`)
+
+PASS exit=0  ./node_modules/node/bin/node scripts/opa-test.mjs
+  PASS: 166/166
+  policy/tests/conformance_test.rego: 13/13 tests passed within the unchanged full suite.
+
+NOTE  git diff --ignore-all-space --exit-code returns 1 for deletion of blank lines themselves; the identical non-whitespace SHA-256 values and word diff provide the required semantic-byte comparison.

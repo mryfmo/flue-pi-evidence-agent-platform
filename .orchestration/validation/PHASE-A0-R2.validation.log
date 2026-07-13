@@ -1,0 +1,134 @@
+PHASE-A0-R2 direct OPA revalidation
+Date: 2026-07-13 Asia/Tokyo
+Plan revision: P9-T02-v5
+
+RESULT SUMMARY
+- corrected direct-evaluation groups: 6/6 exited 0
+- module-omission negative controls: 3/3 exited 1 as required
+- wrong-expectation positive controls: 2/2 exited 1 as required
+- OPA policy suite: PASS 166/166, exit 0
+- production plan validator: passed wus=44 gaps=61 specs=20, exit 0
+
+COMMON BINARY RESOLUTION
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"
+RESOLVED OUTPUT:
+/Users/mryfmo/Workspace/flue_pi_ai_agent/node_modules/agent-control-specification-opa-darwin-arm64/bin/opa
+
+GROUP 1: A0-01
+COMMAND 1:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["missing_classification"]'
+OUTPUT VALUES:
+- not data.eap.routing.allow = true
+- data.eap.routing.deny_reason["missing_classification"] = "missing_classification"
+EXIT_CODE=0
+
+COMMAND 2:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_default_unknown.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["unknown_route"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = true'
+OUTPUT VALUES, IN ORDER:
+- not data.eap.routing.allow = true
+- data.eap.routing.deny_reason["unknown_route"] = "unknown_route"
+- data.eap.routing.allow = true
+EXIT_CODE=0
+
+GROUP 2: A0-02
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_forged_body.json 'not data.eap.agent.allow; data.eap.agent.deny_reason["body_identity_forbidden"]' && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_valid.json 'data.eap.agent.allow = true'
+OUTPUT VALUES, IN ORDER:
+- not data.eap.agent.allow = true
+- data.eap.agent.deny_reason["body_identity_forbidden"] = "body_identity_forbidden"
+- data.eap.agent.allow = true
+EXIT_CODE=0
+
+GROUP 3: A0-03
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/spec05_unmarked_synthetic.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["synthetic_output_not_local_non_evidence"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = true'
+OUTPUT VALUES, IN ORDER:
+- not data.eap.routing.allow = true
+- data.eap.routing.deny_reason["synthetic_output_not_local_non_evidence"] = "synthetic_output_not_local_non_evidence"
+- data.eap.routing.allow = true
+EXIT_CODE=0
+
+GROUP 4: A0-05
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_wrapped_invalid.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["unknown_route"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = true'
+OUTPUT VALUES, IN ORDER:
+- not data.eap.routing.allow = true
+- data.eap.routing.deny_reason["unknown_route"] = "unknown_route"
+- data.eap.routing.allow = true
+EXIT_CODE=0
+
+GROUP 5: PHASE A0 EXIT
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["missing_classification"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_default_unknown.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["unknown_route"]' && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_forged_body.json 'not data.eap.agent.allow; data.eap.agent.deny_reason["body_identity_forbidden"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = true' && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_valid.json 'data.eap.agent.allow = true'
+OUTPUT VALUES, IN ORDER:
+- true, "missing_classification"
+- true, "unknown_route"
+- true, "body_identity_forbidden"
+- routing allow = true
+- agent allow = true
+EXIT_CODE=0
+
+GROUP 6: PRODUCTION READY
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["missing_classification"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/routing_default_unknown.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["unknown_route"]' && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_forged_body.json 'not data.eap.agent.allow; data.eap.agent.deny_reason["body_identity_forbidden"]' && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = true' && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_valid.json 'data.eap.agent.allow = true'
+OUTPUT VALUES, IN ORDER:
+- true, "missing_classification"
+- true, "unknown_route"
+- true, "body_identity_forbidden"
+- routing allow = true
+- agent allow = true
+EXIT_CODE=0
+
+MODULE-OMISSION NEGATIVE 1: MISSING CLASSIFICATION WITHOUT ROUTING MODULE
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/tenants.json --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["missing_classification"]'
+OUTPUT:
+{}
+EXIT_CODE=1
+
+MODULE-OMISSION NEGATIVE 2: UNKNOWN DEFAULT WITHOUT ROUTING MODULE
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/tenants.json --input tests/fixtures/policy/routing_default_unknown.json 'not data.eap.routing.allow; data.eap.routing.deny_reason["unknown_route"]'
+OUTPUT:
+{}
+EXIT_CODE=1
+
+MODULE-OMISSION NEGATIVE 3: FORGED BODY WITHOUT AGENT MODULE
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/tenants.json --input tests/fixtures/policy/identity_forged_body.json 'not data.eap.agent.allow; data.eap.agent.deny_reason["body_identity_forbidden"]'
+OUTPUT:
+{}
+EXIT_CODE=1
+
+WRONG-EXPECTATION POSITIVE CONTROL 1: ROUTING
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow = false'
+OUTPUT:
+{}
+EXIT_CODE=1
+
+WRONG-EXPECTATION POSITIVE CONTROL 2: AGENT
+COMMAND:
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/agent.rego --data policy/tenants.json --input tests/fixtures/policy/identity_valid.json 'data.eap.agent.allow = false'
+OUTPUT:
+{}
+EXIT_CODE=1
+
+OPA POLICY SUITE
+COMMAND:
+./node_modules/node/bin/node scripts/opa-test.mjs
+OUTPUT SUMMARY:
+PASS: 166/166
+EXIT_CODE=0
+
+PRODUCTION PLAN VALIDATOR
+COMMAND:
+./node_modules/node/bin/node plans/validate-production-plan.mjs
+OUTPUT:
+plan-quality:passed wus=44 gaps=61 specs=20
+EXIT_CODE=0
+
+DISPOSITION
+The corrected direct OPA scope is ready for review. Phase A0 was not marked
+passed because SPEC-register/attestation refresh remains a separate prerequisite.

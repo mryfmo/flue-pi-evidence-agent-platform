@@ -1,0 +1,167 @@
+A0-02 validation evidence
+
+===== precondition =====
+COMMAND: test -f policy/agent.rego && test -f docs/INTEGRATION_BOUNDARY.md && test -f docs/POLICY_MODEL.md
+EXIT_CODE: 0
+OUTPUT:
+
+===== spec04 =====
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-04
+EXIT_CODE: 0
+OUTPUT:
+spec-check:passed
+
+===== opa_tests =====
+COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs
+EXIT_CODE: 0
+OUTPUT:
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (457.917µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (412.5µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (155.542µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (123.125µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (999.167µs)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (290.416µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.7005ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (849.584µs)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (766.667µs)
+data.eap.agent_test.test_missing_identity_denied: PASS (228µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (223.458µs)
+data.eap.agent_test.test_anonymous_denied: PASS (479.167µs)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (1.814458ms)
+data.eap.agent_test.test_unverified_denied: PASS (486.458µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (829.916µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (880.583µs)
+data.eap.agent_test.test_missing_role_denied: PASS (1.60625ms)
+data.eap.agent_test.test_absent_role_denied: PASS (301.458µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (913.625µs)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (1.220458ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (1.264208ms)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (857.583µs)
+data.eap.agent_test.test_body_identity_denied: PASS (835.792µs)
+data.eap.agent_test.test_shell_denied: PASS (182.291µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (181.084µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (207.208µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (1.1965ms)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.002416ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (979.291µs)
+data.eap.routing_test.test_missing_classification_denied: PASS (436.417µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (586.5µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (564.5µs)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (728.125µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (887.417µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (628.542µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (745.334µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (713.542µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (307.583µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (591.375µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (568.666µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (1.342667ms)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (763.125µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (646.291µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (882.75µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (955.458µs)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (2.150416ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (952.709µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (164.542µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (138.167µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (147.834µs)
+data.eap.sandbox_test.test_egress_denied: PASS (138.625µs)
+data.eap.sandbox_test.test_env_denied: PASS (139.25µs)
+--------------------------------------------------------------------------------
+PASS: 52/52
+
+===== forged_body =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_forged_body.json 'not data.eap.agent.allow'
+EXIT_CODE: 0
+OUTPUT:
+{
+  "result": [{"expressions": [{"value": true, "text": "not data.eap.agent.allow", "location": {"row": 1, "col": 1}}]}]
+}
+
+===== foreign_tenant =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_foreign_tenant.json 'data.eap.agent.deny_reason["tenant_mismatch"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"tenant_mismatch","text":"data.eap.agent.deny_reason[\"tenant_mismatch\"]","location":{"row":1,"col":1}}]}]}
+
+===== missing_role =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_missing_role.json 'data.eap.agent.deny_reason["missing_role"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"missing_role","text":"data.eap.agent.deny_reason[\"missing_role\"]","location":{"row":1,"col":1}}]}]}
+
+===== forged_issuer =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_forged_verification.json 'data.eap.agent.deny_reason["issuer_mismatch"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"issuer_mismatch","text":"data.eap.agent.deny_reason[\"issuer_mismatch\"]","location":{"row":1,"col":1}}]}]}
+
+===== forged_audience =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_forged_verification.json 'data.eap.agent.deny_reason["audience_mismatch"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"audience_mismatch","text":"data.eap.agent.deny_reason[\"audience_mismatch\"]","location":{"row":1,"col":1}}]}]}
+
+===== forged_verifier =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_forged_verification.json 'data.eap.agent.deny_reason["verifier_mismatch"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"verifier_mismatch","text":"data.eap.agent.deny_reason[\"verifier_mismatch\"]","location":{"row":1,"col":1}}]}]}
+
+===== binding_mismatch =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_binding_mismatch.json 'data.eap.agent.deny_reason["request_binding_mismatch"]'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":"request_binding_mismatch","text":"data.eap.agent.deny_reason[\"request_binding_mismatch\"]","location":{"row":1,"col":1}}]}]}
+
+===== valid_allow =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_valid.json 'data.eap.agent.allow'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":true,"text":"data.eap.agent.allow","location":{"row":1,"col":1}}]}]}
+
+===== high_risk_approval =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_high_risk.json 'data.eap.agent.requires_approval'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":true,"text":"data.eap.agent.requires_approval","location":{"row":1,"col":1}}]}]}
+
+===== high_risk_deny =====
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/identity_high_risk.json 'not data.eap.agent.allow'
+EXIT_CODE: 0
+OUTPUT:
+{"result":[{"expressions":[{"value":true,"text":"not data.eap.agent.allow","location":{"row":1,"col":1}}]}]}
+
+===== diff_check =====
+COMMAND: git diff --check
+EXIT_CODE: 0
+OUTPUT:
+
+===== require_crit_review =====
+COMMAND: make -n require-crit-review
+EXIT_CODE: 2
+OUTPUT:
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+===== crit_status =====
+COMMAND: crit status --json
+EXIT_CODE: 0
+OUTPUT:
+{
+  "branch": "main",
+  "daemon": {"running": false},
+  "review_file": "/Users/mryfmo/.crit/reviews/38c1b28ec435/review.json",
+  "review_file_exists": false,
+  "vcs": "git"
+}
+
+Browser Crit was not used.

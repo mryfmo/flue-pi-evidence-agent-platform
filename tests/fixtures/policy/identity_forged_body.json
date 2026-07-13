@@ -1,0 +1,13 @@
+{
+  "body": {
+    "user": "engineer",
+    "tenant": "acme",
+    "role": "software_engineer",
+    "issuer": "flue-pi-identity-authority",
+    "audience": "flue-pi-agent-policy",
+    "verification": {"status": "verified", "owner": "flue-pi-platform-gateway"}
+  },
+  "tool": "apply_patch",
+  "risk": "medium",
+  "resource": "repo"
+}

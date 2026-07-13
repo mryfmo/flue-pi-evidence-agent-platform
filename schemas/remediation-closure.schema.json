@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.dev/schemas/remediation-closure.schema.json",
+  "title": "Remediation closure record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "issue_id", "defect_removal", "required_regression_check_ids", "regression_checks", "rescan", "hypotheses", "impact"],
+  "properties": {
+    "contract_version": {"const": "remediation-closure-v1"},
+    "issue_id": {"type": "string", "minLength": 1},
+    "defect_removal": {"$ref": "#/$defs/defectRemoval"},
+    "required_regression_check_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "regression_checks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/result"}
+    },
+    "rescan": {"$ref": "#/$defs/rescan"},
+    "hypotheses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/hypothesis"}
+    },
+    "impact": {"$ref": "#/$defs/impact"}
+  },
+  "$defs": {
+    "defectRemoval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue_id", "proof_id", "passed"],
+      "properties": {
+        "issue_id": {"type": "string", "minLength": 1},
+        "proof_id": {"type": "string", "minLength": 1},
+        "passed": {"const": true}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "issue_id", "passed"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "issue_id": {"type": "string", "minLength": 1},
+        "passed": {"type": "boolean"}
+      }
+    },
+    "rescan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue_id", "clean", "finding_issue_ids"],
+      "properties": {
+        "issue_id": {"type": "string", "minLength": 1},
+        "clean": {"type": "boolean"},
+        "finding_issue_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "hypothesisEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hypothesis_id", "issue_id", "passed"],
+      "properties": {
+        "hypothesis_id": {"type": "string", "minLength": 1},
+        "issue_id": {"type": "string", "minLength": 1},
+        "passed": {"type": "boolean"}
+      }
+    },
+    "hypothesis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "issue_id", "patchable", "verified", "evidence", "candidate_ids"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "issue_id": {"type": "string", "minLength": 1},
+        "patchable": {"type": "boolean"},
+        "verified": {"type": "boolean"},
+        "evidence": {"$ref": "#/$defs/hypothesisEvidence"},
+        "candidate_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue_id", "required_evidence_ids", "evidence"],
+      "properties": {
+        "issue_id": {"type": "string", "minLength": 1},
+        "required_evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/result"}
+        }
+      }
+    }
+  }
+}

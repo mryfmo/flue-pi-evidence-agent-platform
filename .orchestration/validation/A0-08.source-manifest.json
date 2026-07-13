@@ -1,0 +1,27 @@
+{
+  "contract_version": "spec20-capability-source-manifest-v1",
+  "paths": [
+    "docs/DATA_GOVERNANCE.md",
+    "docs/FUNCTIONAL_REQUIREMENTS.md",
+    "docs/PRODUCT_REQUIREMENTS.md",
+    "docs/requirements.json",
+    "docs/traceability.json",
+    "package-lock.json",
+    "package.json",
+    "policy/agent.rego",
+    "policy/conformance.rego",
+    "policy/tenants.json",
+    "policy/tests/agent_test.rego",
+    "pyproject.toml",
+    "requirements.txt",
+    "scripts/data_guard.py",
+    "scripts/setup-python.mjs",
+    "scripts/spec-check.mjs",
+    "src/lib/opa.ts",
+    "src/lib/types.ts",
+    "tests_py/test_data_guard.py",
+    "tsconfig.json",
+    "uv.lock",
+    "vitest.config.ts"
+  ]
+}

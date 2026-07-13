@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/approval-state.schema.json",
+  "title": "Persisted approval and resume state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "approval_id", "tenant_id", "task_id", "run_id", "source",
+    "evidence_digest", "action", "requester_identity", "created_at", "expires_at",
+    "state", "decision", "resume"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "approval_id": { "type": "string", "minLength": 1 },
+    "tenant_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "digest"],
+      "properties": {
+        "revision": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "evidence_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "action": { "enum": ["apply_patch", "release_acceptance", "policy_edit", "skill_promotion", "credential_use", "production_data_access"] },
+    "requester_identity": { "$ref": "identity-context.schema.json#/properties/identity_context" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "state": { "enum": ["pending", "approved", "rejected", "expired", "resumed"] },
+    "decision": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outcome", "decided_at", "idempotency_key", "request_digest", "approver_identity"],
+          "properties": {
+            "outcome": { "enum": ["approved", "rejected"] },
+            "decided_at": { "type": "string", "format": "date-time" },
+            "idempotency_key": { "type": "string", "minLength": 1 },
+            "request_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "approver_identity": { "$ref": "identity-context.schema.json#/properties/identity_context" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outcome", "decided_at", "idempotency_key", "request_digest"],
+          "properties": {
+            "outcome": { "const": "expired" },
+            "decided_at": { "type": "string", "format": "date-time" },
+            "idempotency_key": { "type": "string", "minLength": 1 },
+            "request_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          }
+        }
+      ]
+    },
+    "resume": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": { "status": { "const": "not_resumed" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "resumed_at", "idempotency_key", "request_digest"],
+          "properties": {
+            "status": { "const": "resumed" },
+            "resumed_at": { "type": "string", "format": "date-time" },
+            "idempotency_key": { "type": "string", "minLength": 1 },
+            "request_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "type": "object", "properties": { "state": { "const": "pending" } }, "required": ["state"] },
+      "then": { "type": "object", "properties": { "decision": { "type": "null" }, "resume": { "type": "object", "properties": { "status": { "const": "not_resumed" } } } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "state": { "const": "approved" } }, "required": ["state"] },
+      "then": { "type": "object", "properties": { "decision": { "type": "object", "properties": { "outcome": { "const": "approved" } } }, "resume": { "type": "object", "properties": { "status": { "const": "not_resumed" } } } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "state": { "const": "rejected" } }, "required": ["state"] },
+      "then": { "type": "object", "properties": { "decision": { "type": "object", "properties": { "outcome": { "const": "rejected" } } }, "resume": { "type": "object", "properties": { "status": { "const": "not_resumed" } } } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "state": { "const": "expired" } }, "required": ["state"] },
+      "then": { "type": "object", "properties": { "decision": { "type": "object", "properties": { "outcome": { "const": "expired" } } }, "resume": { "type": "object", "properties": { "status": { "const": "not_resumed" } } } } }
+    },
+    {
+      "if": { "type": "object", "properties": { "state": { "const": "resumed" } }, "required": ["state"] },
+      "then": { "type": "object", "properties": { "decision": { "type": "object", "properties": { "outcome": { "const": "approved" } } }, "resume": { "type": "object", "properties": { "status": { "const": "resumed" } } } } }
+    }
+  ]
+}

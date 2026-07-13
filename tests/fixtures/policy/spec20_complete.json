@@ -1,0 +1,309 @@
+{
+  "contract_version": "spec20-conformance-v1",
+  "spec_id": "SPEC-20",
+  "decision": {
+    "requirement_abstraction": "capability_level",
+    "conformance_evidence": "machine_verifiable_capability_tests",
+    "tool_inventory_disposition": "non_normative_design_record"
+  },
+  "source": {
+    "revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+    "digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215"
+  },
+  "verification_context": {
+    "owner": "gateway:policy-enforcement-point",
+    "origin": "trusted_verifier",
+    "caller_supplied": false,
+    "environment": "test",
+    "verifier": "test-vector:opa-rs256-verifier",
+    "status": "verified",
+    "run_id": "run-spec20-test-vector-007",
+    "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+    "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+    "attestation_digests": [
+      "sha256:1f72b73e8ce972a6d9f76e00c35c68a9b2f7be501a4093ba66e1040639e2b217",
+      "sha256:46499986218bf6f73773e69ad99ed7ab68f840c31ca10ce1096ea78aa8dc7be8",
+      "sha256:474fda642484e3f19ccf23c52ceb4b79b348dff6a33740d1f785c51aeb7dd720",
+      "sha256:8a10aa2e4b0777af1be6fb700a9ff3659735000419c35eb798646b6e9036ed39",
+      "sha256:c8ad8e3ea796dbfef82ea75bd62f724dc02fa93e36d2e5a3dcca28f414888ac8",
+      "sha256:c8bf0af93758927aadff83f78ca5eb15ea0c43738c49a07a56bb1fea15f9fd97"
+    ],
+    "attestation_bundle_digest": "sha256:45daa38c0dd2d2db823c63117289a286120d90ad9c50c3291597895ba4756753"
+  },
+  "requirements": [
+    {
+      "id": "REQ-PI-001",
+      "abstraction": "capability_level",
+      "capability_test_ids": [
+        "pi_behavior",
+        "pi_negative",
+        "pi_fail_closed"
+      ]
+    },
+    {
+      "id": "REQ-DATA-001",
+      "abstraction": "capability_level",
+      "capability_test_ids": [
+        "data_behavior",
+        "data_negative",
+        "data_fail_closed"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "requirement_id": "REQ-PI-001",
+      "test_id": "pi_behavior",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:c8bf0af93758927aadff83f78ca5eb15ea0c43738c49a07a56bb1fea15f9fd97",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/pi_behavior.json",
+          "uri": "cas://sha256/0f1e439c4578737f7003df19bea4c888f3e695800e0d53fd57b46bfc9ca5e8e3",
+          "digest": "sha256:0f1e439c4578737f7003df19bea4c888f3e695800e0d53fd57b46bfc9ca5e8e3",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:c8bf0af93758927aadff83f78ca5eb15ea0c43738c49a07a56bb1fea15f9fd97",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OjBmMWU0MzljNDU3ODczN2Y3MDAzZGYxOWJlYTRjODg4ZjNlNjk1ODAwZTBkNTNmZDU3YjQ2YmZjOWNhNWU4ZTMiLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6MGYxZTQzOWM0NTc4NzM3ZjcwMDNkZjE5YmVhNGM4ODhmM2U2OTU4MDBlMGQ1M2ZkNTdiNDZiZmM5Y2E1ZThlMyIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9waV9iZWhhdmlvci5qc29uIiwicHJvZHVjZXIiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwidmVyaWZpZXIiOiJ0ZXN0LXZlY3RvcjpvcGEtcnMyNTYtdmVyaWZpZXIiLCJydW5faWQiOiJydW4tc3BlYzIwLXRlc3QtdmVjdG9yLTAwNyIsInJlcXVpcmVtZW50X2lkIjoiUkVRLVBJLTAwMSIsInRlc3RfaWQiOiJwaV9iZWhhdmlvciIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.LbDTOEKwonsnsgzBVd_EUwWtJWCl6Y5-FdGjm_lDrk15a2IbRFQUwzirto_aclzidvm_CMWXaZYrteS2ocGHf-RO-e-MDGkPClNsGooQcWDyA-Ui0rTLFDH2lQI89wo9Y1gixxa7fXFc_qe-1fvXrNk7ZDq4PafIMQTzDlpekvyrKiNR2EOVbYP3dS580hPVR0WTsWpt53sf0wVg7Q0iMGLnQ_LBp5ggaqD053r4ZGocjjoFsqXWsn3HUy7dCkX3rrKpCA7u6iu1Xedn80b6N_bvjgv2pnHAVDl0tMjBJyRksKpj2NB9dqmkEVhsEzYpXX6IJzkkNTNk5c-gOSdmXA",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:0f1e439c4578737f7003df19bea4c888f3e695800e0d53fd57b46bfc9ca5e8e3",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-PI-001",
+          "test_id": "pi_behavior",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    },
+    {
+      "requirement_id": "REQ-PI-001",
+      "test_id": "pi_negative",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:8a10aa2e4b0777af1be6fb700a9ff3659735000419c35eb798646b6e9036ed39",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/pi_negative.json",
+          "uri": "cas://sha256/26a92801c9935eb93bb930f8f21d5b125d5b377105aa7685eb56cc3d101048c7",
+          "digest": "sha256:26a92801c9935eb93bb930f8f21d5b125d5b377105aa7685eb56cc3d101048c7",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:8a10aa2e4b0777af1be6fb700a9ff3659735000419c35eb798646b6e9036ed39",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OjI2YTkyODAxYzk5MzVlYjkzYmI5MzBmOGYyMWQ1YjEyNWQ1YjM3NzEwNWFhNzY4NWViNTZjYzNkMTAxMDQ4YzciLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6MjZhOTI4MDFjOTkzNWViOTNiYjkzMGY4ZjIxZDViMTI1ZDViMzc3MTA1YWE3Njg1ZWI1NmNjM2QxMDEwNDhjNyIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9waV9uZWdhdGl2ZS5qc29uIiwicHJvZHVjZXIiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwidmVyaWZpZXIiOiJ0ZXN0LXZlY3RvcjpvcGEtcnMyNTYtdmVyaWZpZXIiLCJydW5faWQiOiJydW4tc3BlYzIwLXRlc3QtdmVjdG9yLTAwNyIsInJlcXVpcmVtZW50X2lkIjoiUkVRLVBJLTAwMSIsInRlc3RfaWQiOiJwaV9uZWdhdGl2ZSIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.wFeVrKIDXyGs-hzBOpkBBG8L51JXMXkbJKnxNluz1RKXq1IDQN0elc_EhlpWL6hSqJOA-D6EHkm1rmsNKHB-mj4GbYsLCt-bZqfjnxvUQVZufL1Sx-xTTYrR6V9YCoUDclFUyEndppoB0f8ReXwSP6nGFT_X1Ohish4I4BZJ7ghJtamTYC7J9_DLI2atzCt9zwy17yVfShKsHdkBBr0SE2Pf5OscWj7FHyyl39qdjfwZnfOylyRVaj70909Gt4CG6jY4RVHhs2lypIbYGVVt2Du1Ps4TzMvEW8WUGzh4MlwuzdqNyb-JklHjjL-gXAYvRIwHCUkmpMzH9oRp8tTwhg",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:26a92801c9935eb93bb930f8f21d5b125d5b377105aa7685eb56cc3d101048c7",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-PI-001",
+          "test_id": "pi_negative",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    },
+    {
+      "requirement_id": "REQ-PI-001",
+      "test_id": "pi_fail_closed",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:1f72b73e8ce972a6d9f76e00c35c68a9b2f7be501a4093ba66e1040639e2b217",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/pi_fail_closed.json",
+          "uri": "cas://sha256/ea1f69d3ddd29e4f3ffec1235c1eccd856e224b44a3dd880b041d7a17dd84511",
+          "digest": "sha256:ea1f69d3ddd29e4f3ffec1235c1eccd856e224b44a3dd880b041d7a17dd84511",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:1f72b73e8ce972a6d9f76e00c35c68a9b2f7be501a4093ba66e1040639e2b217",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OmVhMWY2OWQzZGRkMjllNGYzZmZlYzEyMzVjMWVjY2Q4NTZlMjI0YjQ0YTNkZDg4MGIwNDFkN2ExN2RkODQ1MTEiLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6ZWExZjY5ZDNkZGQyOWU0ZjNmZmVjMTIzNWMxZWNjZDg1NmUyMjRiNDRhM2RkODgwYjA0MWQ3YTE3ZGQ4NDUxMSIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9waV9mYWlsX2Nsb3NlZC5qc29uIiwicHJvZHVjZXIiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwidmVyaWZpZXIiOiJ0ZXN0LXZlY3RvcjpvcGEtcnMyNTYtdmVyaWZpZXIiLCJydW5faWQiOiJydW4tc3BlYzIwLXRlc3QtdmVjdG9yLTAwNyIsInJlcXVpcmVtZW50X2lkIjoiUkVRLVBJLTAwMSIsInRlc3RfaWQiOiJwaV9mYWlsX2Nsb3NlZCIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.vGdc4-0GVFT70LoA_NfrDxjm8ZXP_mr_JHc8wE3GatpUkDzeVMPoEsn6L4IrsXXAZTPn8CD6CsAIxpX9ExHyBvZ9nll0pRzgMVapZ4WaYHUlWUbplAEsMcOUe-5ORQy_Np8OA6f2a3lBk7q8sAliw0ltrqyf7_B-otiPXdV87vtNzu140rS43nOg86sTT4AYJB0yF1v0MN2k5OL6FncwZtQUbIOnA7V8iqjQllPzzqJ_I87yelgGz8oqvAntfjLMCoC8mZSSj9dMXn9yhFtbtuBMtjvfnbArcyLiMkl4lGo0cFgAV_PQ94IUcXkMtI05fVXANXFmpVZUUWY7PMdfJQ",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:ea1f69d3ddd29e4f3ffec1235c1eccd856e224b44a3dd880b041d7a17dd84511",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-PI-001",
+          "test_id": "pi_fail_closed",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    },
+    {
+      "requirement_id": "REQ-DATA-001",
+      "test_id": "data_behavior",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:474fda642484e3f19ccf23c52ceb4b79b348dff6a33740d1f785c51aeb7dd720",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/data_behavior.json",
+          "uri": "cas://sha256/b4ca9c1eeead82590b9058d559841c5f6adcf93617fa82a473e4174cf87c83c7",
+          "digest": "sha256:b4ca9c1eeead82590b9058d559841c5f6adcf93617fa82a473e4174cf87c83c7",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:474fda642484e3f19ccf23c52ceb4b79b348dff6a33740d1f785c51aeb7dd720",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OmI0Y2E5YzFlZWVhZDgyNTkwYjkwNThkNTU5ODQxYzVmNmFkY2Y5MzYxN2ZhODJhNDczZTQxNzRjZjg3YzgzYzciLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6YjRjYTljMWVlZWFkODI1OTBiOTA1OGQ1NTk4NDFjNWY2YWRjZjkzNjE3ZmE4MmE0NzNlNDE3NGNmODdjODNjNyIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9kYXRhX2JlaGF2aW9yLmpzb24iLCJwcm9kdWNlciI6InRlc3QtdmVjdG9yOmxvY2FsLW1hY2hpbmUiLCJ2ZXJpZmllciI6InRlc3QtdmVjdG9yOm9wYS1yczI1Ni12ZXJpZmllciIsInJ1bl9pZCI6InJ1bi1zcGVjMjAtdGVzdC12ZWN0b3ItMDA3IiwicmVxdWlyZW1lbnRfaWQiOiJSRVEtREFUQS0wMDEiLCJ0ZXN0X2lkIjoiZGF0YV9iZWhhdmlvciIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.uqFRzhrsK7VT82HjdIHXK6nNVv87FpLLrIq7yZ7yM2RWIu_NbUeSux8elhQjUPaEcdRc_2Hx6LwVJ_qHUQ9ljbZT6rW4y4dnXA0NYY5PoZrXq2dmRvE-F44r4MflG-xBXS7ihjRLzGy00uZVa8aPjFykcIFEjH7cBSY3Pkyoas7vxBDdRsrTqwpdudj6I-q_goVvEEVwhRNw2AZ2aVTFt3_1lFGduVrHV34EnwUbpY5YSgSgb4psHQIyPab94YzjzbCxN1aFgYNaGHp0zTbQHe01dHgWpykmwtvXCYp_prCfyiCNdlBv3vNkrRQgykWzVJi8_dlGiWSH_5f9rmyHXg",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:b4ca9c1eeead82590b9058d559841c5f6adcf93617fa82a473e4174cf87c83c7",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-DATA-001",
+          "test_id": "data_behavior",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    },
+    {
+      "requirement_id": "REQ-DATA-001",
+      "test_id": "data_negative",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:46499986218bf6f73773e69ad99ed7ab68f840c31ca10ce1096ea78aa8dc7be8",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/data_negative.json",
+          "uri": "cas://sha256/7dd9ccc72944e67c522afc1c9f25a0d56e03a725b7725607ce2075f7dbf29a5c",
+          "digest": "sha256:7dd9ccc72944e67c522afc1c9f25a0d56e03a725b7725607ce2075f7dbf29a5c",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:46499986218bf6f73773e69ad99ed7ab68f840c31ca10ce1096ea78aa8dc7be8",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OjdkZDljY2M3Mjk0NGU2N2M1MjJhZmMxYzlmMjVhMGQ1NmUwM2E3MjViNzcyNTYwN2NlMjA3NWY3ZGJmMjlhNWMiLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6N2RkOWNjYzcyOTQ0ZTY3YzUyMmFmYzFjOWYyNWEwZDU2ZTAzYTcyNWI3NzI1NjA3Y2UyMDc1ZjdkYmYyOWE1YyIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9kYXRhX25lZ2F0aXZlLmpzb24iLCJwcm9kdWNlciI6InRlc3QtdmVjdG9yOmxvY2FsLW1hY2hpbmUiLCJ2ZXJpZmllciI6InRlc3QtdmVjdG9yOm9wYS1yczI1Ni12ZXJpZmllciIsInJ1bl9pZCI6InJ1bi1zcGVjMjAtdGVzdC12ZWN0b3ItMDA3IiwicmVxdWlyZW1lbnRfaWQiOiJSRVEtREFUQS0wMDEiLCJ0ZXN0X2lkIjoiZGF0YV9uZWdhdGl2ZSIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.mcjLXatuhQxFGWUezoRQlEB5ri11rhm7Lfa9tDJ45jICVWg3OZGdfXj8DnEkXmN7hFdkBD6r6LKWHhtF4yGOs4rW5nh_9-91Xze2penv-joyBNz74wET8YNQwD7nOmeLHnul-SyjxDFgqCDesPWUOsuv-SbbtZ6s6-w6z454Ce6PaDzKE8ivcy4-8cqcRwZc6Ea6tSTSY3e1ArLULjRBF81HabvFhLKDd9vuMb3iWM6yXVKB4wtGLdHoPFMC0d4BdPVfGbsKNXEvgCm9LH6kzYGm9-mbuFNcNvPyN7JFv-rNxykAQQMTz949ajd73mtcNk488Qjhaw0fcrLEIk0M-Q",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:7dd9ccc72944e67c522afc1c9f25a0d56e03a725b7725607ce2075f7dbf29a5c",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-DATA-001",
+          "test_id": "data_negative",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    },
+    {
+      "requirement_id": "REQ-DATA-001",
+      "test_id": "data_fail_closed",
+      "outcome": "passed",
+      "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+      "evidence_digest": "sha256:c8ad8e3ea796dbfef82ea75bd62f724dc02fa93e36d2e5a3dcca28f414888ac8",
+      "execution": {
+        "kind": "machine_capability_test",
+        "producer": "test-vector:local-machine",
+        "verifier": "test-vector:opa-rs256-verifier",
+        "run_id": "run-spec20-test-vector-007",
+        "artifact": {
+          "path": ".orchestration/validation/A0-08.artifacts/data_fail_closed.json",
+          "uri": "cas://sha256/44743d915067c81a1e5227a47f7f0ea2425f2ef34fdb4c5b6d51cb80d436a1bc",
+          "digest": "sha256:44743d915067c81a1e5227a47f7f0ea2425f2ef34fdb4c5b6d51cb80d436a1bc",
+          "media_type": "application/vnd.eap.capability-test-result+json"
+        },
+        "attestation": {
+          "digest": "sha256:c8ad8e3ea796dbfef82ea75bd62f724dc02fa93e36d2e5a3dcca28f414888ac8",
+          "signed_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InNwZWMyMC10ZXN0LXZlY3Rvci1yczI1Ni12NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0LXZlY3Rvcjpsb2NhbC1tYWNoaW5lIiwiYXVkIjoidGVzdDpzcGVjMjAtY29uZm9ybWFuY2UiLCJzdGF0dXMiOiJ2ZXJpZmllZCIsInN1YmplY3RfZGlnZXN0Ijoic2hhMjU2OjQ0NzQzZDkxNTA2N2M4MWExZTUyMjdhNDdmN2YwZWEyNDI1ZjJlZjM0ZmRiNGM1YjZkNTFjYjgwZDQzNmExYmMiLCJhcnRpZmFjdF9kaWdlc3QiOiJzaGEyNTY6NDQ3NDNkOTE1MDY3YzgxYTFlNTIyN2E0N2Y3ZjBlYTI0MjVmMmVmMzRmZGI0YzViNmQ1MWNiODBkNDM2YTFiYyIsImFydGlmYWN0X3BhdGgiOiIub3JjaGVzdHJhdGlvbi92YWxpZGF0aW9uL0EwLTA4LmFydGlmYWN0cy9kYXRhX2ZhaWxfY2xvc2VkLmpzb24iLCJwcm9kdWNlciI6InRlc3QtdmVjdG9yOmxvY2FsLW1hY2hpbmUiLCJ2ZXJpZmllciI6InRlc3QtdmVjdG9yOm9wYS1yczI1Ni12ZXJpZmllciIsInJ1bl9pZCI6InJ1bi1zcGVjMjAtdGVzdC12ZWN0b3ItMDA3IiwicmVxdWlyZW1lbnRfaWQiOiJSRVEtREFUQS0wMDEiLCJ0ZXN0X2lkIjoiZGF0YV9mYWlsX2Nsb3NlZCIsIm91dGNvbWUiOiJwYXNzZWQiLCJzb3VyY2VfcmV2aXNpb24iOiI5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic291cmNlX2RpZ2VzdCI6InNoYTI1Njo5M2FlYTIwZDQyM2MzNTBiMzQzYWZjZTM3ZGY3Nzk2N2JjNTIyNDMyMjg2OGIyZmZjN2ViN2FiNDg0NTU2MjE1Iiwic3ludGhldGljIjpmYWxzZSwic2VsZl9hdHRlc3RlZCI6ZmFsc2V9.pYPvrGVpo5huxeWFuLLMWHlNz667_FmoKTQzunaXThTfEnwxBnOhym3B-3I_T1-AugIm0A_4QYl_cgVurx3_XT7Vyjlq6XpQlyUeLabz_ZpuHLA6O-qFFpj2kxAdWuZ5XlS8eGFvBek6LxRhHxSjUEVkAv2lUp36EXyJgM7gA-RqNO6B3rYmCkyqPDv7x9Ek1rKt9ieEXteiXDwuCcKc8utSIMZFNycER7bb3fu2sH1qfyCf1cPxzRwwtV2c0K8r7COH4LDn0yCJDD-dzO3EI8okQXpBQ5V7lVi49VTFLXpbfUbM5YrVz5Fs68u_HXF3PSAfIJhhEZCQGIekmSzJ3w",
+          "key_id": "spec20-test-vector-rs256-v5",
+          "algorithm": "RS256",
+          "issuer": "test-vector:local-machine",
+          "audience": "test:spec20-conformance",
+          "status": "verified",
+          "subject_digest": "sha256:44743d915067c81a1e5227a47f7f0ea2425f2ef34fdb4c5b6d51cb80d436a1bc",
+          "producer": "test-vector:local-machine",
+          "verifier": "test-vector:opa-rs256-verifier",
+          "run_id": "run-spec20-test-vector-007",
+          "requirement_id": "REQ-DATA-001",
+          "test_id": "data_fail_closed",
+          "outcome": "passed",
+          "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+          "synthetic": false,
+          "self_attested": false
+        }
+      }
+    }
+  ],
+  "superseded_clauses": [
+    {
+      "requirement_id": "REQ-PI-001",
+      "path": "docs/SPECIFICATION.md",
+      "locator": "deterministic local gateway as normative mechanism",
+      "disposition": "superseded_non_normative"
+    },
+    {
+      "requirement_id": "REQ-DATA-001",
+      "path": "docs/SPECIFICATION.md",
+      "locator": "SQLGlot, DuckDB, and Presidio as normative tool identities",
+      "disposition": "superseded_non_normative"
+    }
+  ]
+}

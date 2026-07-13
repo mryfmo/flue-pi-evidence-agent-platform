@@ -1,0 +1,101 @@
+# A0-01-R2 deterministic validation
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-01,SPEC-02,SPEC-03
+spec-check:passed
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/opa-test.mjs
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (4.569375ms)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (384.541µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (143.458µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (95.375µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.913ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (342.542µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.817292ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (928.791µs)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (198.375µs)
+data.eap.agent_test.test_guest_denied: PASS (120.125µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (185.625µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (169.958µs)
+data.eap.agent_test.test_shell_denied: PASS (89.041µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (86.792µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (104.25µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (195.041µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.14825ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (809.584µs)
+data.eap.routing_test.test_missing_classification_denied: PASS (468.625µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (503.958µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (1.004167ms)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (503.667µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (441.083µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (568.709µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (720.667µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (1.429542ms)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (297.792µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (534.083µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (545.75µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (408.167µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (1.435875ms)
+data.eap.routing_test.test_model_mismatch_denied: PASS (611.25µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (709.958µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (1.6005ms)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.023958ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (836.75µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (129.5µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (118.708µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (135.584µs)
+data.eap.sandbox_test.test_egress_denied: PASS (124.25µs)
+data.eap.sandbox_test.test_env_denied: PASS (246.25µs)
+--------------------------------------------------------------------------------
+PASS: 41/41
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec PR-001
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67
+  if (!id.startsWith('SPEC-')) throw new Error(`not a spec id: ${id}`);
+                                     ^
+
+Error: not a spec id: PR-001
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67:38
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.19.0
+exit_code=1
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec UNKNOWN-SPEC
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67
+  if (!id.startsWith('SPEC-')) throw new Error(`not a spec id: ${id}`);
+                                     ^
+
+Error: not a spec id: UNKNOWN-SPEC
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:67:38
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.19.0
+exit_code=1
+
+$ git diff --check
+exit_code=0
+
+$ direct split-witness deny + non-empty reason
+true route_tuple_mismatch
+exit_code=0
+
+$ direct catalog-enum mismatch deny + non-empty reason
+true catalog_classification_mismatch
+exit_code=0
+
+Expected outcomes: PR-001 and UNKNOWN-SPEC exit nonzero; all other checks exit zero. Observed outcomes match.

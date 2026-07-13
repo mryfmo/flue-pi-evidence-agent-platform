@@ -1,0 +1,546 @@
+# A0-08 revision 6 validation log
+
+## Command
+
+```bash
+test -f docs/requirements.json && test -f docs/PRODUCT_REQUIREMENTS.md && test -f .orchestration/decisions/A0-08.yaml && grep -q '^status: accepted$' .orchestration/decisions/A0-08.yaml && grep -q '^spec_id: "SPEC-20"$' .orchestration/decisions/A0-08.yaml
+```
+
+Exit code: 0
+
+```text
+
+```
+
+## Command
+
+```bash
+MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k 'test_metric_query_redacts_pii_and_rejects_unsafe_classes or test_redact_text_returns_offline_deterministic_redaction'
+```
+
+Exit code: 0
+
+```text
+..                                                                       [100%]
+```
+
+## Command
+
+```bash
+MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k test_accepts_safe_aggregate_sql_and_parser_failure
+```
+
+Exit code: 0
+
+```text
+.                                                                        [100%]
+```
+
+## Command
+
+```bash
+MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k 'test_reject_unsafe_sql or test_rejects_non_aggregate_or_out_of_policy_sql'
+```
+
+Exit code: 0
+
+```text
+............                                                             [100%]
+```
+
+## Command
+
+```bash
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" test policy/agent.rego policy/tenants.json policy/tests/agent_test.rego --run test_allow_happy_path -v
+```
+
+Exit code: 0
+
+```text
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (3.766667ms)
+--------------------------------------------------------------------------------
+PASS: 1/1
+```
+
+## Command
+
+```bash
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" test policy/agent.rego policy/tenants.json policy/tests/agent_test.rego --run 'test_(missing_identity_denied|malformed_identity_denied|unverified_denied)' -v
+```
+
+Exit code: 0
+
+```text
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_missing_identity_denied: PASS (365.125µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (230.583µs)
+data.eap.agent_test.test_unverified_denied: PASS (598.208µs)
+--------------------------------------------------------------------------------
+PASS: 3/3
+```
+
+## Command
+
+```bash
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" test policy/agent.rego policy/tenants.json policy/tests/agent_test.rego --run 'test_(shell_denied|raw_sql_denied|unknown_tool_denied)' -v
+```
+
+Exit code: 0
+
+```text
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_shell_denied: PASS (318.875µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (193.792µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (267.25µs)
+--------------------------------------------------------------------------------
+PASS: 3/3
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node --input-type=module <<'NODE'
+import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';import {readFileSync} from 'node:fs';import {opaBinary} from './src/lib/opa.ts';
+const expected=['docs/DATA_GOVERNANCE.md','docs/FUNCTIONAL_REQUIREMENTS.md','docs/PRODUCT_REQUIREMENTS.md','docs/requirements.json','docs/traceability.json','package-lock.json','package.json','policy/agent.rego','policy/conformance.rego','policy/tenants.json','policy/tests/agent_test.rego','pyproject.toml','requirements.txt','scripts/data_guard.py','scripts/setup-python.mjs','scripts/spec-check.mjs','src/lib/opa.ts','src/lib/types.ts','tests_py/test_data_guard.py','tsconfig.json','uv.lock','vitest.config.ts'];
+const manifest=JSON.parse(readFileSync('.orchestration/validation/A0-08.source-manifest.json')),fixture=JSON.parse(readFileSync('tests/fixtures/policy/spec20_complete.json')),trust=JSON.parse(readFileSync('.orchestration/validation/A0-08.test-trust.json')).eap.conformance_trust;
+if(manifest.contract_version!=='spec20-capability-source-manifest-v1'||JSON.stringify(manifest.paths)!==JSON.stringify(expected))throw Error('exact manifest membership');
+const ids=(mut)=>{const h=createHash('sha256');for(const p of expected){h.update(p);h.update('\0');h.update(mut?.path===p?mut.bytes:readFileSync(p));h.update('\0')}const x=h.digest('hex');return {revision:x,digest:'sha256:'+x}};
+const current=ids();if(fixture.source.revision!==current.revision||fixture.source.digest!==current.digest||trust.expected.source_revision!==current.revision||trust.expected.source_digest!==current.digest)throw Error('current source binding');
+const evaluate=t=>{const q='data.eap.conformance.satisfied_test_vector with data.eap.conformance_trust as '+JSON.stringify(t)+' with time.now_ns as 1783908000000000000';const x=JSON.parse(execFileSync(opaBinary(),['eval','--format=json','--data','policy/conformance.rego','--input','tests/fixtures/policy/spec20_complete.json',q]));return x.result?.[0]?.expressions?.[0]?.value===true};
+for(const p of ['policy/agent.rego','policy/tests/agent_test.rego','scripts/data_guard.py','tests_py/test_data_guard.py','package-lock.json','requirements.txt','scripts/setup-python.mjs']){const changed=ids({path:p,bytes:Buffer.concat([readFileSync(p),Buffer.from('\nMUTATION\n')])});const rotated=structuredClone(trust);rotated.expected.source_revision=changed.revision;rotated.expected.source_digest=changed.digest;const allowed=evaluate(rotated);console.log(p+': '+(allowed?'UNEXPECTED_ALLOW':'OPA_DENY')+' '+changed.digest);if(allowed||changed.digest===current.digest)process.exitCode=1}
+console.log('manifest_entries='+expected.length);console.log('source_revision='+current.revision);console.log('source_digest='+current.digest);
+NODE
+```
+
+Exit code: 0
+
+```text
+policy/agent.rego: OPA_DENY sha256:3230f39535fc1bbd8d4b7ce20901dfd48ccbc6d8000ba914c553637b13051550
+policy/tests/agent_test.rego: OPA_DENY sha256:733b675b7576a4bcd8e8b841ca4987bec376149d8724b3a917d72153703ac7ee
+scripts/data_guard.py: OPA_DENY sha256:9c915fc3ae9d9ce7352cbd22d5d5b89e541b24a8307f38188b7fac100b7b1d6a
+tests_py/test_data_guard.py: OPA_DENY sha256:54bfe2fbe0ddb37b5672597af196206d5833087b914bc29b1c1409bd0cb0354e
+package-lock.json: OPA_DENY sha256:054f547864a690082dbe61c9e8a37d818b7c14ecaf9c53696161bc44ffa735de
+requirements.txt: OPA_DENY sha256:3027723b046d5d42d85e5340cf28ef5e1248bcbee7f0c5da127fe279f7de5791
+scripts/setup-python.mjs: OPA_DENY sha256:df851424ecd8edc14aefe7ca0a221566dff24891005b8c925c0b5562c7b04e09
+manifest_entries=22
+source_revision=5383d2b325478d91509be8dce73877bad6504692064921a7b0a5028f9547cfd9
+source_digest=sha256:5383d2b325478d91509be8dce73877bad6504692064921a7b0a5028f9547cfd9
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node --input-type=module <<'NODE'
+import{readFileSync}from'node:fs';const req=readFileSync('requirements.txt','utf8').split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith('#'));const setup=readFileSync('scripts/setup-python.mjs','utf8'),lock=readFileSync('uv.lock','utf8');if(!setup.includes("'requirements.txt'")||!setup.includes("'pip', 'install'"))throw Error('bootstrap path');const unpinned=req.filter(x=>!x.includes('=='));const packages=(lock.match(/^\[\[package\]\]$/gm)||[]).length;if(unpinned.length===0||packages!==0)throw Error('expected non-hermetic boundary changed');console.log('requirements_entries='+req.length);console.log('unpinned_or_ranged_entries='+unpinned.length);console.log('uv_lock_resolved_package_entries='+packages);console.log('setup_python_installs_requirements_txt=PASS');console.log('hermetic_python_resolution_claim=DENIED');
+NODE
+```
+
+Exit code: 0
+
+```text
+requirements_entries=12
+unpinned_or_ranged_entries=12
+uv_lock_resolved_package_entries=0
+setup_python_installs_requirements_txt=PASS
+hermetic_python_resolution_claim=DENIED
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node --input-type=module <<'NODE'
+import{createHash,verify}from'node:crypto';import{readFileSync}from'node:fs';const input=JSON.parse(readFileSync('tests/fixtures/policy/spec20_complete.json')),trust=JSON.parse(readFileSync('.orchestration/validation/A0-08.test-trust.json')).eap.conformance_trust,sha=x=>'sha256:'+createHash('sha256').update(x).digest('hex'),catalog=new Map(trust.expected.artifacts.map(x=>[x.requirement_id+':'+x.test_id,x]));if(catalog.size!==6)throw Error('catalog size');for(const r of input.results){const a=catalog.get(r.requirement_id+':'+r.test_id),bytes=readFileSync(a.path);if(sha(bytes)!==a.digest||a.digest!==r.execution.artifact.digest)throw Error('artifact '+r.test_id);const [h,p,s]=r.execution.attestation.signed_jwt.split('.');if(!verify('RSA-SHA256',Buffer.from(h+'.'+p),trust.active_key.public_key_pem,Buffer.from(s,'base64url')))throw Error('signature '+r.test_id);const payload=JSON.parse(Buffer.from(p,'base64url'));for(const[k,v]of Object.entries({artifact_digest:a.digest,artifact_path:a.path,producer:trust.producer,verifier:trust.verifier,run_id:trust.expected.run_id,requirement_id:r.requirement_id,test_id:r.test_id,outcome:r.outcome,source_revision:input.source.revision,source_digest:input.source.digest,synthetic:false,self_attested:false}))if(payload[k]!==v)throw Error('payload '+r.test_id+' '+k);if(sha(r.execution.attestation.signed_jwt)!==r.evidence_digest)throw Error('attestation digest');console.log(r.test_id+': ARTIFACT_HASH_RS256_CATALOG_MATCH '+a.digest)}const ds=input.results.map(r=>r.execution.attestation.digest).sort(),bundle=sha(input.verification_context.run_id+'|'+input.source.revision+'|'+input.source.digest+'|'+ds.join('|'));if(JSON.stringify(ds)!==JSON.stringify(input.verification_context.attestation_digests)||bundle!==input.verification_context.attestation_bundle_digest)throw Error('bundle');console.log('run_id='+trust.expected.run_id);console.log('key_id='+trust.active_key.id);console.log('exact_six_bundle=PASS '+bundle);
+NODE
+```
+
+Exit code: 0
+
+```text
+pi_behavior: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:282ad6bae9a1520c866dbfcd2167b361d53ac236b0c4ae902d9d96db538e9291
+pi_negative: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:7c79f668bf00320a069baddef689744461ca0dfc3a5b5d4015ce9d537183ce1e
+pi_fail_closed: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:67d750a258529dcfb5312f5e7d95666833906979d8be059bcff94d7bf0f075cc
+data_behavior: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:63ed4be970b9ea7d3a0ec7da3320aedf148dcffe6b2c72ab92b0d0e3e11ceed3
+data_negative: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:b5260a934c416533b5dc0e3dbd509c32daa6ac861539b9ccf72ec5ad4537aea3
+data_fail_closed: ARTIFACT_HASH_RS256_CATALOG_MATCH sha256:8006a5932873e45e4d993303c3d4fb0040a0a63f43ec1213edc456dae1a9165d
+run_id=run-spec20-test-vector-006
+key_id=spec20-test-vector-rs256-v4
+exact_six_bundle=PASS sha256:5406c8da53da556e6cc09d9752e245f8d678779ee66bcb256a73fb1a09b8b2e5
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node scripts/spec-check.mjs --check-decision .orchestration/decisions/A0-08.yaml
+```
+
+Exit code: 0
+
+```text
+spec-check:passed
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-20
+```
+
+Exit code: 0
+
+```text
+spec-check:passed
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node scripts/opa-test.mjs
+```
+
+Exit code: 0
+
+```text
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (293.875µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (196.833µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (144.417µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (102.833µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.196125ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (345.583µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.332125ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (1.116292ms)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (828.125µs)
+data.eap.agent_test.test_missing_identity_denied: PASS (178.417µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (219.958µs)
+data.eap.agent_test.test_anonymous_denied: PASS (440.708µs)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (3.270333ms)
+data.eap.agent_test.test_unverified_denied: PASS (484µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (928.709µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (880.333µs)
+data.eap.agent_test.test_missing_role_denied: PASS (860.125µs)
+data.eap.agent_test.test_absent_role_denied: PASS (317.167µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (892.375µs)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (1.035709ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (973.875µs)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (2.17075ms)
+data.eap.agent_test.test_body_identity_denied: PASS (1.622416ms)
+data.eap.agent_test.test_shell_denied: PASS (218.417µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (202.875µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (228.25µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (910.083µs)
+
+policy/tests/approval_test.rego:
+data.eap.approval_test.test_pending_to_approved: PASS (2.035667ms)
+data.eap.approval_test.test_pending_to_rejected: PASS (1.598791ms)
+data.eap.approval_test.test_pending_to_expired: PASS (1.423666ms)
+data.eap.approval_test.test_approved_to_resumed: PASS (1.497708ms)
+data.eap.approval_test.test_anonymous_denied: PASS (1.468459ms)
+data.eap.approval_test.test_wrong_issuer_denied: PASS (1.5645ms)
+data.eap.approval_test.test_wrong_audience_denied: PASS (1.030333ms)
+data.eap.approval_test.test_unknown_role_denied: PASS (1.2535ms)
+data.eap.approval_test.test_insufficient_role_denied: PASS (1.250625ms)
+data.eap.approval_test.test_foreign_tenant_denied: PASS (1.310875ms)
+data.eap.approval_test.test_unpersisted_denied: PASS (646.792µs)
+data.eap.approval_test.test_expired_denied: PASS (1.897625ms)
+data.eap.approval_test.test_stale_source_revision_denied: PASS (1.008417ms)
+data.eap.approval_test.test_stale_source_digest_denied: PASS (1.392625ms)
+data.eap.approval_test.test_changed_evidence_denied: PASS (1.543875ms)
+data.eap.approval_test.test_action_mismatch_denied: PASS (3.699875ms)
+data.eap.approval_test.test_task_mismatch_denied: PASS (1.000458ms)
+data.eap.approval_test.test_run_mismatch_denied: PASS (1.030458ms)
+data.eap.approval_test.test_pending_resume_denied_with_reason: PASS (728.084µs)
+data.eap.approval_test.test_rejected_resume_denied_with_reason: PASS (604.292µs)
+data.eap.approval_test.test_expired_state_resume_denied_with_reason: PASS (692.75µs)
+data.eap.approval_test.test_duplicate_resume_is_replay_not_authorization: PASS (2.177625ms)
+data.eap.approval_test.test_duplicate_approve_is_replay: PASS (1.46925ms)
+data.eap.approval_test.test_duplicate_reject_is_replay: PASS (1.514792ms)
+data.eap.approval_test.test_reused_key_different_payload_conflicts: PASS (5.693958ms)
+data.eap.approval_test.test_reused_approve_key_different_payload_conflicts: PASS (2.773209ms)
+data.eap.approval_test.test_reused_reject_key_different_payload_conflicts: PASS (2.684417ms)
+data.eap.approval_test.test_invalid_stored_approver_denied: PASS (3.631583ms)
+data.eap.approval_test.test_foreign_requester_denied: PASS (1.950125ms)
+data.eap.approval_test.test_requester_approver_role_not_required: PASS (1.589375ms)
+data.eap.approval_test.test_requester_unknown_role_denied: PASS (1.763959ms)
+data.eap.approval_test.test_precreation_decision_denied_and_not_replayed_or_conflicted: PASS (3.954ms)
+data.eap.approval_test.test_post_expiry_future_decision_denied: PASS (3.933875ms)
+data.eap.approval_test.test_expiry_transition_before_expiry_denied: PASS (1.273292ms)
+data.eap.approval_test.test_incoherent_resume_denied_and_not_replayed_or_conflicted: PASS (3.8505ms)
+data.eap.approval_test.test_future_resume_denied: PASS (1.993708ms)
+
+policy/tests/closure_test.rego:
+data.eap.closure_test.test_complete_record_closes: PASS (11.806875ms)
+data.eap.closure_test.test_clean_without_issue_proof_stays_open: PASS (320.542µs)
+data.eap.closure_test.test_other_issue_evidence_stays_open: PASS (4.579375ms)
+data.eap.closure_test.test_missing_regression_stays_open: PASS (7.079834ms)
+data.eap.closure_test.test_failed_regression_stays_open: PASS (4.443541ms)
+data.eap.closure_test.test_contradictory_duplicate_regression_id_fails_closed: PASS (928.625µs)
+data.eap.closure_test.test_extra_failed_regression_stays_open: PASS (5.179375ms)
+data.eap.closure_test.test_extra_passed_regression_stays_open: PASS (7.327042ms)
+data.eap.closure_test.test_remaining_rescan_finding_stays_open: PASS (4.413292ms)
+data.eap.closure_test.test_missing_impact_stays_open: PASS (307.375µs)
+data.eap.closure_test.test_failed_impact_stays_open: PASS (6.935459ms)
+data.eap.closure_test.test_contradictory_duplicate_impact_id_fails_closed: PASS (3.828959ms)
+data.eap.closure_test.test_extra_failed_impact_stays_open: PASS (4.970875ms)
+data.eap.closure_test.test_extra_passed_impact_stays_open: PASS (7.690875ms)
+data.eap.closure_test.test_one_candidate_stays_open: PASS (4.249166ms)
+data.eap.closure_test.test_duplicate_candidates_stay_open: PASS (4.458958ms)
+data.eap.closure_test.test_candidates_are_not_counted_across_hypotheses: PASS (8.749334ms)
+data.eap.closure_test.test_unverified_hypothesis_stays_open: PASS (4.429125ms)
+data.eap.closure_test.test_missing_hypothesis_evidence_stays_open: PASS (1.789042ms)
+data.eap.closure_test.test_duplicate_hypothesis_id_fails_closed: PASS (4.032084ms)
+data.eap.closure_test.test_missing_field_fails_closed: PASS (296.458µs)
+data.eap.closure_test.test_unknown_field_fails_closed: PASS (314.375µs)
+data.eap.closure_test.test_wrong_type_fails_closed: PASS (345.792µs)
+
+policy/tests/conformance_test.rego:
+data.eap.conformance_test.test_complete_capability_evidence_satisfies: PASS (19.157417ms)
+data.eap.conformance_test.test_exact_set_missing_mixed_duplicate_extra_and_split_fail_closed: PASS (27.041208ms)
+data.eap.conformance_test.test_provenance_metadata_and_tool_identity_fail_closed: PASS (15.24575ms)
+data.eap.conformance_test.test_artifact_attestation_row_binding_fails_closed: PASS (16.727625ms)
+data.eap.conformance_test.test_revision1_internally_consistent_digest_bypass_denied: PASS (10.339084ms)
+data.eap.conformance_test.test_untrusted_resigning_malformed_signature_key_and_algorithm_denied: PASS (17.72175ms)
+data.eap.conformance_test.test_bundle_reordering_substitution_duplication_and_arbitrary_digest_denied: PASS (68.206458ms)
+data.eap.conformance_test.test_default_production_absent_trust_and_test_key_production_deny: PASS (1.285208ms)
+data.eap.conformance_test.test_inactive_dead_expired_wrong_environment_and_unknown_key_deny: PASS (5.832834ms)
+data.eap.conformance_test.test_runtime_clock_boundaries_and_immediately_before_expiry: PASS (46.215792ms)
+data.eap.conformance_test.test_trusted_artifact_catalog_path_digest_missing_extra_duplicate_deny: PASS (19.251917ms)
+data.eap.conformance_test.test_whole_old_bundle_replay_denied_after_trusted_anchor_rotation: PASS (3.036958ms)
+data.eap.conformance_test.test_artifact_content_hash_mismatch_denied: PASS (5.255667ms)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.12675ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (2.331791ms)
+data.eap.routing_test.test_missing_classification_denied: PASS (785.792µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (1.018875ms)
+data.eap.routing_test.test_forged_verifier_denied: PASS (632.583µs)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (578.333µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (546.542µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (660.292µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (671.5µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (667.75µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (273.5µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (564.792µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (560.167µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (423.708µs)
+data.eap.routing_test.test_missing_route_denied: PASS (418.75µs)
+data.eap.routing_test.test_malformed_route_denied: PASS (436.167µs)
+data.eap.routing_test.test_missing_provider_denied: PASS (393.584µs)
+data.eap.routing_test.test_unknown_provider_denied: PASS (418.042µs)
+data.eap.routing_test.test_malformed_provider_denied: PASS (485.125µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (700.084µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (711.958µs)
+data.eap.routing_test.test_missing_model_denied: PASS (710.083µs)
+data.eap.routing_test.test_malformed_model_denied: PASS (649µs)
+data.eap.routing_test.test_old_wrapped_policy_denied: PASS (248µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (775.042µs)
+data.eap.routing_test.test_selected_route_missing_tenant_denied: PASS (3.967042ms)
+data.eap.routing_test.test_selected_route_malformed_tenant_denied: PASS (753.833µs)
+data.eap.routing_test.test_selected_route_cross_tenant_denied: PASS (721.25µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (1.066417ms)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.362417ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (1.121834ms)
+data.eap.routing_test.test_production_local_fallback_denied: PASS (1.381792ms)
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS (1.253958ms)
+data.eap.routing_test.test_missing_execution_environment_denied: PASS (1.292334ms)
+data.eap.routing_test.test_malformed_execution_denied: PASS (1.186ms)
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS (4.514ms)
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS (1.320167ms)
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS (1.337709ms)
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS (1.474041ms)
+data.eap.routing_test.test_production_local_gateway_denied: PASS (1.411416ms)
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS (1.310875ms)
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS (1.411583ms)
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS (1.381958ms)
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS (1.347208ms)
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS (4.056792ms)
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS (1.40275ms)
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS (1.439791ms)
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS (1.277625ms)
+data.eap.routing_test.test_synthetic_evidence_denied: PASS (1.219583ms)
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS (1.126042ms)
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS (652.417µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_no_egress_legacy_allow: PASS (140µs)
+data.eap.sandbox_test.test_valid_nonapproval_egress_allows: PASS (2.194625ms)
+data.eap.sandbox_test.test_valid_approval_egress_allows: PASS (10.54125ms)
+data.eap.sandbox_test.test_identity_failures_deny: PASS (485.083µs)
+data.eap.sandbox_test.test_missing_identity_denies: PASS (250.417µs)
+data.eap.sandbox_test.test_body_forged_identity_denies: PASS (924.708µs)
+data.eap.sandbox_test.test_destination_tuple_failures_deny: PASS (4.05025ms)
+data.eap.sandbox_test.test_split_witness_catalog_denies: PASS (1.131459ms)
+data.eap.sandbox_test.test_catalog_rows_are_closed_and_typed: PASS (1.759958ms)
+data.eap.sandbox_test.test_duplicate_matching_catalog_rows_deny: PASS (2.294709ms)
+data.eap.sandbox_test.test_request_binding_denies: PASS (689.125µs)
+data.eap.sandbox_test.test_approval_failures_deny: PASS (13.760375ms)
+data.eap.sandbox_test.test_approval_identities_fail_closed: PASS (10.221958ms)
+data.eap.sandbox_test.test_egress_authorization_context_is_closed_and_bound: PASS (7.437875ms)
+data.eap.sandbox_test.test_malformed_request_context_denies: PASS (519.209µs)
+data.eap.sandbox_test.test_missing_approval_denies: PASS (3.903334ms)
+--------------------------------------------------------------------------------
+PASS: 166/166
+```
+
+## Command
+
+```bash
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/conformance.rego --input tests/fixtures/policy/spec20_missing_conformance.json 'not data.eap.conformance.satisfied'
+```
+
+Exit code: 0
+
+```text
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.conformance.satisfied",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Command
+
+```bash
+OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/conformance.rego --data .orchestration/validation/A0-08.test-trust.json --input tests/fixtures/policy/spec20_complete.json 'data.eap.conformance.satisfied_test_vector with time.now_ns as 1783908000000000000'
+```
+
+Exit code: 0
+
+```text
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.conformance.satisfied_test_vector with time.now_ns as 1783908000000000000",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Command
+
+```bash
+./node_modules/node/bin/node --input-type=module <<'NODE'
+import{readFileSync}from'node:fs';import{execFileSync}from'node:child_process';import{opaBinary}from'./src/lib/opa.ts';const input=JSON.parse(readFileSync('tests/fixtures/policy/spec20_complete.json')),trust=JSON.parse(readFileSync('.orchestration/validation/A0-08.test-trust.json')).eap.conformance_trust,clone=x=>structuredClone(x),ns=s=>BigInt(Date.parse(s))*1000000n;const raw=q=>JSON.parse(execFileSync(opaBinary(),['eval','--format=json','--data','policy/conformance.rego','--stdin-input',q],{input:JSON.stringify(input)})).result?.[0]?.expressions?.[0]?.value===true,test=(t,n)=>raw('data.eap.conformance.satisfied_test_vector with data.eap.conformance_trust as '+JSON.stringify(t)+' with time.now_ns as '+n),now=ns('2026-07-13T02:00:00Z'),start=ns(trust.expected.not_before),end=ns(trust.expected.not_after),keyEnd=ns(trust.active_key.expires_at);const checks=[['run before not_before',test(trust,start-1n),false],['run at not_before',test(trust,start),true],['run immediately before not_after',test(trust,end-1n),true],['run at not_after',test(trust,end),false],['run after not_after',test(trust,end+1n),false]];const extended=clone(trust);extended.expected.not_after='2028-07-13T00:00:00Z';checks.push(['key immediately before expiry',test(extended,keyEnd-1n),true],['key at expiry',test(extended,keyEnd),false],['key after expiry',test(extended,keyEnd+1n),false]);const muts={catalog_path_substitution:c=>c[0].path='/attacker/result.json',catalog_digest_substitution:c=>c[0].digest='sha256:'+'0'.repeat(64),catalog_missing:c=>c.pop(),catalog_extra:c=>c.push(clone(c[0])),catalog_duplicate_row:c=>c[5]=clone(c[0]),catalog_duplicate_path:c=>c[1].path=c[0].path,catalog_duplicate_digest:c=>c[1].digest=c[0].digest};for(const[name,m]of Object.entries(muts)){const t=clone(trust);m(t.expected.artifacts);checks.push([name,test(t,now),false])}const rotated=clone(trust);rotated.expected.run_id='run-spec20-rotated-006';rotated.expected.source_revision='a'.repeat(64);rotated.expected.source_digest='sha256:'+'a'.repeat(64);checks.push(['whole old bundle after source/run rotation',test(rotated,now),false]);for(const[name,a,e]of checks){console.log(name+': '+(a?'ALLOW':'DENY')+' expected='+(e?'ALLOW':'DENY'));if(a!==e)process.exitCode=1}const absent=raw('data.eap.conformance.satisfied'),testProd=raw('data.eap.conformance.satisfied with data.eap.conformance_trust as '+JSON.stringify(trust)+' with time.now_ns as '+now);console.log('production absent trust: '+(absent?'UNEXPECTED_ALLOW':'DENY'));console.log('production test-only trust: '+(testProd?'UNEXPECTED_ALLOW':'DENY'));if(absent||testProd)process.exitCode=1;
+NODE
+```
+
+Exit code: 0
+
+```text
+run before not_before: DENY expected=DENY
+run at not_before: ALLOW expected=ALLOW
+run immediately before not_after: ALLOW expected=ALLOW
+run at not_after: DENY expected=DENY
+run after not_after: DENY expected=DENY
+key immediately before expiry: ALLOW expected=ALLOW
+key at expiry: DENY expected=DENY
+key after expiry: DENY expected=DENY
+catalog_path_substitution: DENY expected=DENY
+catalog_digest_substitution: DENY expected=DENY
+catalog_missing: DENY expected=DENY
+catalog_extra: DENY expected=DENY
+catalog_duplicate_row: DENY expected=DENY
+catalog_duplicate_path: DENY expected=DENY
+catalog_duplicate_digest: DENY expected=DENY
+whole old bundle after source/run rotation: DENY expected=DENY
+production absent trust: DENY
+production test-only trust: DENY
+```
+
+## Command
+
+```bash
+./node_modules/.bin/biome format --diagnostic-level=error scripts/spec-check.mjs
+```
+
+Exit code: 0
+
+```text
+Checked 1 file in 33ms. No fixes applied.
+```
+
+## Command
+
+```bash
+./node_modules/.bin/biome lint --diagnostic-level=error scripts/spec-check.mjs
+```
+
+Exit code: 0
+
+```text
+Checked 1 file in 37ms. No fixes applied.
+```
+
+## Command
+
+```bash
+rg -n --hidden --glob '!node_modules/**' --glob '!.git/**' -- '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----' .
+```
+
+Exit code: 1
+
+```text
+
+```
+
+## Command
+
+```bash
+test ! -e /tmp/a008-r6-private.pem
+```
+
+Exit code: 0
+
+```text
+
+```
+
+## Command
+
+```bash
+git diff --check
+```
+
+Exit code: 0
+
+```text
+
+```
+
+## Command
+
+```bash
+make require-crit-review
+```
+
+Exit code: 2
+
+```text
+make: *** No rule to make target `require-crit-review'.  Stop.
+```
+
+The corrected repository private-key scan passes the leading-hyphen pattern after `--`; exit 1 means no match. The temporary run-006 private key is absent. The Crit probe exited 2 because this checkout has no `require-crit-review` Make target; no browser Crit was launched.

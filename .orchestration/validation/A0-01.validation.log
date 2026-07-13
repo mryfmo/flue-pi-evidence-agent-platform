@@ -1,0 +1,145 @@
+
+$ ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-01,SPEC-02,SPEC-03
+spec-check:passed
+exit_code=0
+
+$ ./node_modules/node/bin/node scripts/opa-test.mjs
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (236.667µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (651.042µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (140µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (108.083µs)
+
+policy/routing_test.rego:
+data.eap.routing_test.test_confidential_external_requires_approval#01: PASS (328.833µs)
+data.eap.routing_test.test_confidential_external_allows_with_approval#01: PASS (674.667µs)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (186.916µs)
+data.eap.agent_test.test_guest_denied: PASS (107.583µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (133.5µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (146.042µs)
+data.eap.agent_test.test_shell_denied: PASS (105.042µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (107.208µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (245.791µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (502.125µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (744.292µs)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (703.875µs)
+data.eap.routing_test.test_missing_classification_denied: PASS (955.333µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (574.083µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (522.833µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (506.75µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (394.917µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (1.090375ms)
+data.eap.routing_test.test_model_mismatch_denied: PASS (696.5µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (738.292µs)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.6095ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (727.792µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (153.125µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (122.916µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (143.042µs)
+data.eap.sandbox_test.test_egress_denied: PASS (122.084µs)
+data.eap.sandbox_test.test_env_denied: PASS (119.875µs)
+--------------------------------------------------------------------------------
+PASS: 31/31
+exit_code=0
+
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_missing_classification.json 'not data.eap.routing.allow'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+$ OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy --input tests/fixtures/policy/routing_default_unknown.json 'data.eap.routing.deny_reason[_] == "unknown_route"'
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"unknown_route\"",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+exit_code=0
+
+$ git diff --check
+exit_code=0
+
+$ git status --short
+ M .agents/worklog/codex/learn/learn_index.md
+ M .orchestration/orchestrator/events.jsonl
+ M .orchestration/orchestrator/leases.json
+ M docs/INTEGRATION_BOUNDARY.md
+ M docs/POLICY_MODEL.md
+ M docs/requirements.json
+ M docs/traceability.json
+ M policy/routing.prod.json
+ M policy/routing.rego
+ M policy/tests/routing_test.rego
+ M scripts/spec-check.mjs
+?? .agents/worklog/codex/learn/20260710_195050_learn.md
+?? .agents/worklog/codex/learn/20260710_202307_learn.md
+?? .agents/worklog/codex/plan/20260710_182608_plan.md
+?? .agents/worklog/codex/plan/20260710_184805_plan.md
+?? .agents/worklog/codex/plan/20260710_185659_plan.md
+?? .agents/worklog/codex/plan/20260710_193425_plan.md
+?? .agents/worklog/codex/plan/20260710_195814_plan.md
+?? .agents/worklog/codex/plan/20260710_201359_plan.md
+?? .agents/worklog/codex/plan/20260711_164220_plan.md
+?? .agents/worklog/codex/plan/20260711_173103_plan.md
+?? .agents/worklog/codex/plan/20260711_175048_plan.md
+?? .agents/worklog/codex/todo/20260710_184253_done.md
+?? .agents/worklog/codex/todo/20260710_185100_done.md
+?? .agents/worklog/codex/todo/20260710_192920_done.md
+?? .agents/worklog/codex/todo/20260710_195202_done.md
+?? .agents/worklog/codex/todo/20260710_201014_done.md
+?? .agents/worklog/codex/todo/20260710_202759_done.md
+?? .agents/worklog/codex/todo/20260711_164220_done.md
+?? .agents/worklog/codex/todo/20260711_173103_done.md
+?? .agents/worklog/codex/todo/20260711_175048_todo.md
+?? .orchestration/_rollback_opus_20260710/
+?? .orchestration/acceptance/P9-T01.acceptance.md
+?? .orchestration/autoskill/runs/A0-01.autoskill.md
+?? .orchestration/autoskill/runs/P9-T01.md
+?? .orchestration/decisions/
+?? .orchestration/learning/A0-01.learning.md
+?? .orchestration/learning/P9-T01.md
+?? .orchestration/reports/A0-01.deviation-request.md
+?? .orchestration/reports/A0-01.report.md
+?? .orchestration/reports/P9-T01_production_readiness_audit.md
+?? .orchestration/sandboxes/A0-01.sandbox.md
+?? .orchestration/sandboxes/P9-T01.md
+?? .orchestration/tasks/A0-01.md
+?? .orchestration/tasks/P9-T01.md
+?? .orchestration/validation/A0-01.validation.log
+?? .orchestration/validation/P9-T01_evidence.md
+?? .orchestration/validation/P9-T02-plan-check.mjs
+?? plans/
+?? schemas/
+?? tests/fixtures/
+?? uv.lock
+exit_code=0

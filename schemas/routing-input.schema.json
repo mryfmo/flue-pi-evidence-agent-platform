@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/routing-input.schema.json",
+  "title": "OPA routing authorization input",
+  "type": "object",
+  "required": ["decision", "policy"],
+  "additionalProperties": false,
+  "properties": {
+    "decision": {
+      "type": "object",
+      "required": [
+        "tenant",
+        "route_id",
+        "provider",
+        "model_id",
+        "classification"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "tenant": { "type": "string", "minLength": 1 },
+        "route_id": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string", "minLength": 1 },
+        "model_id": { "type": "string", "minLength": 1 },
+        "classification": {
+          "type": "object",
+          "required": ["value", "trust_proof"],
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "enum": ["public", "internal", "confidential", "restricted"]
+            },
+            "trust_proof": {
+              "description": "Gateway/PEP provenance metadata. These constant strings are not a cryptographic authenticity proof; callers must not be able to submit OPA input directly.",
+              "type": "object",
+              "required": ["producer", "verified_by", "evidence_kind"],
+              "additionalProperties": false,
+              "properties": {
+                "producer": { "const": "flue-pi-data-guard" },
+                "verified_by": { "const": "flue-pi-platform-gateway" },
+                "evidence_kind": { "const": "presidio-sqlglot-redaction-v1" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["classification", "providers", "routes"],
+      "additionalProperties": true,
+      "properties": {
+        "classification": {
+          "type": "object",
+          "required": ["producer", "verified_by", "evidence_kind", "enum"],
+          "additionalProperties": true,
+          "properties": {
+            "producer": { "const": "flue-pi-data-guard" },
+            "verified_by": { "const": "flue-pi-platform-gateway" },
+            "evidence_kind": { "const": "presidio-sqlglot-redaction-v1" },
+            "enum": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["public", "internal", "confidential", "restricted"]
+              },
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true
+            }
+          }
+        },
+        "providers": { "type": "object" },
+        "routes": { "type": "array" }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/telemetry-event.schema.json",
+  "title": "Correlated production gateway telemetry event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["span_name", "audit", "span"],
+  "properties": {
+    "span_name": { "const": "gateway.call" },
+    "audit": { "$ref": "#/$defs/correlation" },
+    "span": {
+      "allOf": [
+        { "$ref": "#/$defs/correlation" },
+        {
+          "type": "object",
+          "required": ["attributes"],
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["gateway.latency_ms"],
+              "properties": {
+                "gateway.latency_ms": { "type": "number", "minimum": 0 }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audit_id", "trace_id"],
+      "properties": {
+        "audit_id": { "type": "string", "minLength": 1 },
+        "trace_id": { "type": "string", "minLength": 1 },
+        "attributes": { "type": "object" }
+      }
+    }
+  }
+}

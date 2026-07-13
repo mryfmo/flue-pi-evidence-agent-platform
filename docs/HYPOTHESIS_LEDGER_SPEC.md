@@ -8,11 +8,8 @@ A run ledger contains:
 - `impactGraph[]`
 - `verifications[]`
 
-Closure is denied when:
-- no hypotheses are registered;
-- any hypothesis is not verified;
-- no passing verifier exists;
-- source, policy, verification, or data evidence is missing;
-- the patch candidate count is lower than the hypothesis count.
+## Normative closure contract
+
+The ledger supplies the issue-scoped record defined by `schemas/remediation-closure.schema.json`. Its only closure rule is `data.eap.closure.remediation_success`; `data.eap.closure.closed` is an alias. The combined schema and canonical policy-source contract digest is `sha256:b54388e5bf8f17ef14ca4a5facf4103c48502ae52be35f70142a9d2cf9391b00`. Candidate IDs and hypothesis IDs are interpreted within that record, and duplicate IDs fail closed.
 
 The ledger is stored as JSON under `artifacts/demo/hypothesis-ledger.json` during E2E validation.

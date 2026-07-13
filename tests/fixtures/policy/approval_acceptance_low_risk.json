@@ -1,0 +1,1 @@
+{"schema_version":"1.0","task_id":"task-low","acceptance_tier":"auto","risk_inputs":{"task_risk":"low","controlled_resource":false,"all_evidence_green":true,"deterministic_checks_passed":true,"unresolved_policy_warning":false,"policy_denied":false,"side_effect":false,"publishable_result":false,"restricted_data":false,"release_decision":false,"skill_promotion":false}}

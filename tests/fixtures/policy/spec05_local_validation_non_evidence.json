@@ -1,0 +1,36 @@
+{
+  "decision": {
+    "tenant": "acme",
+    "route_id": "local-validation-summary",
+    "provider": "local",
+    "model_id": "fixbot",
+    "classification": {
+      "value": "internal",
+      "trust_proof": {
+        "producer": "flue-pi-data-guard",
+        "verified_by": "flue-pi-platform-gateway",
+        "evidence_kind": "presidio-sqlglot-redaction-v1"
+      }
+    },
+    "execution": {
+      "environment": "local_validation",
+      "fallback_mode": "local",
+      "synthetic_output": {"evidence_status": "explicitly_marked_non_evidence", "scope": "local_validation_only"}
+    }
+  },
+  "policy": {
+    "classification": {
+      "producer": "flue-pi-data-guard",
+      "verified_by": "flue-pi-platform-gateway",
+      "evidence_kind": "presidio-sqlglot-redaction-v1",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "providers": {"local": {"type": "local_gateway"}},
+    "routes": [{
+      "id": "local-validation-summary",
+      "match": {"data_classification": "internal"},
+      "provider": "local",
+      "model_id": "fixbot"
+    }]
+  }
+}

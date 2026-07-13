@@ -27,13 +27,14 @@ import { startLocalGateway } from '../lib/localGateway.ts';
 import { evaluatePolicy } from '../lib/opa.ts';
 import { getSandboxExecutor, type SandboxHandle } from '../lib/sandbox.ts';
 import { configureTelemetry, withSpan } from '../lib/telemetry.ts';
-import type { RemediationPayload, RemediationResult } from '../lib/types.ts';
+import type { RemediationInvocation, RemediationResult } from '../lib/types.ts';
 
 export async function run({
   init,
   log,
   payload,
-}: FlueContext<RemediationPayload>): Promise<RemediationResult> {
+}: FlueContext<RemediationInvocation>): Promise<RemediationResult> {
+  const { request, trusted } = payload;
   const auditLog = 'artifacts/audit/remediation.jsonl';
   const ledgerPath = 'artifacts/demo/hypothesis-ledger.json';
   const tracePath = configureTelemetry('artifacts/telemetry/traces.jsonl');
@@ -42,15 +43,19 @@ export async function run({
   const traceId = runId;
   const sandboxExecutor = getSandboxExecutor({ auditLog });
   let sandboxHandle: SandboxHandle | undefined;
-  const workspaceFiles = await readWorkspaceFiles(payload.workspace);
+  const workspaceFiles = await readWorkspaceFiles(request.workspace);
   const gateway = await startLocalGateway(
     'Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.',
   );
   try {
-    await appendAudit(auditLog, { type: 'run_start', payload });
+    await appendAudit(auditLog, {
+      type: 'run_start',
+      workspace: request.workspace,
+      issue_present: request.issue !== undefined,
+    });
     const workspace = await withSpan(
       'workspace.prepare',
-      { workspace: payload.workspace },
+      { workspace: request.workspace },
       async () => {
         sandboxHandle = await sandboxExecutor.create({
           image: {
@@ -103,8 +108,7 @@ export async function run({
       { tool: 'apply_patch' },
       () =>
         evaluatePolicy({
-          user: payload.user,
-          tenant: payload.tenant,
+          ...trusted,
           tool: 'apply_patch',
           risk: 'medium',
           resource: workspace,

@@ -6,6 +6,20 @@ This document defines the production LLM gateway and model-routing design for th
 
 The current deterministic local OpenAI-compatible gateway remains the validation provider. It is used by `validate-release` so release gates stay reproducible and free of external LLM nondeterminism. The production gateway is an additional Pi provider registration behind the same `openai-completions` contract.
 
+## SPEC-05 canonical production rule
+
+The sole normative rule is `production_fallback_prohibited`. Production can use only its approved provider chain. The deterministic local gateway is unreachable from production routing. When that chain is exhausted, the exact gateway result is `ok:false, reason=llm_unavailable`, and the workflow outcome is `typed_failure_no_summary`; no summary or other content is returned.
+
+Synthetic output is permitted only under `local_validation_only` and must carry `evidence_status=explicitly_marked_non_evidence`. It cannot satisfy production, release, acceptance, audit, or remediation evidence. Missing or different markers deny authorization.
+
+Execution-state authorization uses `decision.execution`:
+
+- When `execution` is present, `environment` is required and must be exactly `production` or `local_validation`; missing, malformed, or unknown values deny.
+- `fallback_mode` uses the closed vocabulary `none`, `local`, or `deterministic_local`; missing is permitted and any other value denies. `environment=production` denies both local modes and every `local_gateway` provider.
+- Any production exhaustion/result state requires `provider_chain_exhausted=true` and the exact three-field result `{ok:false, reason:llm_unavailable, workflow_outcome:typed_failure_no_summary}`. Missing, false, or malformed exhaustion and any `content` field deny.
+- Any `synthetic_output` object requires `environment=local_validation`, `scope=local_validation_only`, and `evidence_status=explicitly_marked_non_evidence`.
+- These execution-state rules are additional to the complete tenant, route, provider, model, and trusted-classification tuple; they never authorize a route by themselves.
+
 ## Scope
 
 In scope:
@@ -40,11 +54,11 @@ Flue/Pi summarization request
   -> audit JSONL + OpenTelemetry span
   -> verified-evidence summary returned to workflow
 
-Fallback:
+Production provider chain:
   primary provider
     -> secondary provider
-    -> deterministic local gateway
-       audit marker: deterministic-fallback
+    -> typed failure: ok:false, reason=llm_unavailable
+       workflow outcome: typed_failure_no_summary
 ```
 
 The agent loop remains gated. The LLM path summarizes verified evidence only. Tool execution stays in typed workflow tools controlled by OPA, verifiers, the data guard, and closure gates.
@@ -72,6 +86,10 @@ Responsibility split:
 
 ## Typed Contracts
 
+`schemas/routing-policy.schema.json` is the sole production routing document shape and `policy/routing.prod.json` is an instance of it. The document is flat (`version`, `defaults`, `classification`, `routes`, `providers`) and is passed directly as `input.policy` to `data.eap.routing`; the former `routing_prod` wrapper is invalid and cannot authorize.
+
+`schemas/run-outcome.schema.json` defines the complete workflow run outcome enum: `passed`, `needs_review`, and `failed`. Missing, unknown, or malformed outcomes are invalid. A `failed` outcome requires one typed failure code; `passed` and `needs_review` prohibit a failure object. Audit sink, telemetry emission, sandbox lifecycle, and sandbox evidence failures use `audit_sink_failure`, `telemetry_emission_failure`, `sandbox_lifecycle_failure`, and `sandbox_evidence_failure` and can never be represented as success.
+
 The production gateway uses the same provider shape as the deterministic local gateway:
 
 - Provider API: `openai-completions`
@@ -93,7 +111,7 @@ Request contract:
 | `audit_id` | workflow audit context | Propagated to audit and telemetry. |
 | `trace_id` | OpenTelemetry active span | Propagated to audit and provider metadata where supported. |
 
-Response contract:
+Successful response contract:
 
 | Field | Notes |
 | --- | --- |
@@ -108,6 +126,16 @@ Response contract:
 
 Raw prompts, raw responses, and API keys are not written to audit logs.
 
+Exhausted production chain failure contract:
+
+| Field | Exact value |
+| --- | --- |
+| `ok` | `false` |
+| `reason` | `llm_unavailable` |
+| `workflow_outcome` | `typed_failure_no_summary` |
+
+The failure object has exactly these fields. In particular it has no `content`, provider-generated summary, deterministic summary, or synthetic success body.
+
 ## Routing Policy
 
 Routing is a pure function:
@@ -117,94 +145,7 @@ Routing is a pure function:
   -> {provider, model_id, fallback_chain}
 ```
 
-The policy lives in versioned JSON or YAML. OPA authorizes use of the selected route through a new Rego package, `eap.routing`, using the same fail-closed adapter posture as `src/lib/opa.ts`.
-
-Example schema:
-
-```json
-{
-  "version": "2026-07-05.p1",
-  "defaults": {
-    "fallback_chain": [
-      {
-        "provider": "openai",
-        "model_id": "gpt-5.5"
-      },
-      {
-        "provider": "local",
-        "model_id": "fixbot",
-        "mode": "deterministic-fallback"
-      }
-    ]
-  },
-  "routes": [
-    {
-      "id": "acme-internal-summary-fast",
-      "match": {
-        "tenant": "acme",
-        "data_classification": "internal",
-        "task_kind": "verified_evidence_summary",
-        "cost_budget": "standard",
-        "latency_target": "interactive"
-      },
-      "provider": "anthropic",
-      "model_id": "claude-sonnet-5",
-      "fallback_chain": [
-        {
-          "provider": "openai",
-          "model_id": "gpt-5.5"
-        },
-        {
-          "provider": "local",
-          "model_id": "fixbot",
-          "mode": "deterministic-fallback"
-        }
-      ]
-    },
-    {
-      "id": "acme-public-summary-low-cost",
-      "match": {
-        "tenant": "acme",
-        "data_classification": "public",
-        "task_kind": "verified_evidence_summary",
-        "cost_budget": "low",
-        "latency_target": "batch"
-      },
-      "provider": "anthropic",
-      "model_id": "claude-haiku-4-5-20251001",
-      "fallback_chain": [
-        {
-          "provider": "vllm",
-          "model_id": "tenant-summary-small"
-        },
-        {
-          "provider": "local",
-          "model_id": "fixbot",
-          "mode": "deterministic-fallback"
-        }
-      ]
-    }
-  ],
-  "providers": {
-    "anthropic": {
-      "type": "anthropic_api",
-      "api_key_env": "ANTHROPIC_API_KEY"
-    },
-    "openai": {
-      "type": "openai_api",
-      "api_key_env": "OPENAI_API_KEY"
-    },
-    "vllm": {
-      "type": "openai_compatible",
-      "base_url_env": "VLLM_BASE_URL",
-      "api_key_env": "VLLM_API_KEY"
-    },
-    "local": {
-      "type": "local_gateway"
-    }
-  }
-}
-```
+The policy lives in the versioned JSON document `policy/routing.prod.json`. Its only valid schema is `schemas/routing-policy.schema.json`; copied examples are deliberately avoided so the production contract cannot drift. OPA authorizes the selected route through `eap.routing` using the same fail-closed adapter posture as `src/lib/opa.ts`.
 
 Learned routers are a recorded non-goal. Revisit only if a future requirement proves static policy cannot express tenant, classification, cost, and latency constraints.
 
@@ -227,9 +168,11 @@ API keys are never logged, never sent in agmsg messages, and never written to au
 - `eap.routing` unavailable or OPA deny: fail closed, no external call.
 - Redaction unavailable or redaction check fails: fail closed, no external call.
 - Provider API key missing: fail closed, no external call.
-- Primary provider timeout or provider error: try the configured fallback chain.
-- Fallback reaches deterministic local gateway: return deterministic summary and record `deterministic-fallback` in audit and telemetry.
-- All fallbacks fail: return a typed gateway failure to the workflow; do not fabricate a summary.
+- Primary provider timeout or provider error: try only the configured approved production provider chain.
+- All approved production providers fail: return exactly `ok:false, reason=llm_unavailable`; the workflow records `typed_failure_no_summary` and no summary content.
+- Production never reaches the deterministic local gateway and never converts exhaustion into synthetic success.
+- Local validation may emit synthetic output only with `scope=local_validation_only` and `evidence_status=explicitly_marked_non_evidence`.
+- Audit sink write failure, telemetry emission failure, sandbox lifecycle failure, or missing sandbox evidence terminates the run with its typed `failed` outcome from `schemas/run-outcome.schema.json`; none may be downgraded to warning or represented as success.
 
 ## Provider Matrix
 
@@ -238,9 +181,17 @@ API keys are never logged, never sent in agmsg messages, and never written to au
 | Anthropic API | Anthropic adapter normalized to `openai-completions` | `claude-sonnet-5` | `claude-haiku-4-5-20251001` | `ANTHROPIC_API_KEY` | Default production route candidate. |
 | OpenAI API | OpenAI-compatible completions | `gpt-5.5` | Config-selected | `OPENAI_API_KEY` | Secondary provider candidate. |
 | Self-hosted OpenAI-compatible endpoint | OpenAI-compatible completions | Config-selected | Config-selected | endpoint-specific env vars | Example: vLLM. |
-| Deterministic local gateway | Existing local `openai-completions` provider | `fixbot` | `fixbot` | test key only | Validation provider and degraded fallback only. |
+| Deterministic local gateway | Existing local `openai-completions` provider | `fixbot` | `fixbot` | test key only | Local validation only; unreachable from production and always non-evidence when output is synthetic. |
 
 All model IDs are configurable. Code must not hard-code provider model names.
+
+## Superseded production fallback passages
+
+The accepted SPEC-05 decision makes these earlier locations historical and non-normative:
+
+- `SUPERSEDED by SPEC-05: fallback chain and deterministic-fallback success passages` — the former architecture diagram, routing example, failure-posture success branch, and provider-matrix “degraded fallback” note in this document. The current canonical rule above replaces all of them.
+- `SUPERSEDED by SPEC-05: production local_gateway provider declaration` — the former `local_gateway` declaration has been removed from `policy/routing.prod.json`; OPA also denies any production local-gateway decision.
+- `SUPERSEDED by SPEC-05: production deterministic-fallback success branch` — the branch in `src/lib/productionGateway.ts` is not an authorized production success path and must be removed by the runtime-owning work unit; it cannot produce evidence.
 
 ## Testing and Gates
 
@@ -257,6 +208,8 @@ Live-provider smoke is an ops runbook action. It validates credentials, provider
 ## G12 Measurement
 
 Every production gateway call emits an OpenTelemetry span through the existing JSONL exporter pattern.
+
+The only valid span name is `gateway.call`. `schemas/telemetry-event.schema.json` requires non-empty `audit_id` and `trace_id` on both the audit and span sides and exact equality of both values. Missing IDs, mismatches, and alternate span names are invalid evidence.
 
 Required span attributes:
 

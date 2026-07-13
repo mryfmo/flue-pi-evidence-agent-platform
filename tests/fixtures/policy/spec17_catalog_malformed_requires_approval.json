@@ -1,0 +1,9 @@
+{
+  "now": "2026-07-13T12:00:00Z",
+  "egress": "allow",
+  "identity_context": { "subject_id": "sub-1", "principal_type": "authenticated", "tenant_memberships": ["acme"], "roles": ["software_engineer"], "issuer": "flue-pi-identity-authority", "audience": "flue-pi-sandbox-policy", "verification": { "status": "verified", "owner": "flue-pi-platform-gateway" }, "request_binding": { "id": "binding-1" } },
+  "request_context": { "tenant": "acme", "task_id": "task-1", "run_id": "run-1", "binding_id": "binding-1", "source": { "revision": "rev-1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }, "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "action": "fetch_dependency" },
+  "egress_request": { "destination": "packages.example", "protocol": "https", "port": 443, "action": "fetch_dependency", "binding_id": "binding-1" },
+  "egress_catalog": [{ "tenant_id": "acme", "destination": "packages.example", "protocol": "https", "port": 443, "action": "fetch_dependency", "enabled": true, "requires_approval": "yes", "allowed_roles": ["software_engineer"] }],
+  "env_keys": []
+}

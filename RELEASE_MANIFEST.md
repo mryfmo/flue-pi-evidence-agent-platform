@@ -2,7 +2,7 @@
 
 Package: `flue-pi-evidence-agent-platform`
 Version: `1.2.0`
-Release status: validation passed
+Release status: determined only by current bound validation evidence
 
 ## Included runtime sources
 
@@ -15,8 +15,8 @@ Release status: validation passed
 - Release, container, deploy-smoke, SBOM/audit, OPA bundle, and skill-registry validation scripts under `scripts/`.
 - Unit, component, system, E2E, failure, security, regression tests under `tests/` and `tests_py/`.
 - Documentation, requirements, and traceability under `docs/`.
-- Validation logs and evidence artifacts under `artifacts/`.
-- Skill registry, promotion, optimization-loop, and AutoSkill evidence under `.orchestration/skills/` and `.orchestration/autoskill/`.
+- Promoted skill material and registry policy under `.orchestration/skills/`.
+- Generated validation, policy-bundle, SBOM, and runtime evidence artifacts are published separately and are not self-referential release-source inputs.
 
 ## Excluded generated dependencies
 
@@ -27,14 +27,15 @@ npm ci
 ./node_modules/node/bin/node scripts/setup-python.mjs
 ```
 
-Dependency lock/evidence files are included:
+Dependency lock files are release-source inputs:
 
 - `package-lock.json`
 - `requirements.txt`
-- `artifacts/sbom/npm-cyclonedx.json`
-- `artifacts/sbom/python-cyclonedx.json`
-- `artifacts/policy/bundle.tar.gz`
-- `artifacts/validation/final_verification_report.json`
+- `uv.lock`
+
+`uv.lock` is bound as release-source metadata; its inclusion does not by itself prove hermetic dependency resolution.
+
+Generated SBOMs, the OPA bundle, logs, and final validation report are outputs of the bound validation run. Their publication must preserve the artifact digests recorded by local or trusted CI evidence; they are not entries in `RELEASE_FILE_MANIFEST.json`.
 
 ## Validation command
 
@@ -42,6 +43,6 @@ Dependency lock/evidence files are included:
 npm run validate-release
 ```
 
-The attached validation report shows every release gate passed in this environment using bundled Node `v22.19.0` from the npm `node` package.
+`scripts/validation-manifest.mjs` defines the canonical ordered gate commands. `RELEASE_FILE_MANIFEST.json` deterministically binds the intended current source inputs, including relevant untracked bytes, while excluding itself and mutable generated output. Regenerate and commit it before validation; `--check` rejects missing, extra, duplicate, noncanonical, symlinked, or digest-mismatched entries.
 
-`npm run validate-release` runs 23 local release gates: setup, specification traceability, formatting, linting, typechecking, OPA adapter checks, Python compile/lint/type/security/tests, Vitest suites, production gateway contract, Flue build, E2E artifact assertions, npm audit/SBOM, Python SBOM/audit, lockfile registry validation, native OPA tests, OPA bundle build, and skill-registry validation. CI additionally runs container validation, deploy smoke, and OpenSandbox integration.
+`npm run validate-release` runs every canonical local gate, records the exact executable and argument vector for every result, and binds the report to the clean Git revision and source bytes. `scripts/ops-check.mjs` must accept that report against the same repository state. Those local records prove integrity and replay/source binding only in a trusted workspace; they are not cryptographic execution authenticity against a hostile local writer. CI additionally runs container validation, deploy smoke, and OpenSandbox integration, and production release authenticity requires live authenticated GitHub job/log/artifact binding. No current CI success is claimed by this manifest alone.

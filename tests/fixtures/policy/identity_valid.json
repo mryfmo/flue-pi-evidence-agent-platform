@@ -1,0 +1,16 @@
+{
+  "identity_context": {
+    "subject_id": "sub-123",
+    "principal_type": "authenticated",
+    "tenant_memberships": ["acme"],
+    "roles": ["software_engineer"],
+    "issuer": "flue-pi-identity-authority",
+    "audience": "flue-pi-agent-policy",
+    "verification": {"status": "verified", "owner": "flue-pi-platform-gateway"},
+    "request_binding": {"id": "req-123"}
+  },
+  "request_context": {"tenant": "acme", "binding_id": "req-123"},
+  "tool": "apply_patch",
+  "risk": "medium",
+  "resource": "repo"
+}

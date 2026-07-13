@@ -1,0 +1,234 @@
+# A0-05 Revision 1 Validation Evidence
+
+## PRECONDITION
+
+COMMAND: grep -q 'status: accepted' .orchestration/acceptance/A0-01.acceptance.md && grep -q 'status: accepted' .orchestration/acceptance/A0-03.acceptance.md && grep -q 'status: accepted' .orchestration/acceptance/A0-04.acceptance.md
+OUTPUT:
+(none)
+EXIT: 0
+
+## SECTION 7 SPEC CHECK
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-08,SPEC-10,SPEC-11,SPEC-13
+OUTPUT:
+spec-check:passed
+EXIT: 0
+
+## SECTION 7 OPA SUITE
+
+COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs
+OUTPUT:
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (277.292µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (213.208µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (123.792µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (88.542µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.970292ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (604.417µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.400417ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (1.1575ms)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (847.708µs)
+data.eap.agent_test.test_missing_identity_denied: PASS (195.042µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (242.542µs)
+data.eap.agent_test.test_anonymous_denied: PASS (1.191125ms)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (1.638916ms)
+data.eap.agent_test.test_unverified_denied: PASS (498.375µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (942µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (871µs)
+data.eap.agent_test.test_missing_role_denied: PASS (832.209µs)
+data.eap.agent_test.test_absent_role_denied: PASS (289µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (2.090041ms)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (1.099792ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (918.666µs)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (781.541µs)
+data.eap.agent_test.test_body_identity_denied: PASS (855.75µs)
+data.eap.agent_test.test_shell_denied: PASS (215.417µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (195.542µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (229.542µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (2.237208ms)
+
+policy/tests/closure_test.rego:
+data.eap.closure_test.test_complete_record_closes: PASS (13.17725ms)
+data.eap.closure_test.test_clean_without_issue_proof_stays_open: PASS (295.417µs)
+data.eap.closure_test.test_other_issue_evidence_stays_open: PASS (5.199916ms)
+data.eap.closure_test.test_missing_regression_stays_open: PASS (5.80125ms)
+data.eap.closure_test.test_failed_regression_stays_open: PASS (4.586ms)
+data.eap.closure_test.test_contradictory_duplicate_regression_id_fails_closed: PASS (1.059166ms)
+data.eap.closure_test.test_extra_failed_regression_stays_open: PASS (7.73875ms)
+data.eap.closure_test.test_extra_passed_regression_stays_open: PASS (7.011666ms)
+data.eap.closure_test.test_remaining_rescan_finding_stays_open: PASS (6.289791ms)
+data.eap.closure_test.test_missing_impact_stays_open: PASS (315.625µs)
+data.eap.closure_test.test_failed_impact_stays_open: PASS (6.607667ms)
+data.eap.closure_test.test_contradictory_duplicate_impact_id_fails_closed: PASS (3.98275ms)
+data.eap.closure_test.test_extra_failed_impact_stays_open: PASS (7.187334ms)
+data.eap.closure_test.test_extra_passed_impact_stays_open: PASS (9.439875ms)
+data.eap.closure_test.test_one_candidate_stays_open: PASS (5.621791ms)
+data.eap.closure_test.test_duplicate_candidates_stay_open: PASS (4.842958ms)
+data.eap.closure_test.test_candidates_are_not_counted_across_hypotheses: PASS (8.622417ms)
+data.eap.closure_test.test_unverified_hypothesis_stays_open: PASS (5.092417ms)
+data.eap.closure_test.test_missing_hypothesis_evidence_stays_open: PASS (1.827208ms)
+data.eap.closure_test.test_duplicate_hypothesis_id_fails_closed: PASS (1.637833ms)
+data.eap.closure_test.test_missing_field_fails_closed: PASS (1.058125ms)
+data.eap.closure_test.test_unknown_field_fails_closed: PASS (661.375µs)
+data.eap.closure_test.test_wrong_type_fails_closed: PASS (364.5µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.043208ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (1.105166ms)
+data.eap.routing_test.test_missing_classification_denied: PASS (477.958µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (602µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (594.792µs)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (1.487125ms)
+data.eap.routing_test.test_missing_proof_denied: PASS (829.25µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (685.458µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (867.708µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (711.167µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (295.917µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (601.459µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (540.917µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (458.416µs)
+data.eap.routing_test.test_missing_route_denied: PASS (414.5µs)
+data.eap.routing_test.test_malformed_route_denied: PASS (502.083µs)
+data.eap.routing_test.test_missing_provider_denied: PASS (695.292µs)
+data.eap.routing_test.test_unknown_provider_denied: PASS (701.583µs)
+data.eap.routing_test.test_malformed_provider_denied: PASS (454.958µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (760µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (656.625µs)
+data.eap.routing_test.test_missing_model_denied: PASS (707.333µs)
+data.eap.routing_test.test_malformed_model_denied: PASS (700.583µs)
+data.eap.routing_test.test_old_wrapped_policy_denied: PASS (269.458µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (722.292µs)
+data.eap.routing_test.test_selected_route_missing_tenant_denied: PASS (724.375µs)
+data.eap.routing_test.test_selected_route_malformed_tenant_denied: PASS (972.625µs)
+data.eap.routing_test.test_selected_route_cross_tenant_denied: PASS (1.422875ms)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (1.031291ms)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.4085ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (1.1385ms)
+data.eap.routing_test.test_production_local_fallback_denied: PASS (1.422333ms)
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS (2.052083ms)
+data.eap.routing_test.test_missing_execution_environment_denied: PASS (1.995042ms)
+data.eap.routing_test.test_malformed_execution_denied: PASS (1.248042ms)
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS (1.276791ms)
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS (1.36525ms)
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS (1.364708ms)
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS (2.964958ms)
+data.eap.routing_test.test_production_local_gateway_denied: PASS (1.4225ms)
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS (1.324583ms)
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS (1.853708ms)
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS (4.555125ms)
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS (1.5345ms)
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS (1.672417ms)
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS (1.599083ms)
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS (1.659208ms)
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS (2.32275ms)
+data.eap.routing_test.test_synthetic_evidence_denied: PASS (1.700833ms)
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS (1.149916ms)
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS (714.542µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (155.792µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (123.917µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (156.5µs)
+data.eap.sandbox_test.test_egress_denied: PASS (137.833µs)
+data.eap.sandbox_test.test_env_denied: PASS (110.875µs)
+--------------------------------------------------------------------------------
+PASS: 106/106
+EXIT: 0
+
+## SECTION 7 OLD WRAPPER DENY
+
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --input tests/fixtures/policy/production_contract_wrapped_invalid.json 'not data.eap.routing.allow'
+OUTPUT:
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+EXIT: 0
+
+## SECTION 7 DIFF CHECK
+
+COMMAND: git diff --check
+OUTPUT:
+(none)
+EXIT: 0
+
+## POSITIVE NORMALIZED ROUTE
+
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_routing_valid.json 'data.eap.routing.allow'
+OUTPUT:
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+EXIT: 0
+
+## REVISION 1 CROSS-TENANT DENY
+
+COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/routing.rego --data policy/tenants.json --input tests/fixtures/policy/production_contract_cross_tenant_invalid.json 'not data.eap.routing.allow; data.eap.routing.deny_reason[_] == "route_tenant_mismatch"'
+OUTPUT:
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.routing.allow",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        },
+        {
+          "value": true,
+          "text": "data.eap.routing.deny_reason[_] == \"route_tenant_mismatch\"",
+          "location": {
+            "row": 1,
+            "col": 29
+          }
+        }
+      ]
+    }
+  ]
+}
+EXIT: 0
+
+## CRIT REQUIREMENT CHECK
+
+COMMAND: make require-crit-review
+OUTPUT:
+make: *** No rule to make target `require-crit-review'.  Stop.
+EXIT: 2
+
+## Coverage notes
+
+- `scripts/spec-check.mjs` schema-validates the normalized production policy and positive routing fixture; asserts the reproduced cross-tenant policy remains schema-valid; validates all positive run-outcome and telemetry fixtures; rejects missing, unknown, malformed, false-success, missing-correlation, mismatched-correlation, and unknown-span fixtures; and directly verifies every audit/telemetry/sandbox failure row is `outcome=failed` with its typed code.
+- The OPA suite reports 106/106: all 103 pre-revision tests plus three explicit selected-route tenant regressions (missing, malformed, cross-tenant). The split-witness regression now supplies tenant from a fourth, different row.
+- `make require-crit-review` is unavailable in this repository. No browser Crit was launched.

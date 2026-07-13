@@ -1,0 +1,523 @@
+
+===== COMMAND: test -f docs/SPECIFICATION.md =====
+===== EXIT CODE: 0 =====
+
+===== COMMAND: test -f docs/HYPOTHESIS_LEDGER_SPEC.md =====
+===== EXIT CODE: 0 =====
+
+===== COMMAND: test -f docs/EVIDENCE_GRAPH_SPEC.md =====
+===== EXIT CODE: 0 =====
+
+===== COMMAND: test -f docs/requirements.json =====
+===== EXIT CODE: 0 =====
+
+===== COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-06,SPEC-07,SPEC-09 =====
+spec-check:passed
+===== EXIT CODE: 0 =====
+
+===== COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs =====
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (1.8205ms)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (192.875µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (145.5µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (93.834µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.325041ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (336.417µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.6345ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (1.309708ms)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (862.291µs)
+data.eap.agent_test.test_missing_identity_denied: PASS (196.958µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (204.708µs)
+data.eap.agent_test.test_anonymous_denied: PASS (480.041µs)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (1.04025ms)
+data.eap.agent_test.test_unverified_denied: PASS (471.542µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (1.768667ms)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (872µs)
+data.eap.agent_test.test_missing_role_denied: PASS (785.125µs)
+data.eap.agent_test.test_absent_role_denied: PASS (270.75µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (2.082541ms)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (1.006042ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (852.209µs)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (762.708µs)
+data.eap.agent_test.test_body_identity_denied: PASS (796.584µs)
+data.eap.agent_test.test_shell_denied: PASS (205.542µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (368.708µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (372.5µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (1.140917ms)
+
+policy/tests/closure_test.rego:
+data.eap.closure_test.test_complete_record_closes: PASS (10.003083ms)
+data.eap.closure_test.test_clean_without_issue_proof_stays_open: PASS (289.291µs)
+data.eap.closure_test.test_other_issue_evidence_stays_open: PASS (4.911958ms)
+data.eap.closure_test.test_missing_regression_stays_open: PASS (5.106834ms)
+data.eap.closure_test.test_failed_regression_stays_open: PASS (5.19225ms)
+data.eap.closure_test.test_contradictory_duplicate_regression_id_fails_closed: PASS (804.375µs)
+data.eap.closure_test.test_extra_failed_regression_stays_open: PASS (5.482375ms)
+data.eap.closure_test.test_extra_passed_regression_stays_open: PASS (5.271ms)
+data.eap.closure_test.test_remaining_rescan_finding_stays_open: PASS (5.398875ms)
+data.eap.closure_test.test_missing_impact_stays_open: PASS (316.167µs)
+data.eap.closure_test.test_failed_impact_stays_open: PASS (5.212291ms)
+data.eap.closure_test.test_contradictory_duplicate_impact_id_fails_closed: PASS (4.195792ms)
+data.eap.closure_test.test_extra_failed_impact_stays_open: PASS (5.832792ms)
+data.eap.closure_test.test_extra_passed_impact_stays_open: PASS (5.842084ms)
+data.eap.closure_test.test_one_candidate_stays_open: PASS (5.299292ms)
+data.eap.closure_test.test_duplicate_candidates_stay_open: PASS (5.682833ms)
+data.eap.closure_test.test_candidates_are_not_counted_across_hypotheses: PASS (6.143916ms)
+data.eap.closure_test.test_unverified_hypothesis_stays_open: PASS (5.273959ms)
+data.eap.closure_test.test_missing_hypothesis_evidence_stays_open: PASS (1.565209ms)
+data.eap.closure_test.test_duplicate_hypothesis_id_fails_closed: PASS (2.516708ms)
+data.eap.closure_test.test_missing_field_fails_closed: PASS (240.833µs)
+data.eap.closure_test.test_unknown_field_fails_closed: PASS (296.041µs)
+data.eap.closure_test.test_wrong_type_fails_closed: PASS (344.375µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (830.541µs)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (945µs)
+data.eap.routing_test.test_missing_classification_denied: PASS (459.834µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (539.208µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (1.61325ms)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (581.25µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (479.584µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (626.291µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (668.792µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (640.75µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (291.375µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (601.584µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (532.75µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (432.125µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (831.75µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (1.135916ms)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (851.959µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (815.75µs)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.099375ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (885.916µs)
+data.eap.routing_test.test_production_local_fallback_denied: PASS (1.174375ms)
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS (1.933291ms)
+data.eap.routing_test.test_missing_execution_environment_denied: PASS (1.100042ms)
+data.eap.routing_test.test_malformed_execution_denied: PASS (1.040584ms)
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS (988.084µs)
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS (1.107666ms)
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS (1.72475ms)
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS (1.428458ms)
+data.eap.routing_test.test_production_local_gateway_denied: PASS (1.219292ms)
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS (1.143584ms)
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS (1.283375ms)
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS (1.501125ms)
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS (1.74125ms)
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS (1.131458ms)
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS (1.960334ms)
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS (1.249583ms)
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS (1.076333ms)
+data.eap.routing_test.test_synthetic_evidence_denied: PASS (1.550166ms)
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS (1.467375ms)
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS (631.541µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (160.667µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (130.917µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (185.167µs)
+data.eap.sandbox_test.test_egress_denied: PASS (129.166µs)
+data.eap.sandbox_test.test_env_denied: PASS (123.625µs)
+--------------------------------------------------------------------------------
+PASS: 95/95
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/closure.rego --input tests/fixtures/policy/closure_clean_without_issue_proof.json 'not data.eap.closure.closed' =====
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.closure.closed",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+===== EXIT CODE: 0 =====
+
+===== COMMAND: git diff --check =====
+===== EXIT CODE: 0 =====
+
+===== COMMAND: npm test =====
+
+> flue-pi-evidence-agent-platform@1.2.0 test
+> vitest run --pool=forks
+
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+[flue] Loaded config: flue.config.ts
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+(node:57450) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[flue] Run ID: workflow:remediate:01KX9QGYHP62C7GC00NMYBDT1K
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v22.19.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: ./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload {"workspace":"sample_repos/buggy_multi","user":"engineer","tenant":"acme","issue":"fix all localized defects"}
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+(node:57450) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[flue] Run ID: workflow:remediate:01KX9QGYHP62C7GC00NMYBDT1K
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v22.19.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:915:11)
+    at execFileSync (node:child_process:951:15)
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/run-flue-workflow.mjs:12:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+      '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+      '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+      '[flue] Target: node\n' +
+      '[flue] Custom app entry: src/app.ts\n' +
+      '[flue] Found 1 agent(s): remediator\n' +
+      '[flue] Found 2 workflow(s): remediate, smoke\n' +
+      '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+      '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+      '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+    '[flue] Loaded config: flue.config.ts\n' +
+      '[flue] Running workflow: remediate\n' +
+      '(node:57450) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n' +
+      '(Use `node --trace-warnings ...` to show where the warning was created)\n' +
+      '[flue] Run ID: workflow:remediate:01KX9QGYHP62C7GC00NMYBDT1K\n' +
+      'node:events:497\n' +
+      "      throw er; // Unhandled 'error' event\n" +
+      '      ^\n' +
+      'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+      '    at Server.setupListenHandle [as _listen2] (node:net:1918:21)\n' +
+      '    at listenInCluster (node:net:1997:12)\n' +
+      '    at node:net:2206:7\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+      "Emitted 'error' event on Server instance at:\n" +
+      '    at emitErrorNT (node:net:1976:8)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+      "  code: 'EPERM',\n" +
+      '  errno: -1,\n' +
+      "  syscall: 'listen',\n" +
+      "  address: '127.0.0.1'\n" +
+      '}\n' +
+      'Node.js v22.19.0\n' +
+      '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+  ],
+  pid: 57412,
+  stdout: '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+    '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+    '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+    '[flue] Target: node\n' +
+    '[flue] Custom app entry: src/app.ts\n' +
+    '[flue] Found 1 agent(s): remediator\n' +
+    '[flue] Found 2 workflow(s): remediate, smoke\n' +
+    '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+    '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+    '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+  stderr: '[flue] Loaded config: flue.config.ts\n' +
+    '[flue] Running workflow: remediate\n' +
+    '(node:57450) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n' +
+    '(Use `node --trace-warnings ...` to show where the warning was created)\n' +
+    '[flue] Run ID: workflow:remediate:01KX9QGYHP62C7GC00NMYBDT1K\n' +
+    'node:events:497\n' +
+    "      throw er; // Unhandled 'error' event\n" +
+    '      ^\n' +
+    'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1918:21)\n' +
+    '    at listenInCluster (node:net:1997:12)\n' +
+    '    at node:net:2206:7\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+    "Emitted 'error' event on Server instance at:\n" +
+    '    at emitErrorNT (node:net:1976:8)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+    "  code: 'EPERM',\n" +
+    '  errno: -1,\n' +
+    "  syscall: 'listen',\n" +
+    "  address: '127.0.0.1'\n" +
+    '}\n' +
+    'Node.js v22.19.0\n' +
+    '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+}
+
+Node.js v22.19.0
+ ❯ tests/e2e/remediate_e2e.test.ts (1 test | 1 failed) 3180ms
+     × runs issue localization, patching, verification, data guard, and closure gate 3179ms
+ ❯ tests/component/opa.test.ts (4 tests | 2 failed) 87ms
+     × allows bounded patching for authorized engineer in tenant 25ms
+     × denies acme when the tenant allowlist is empty 22ms
+ ❯ tests/component/routing.test.ts (8 tests | 2 failed) 83ms
+     × allows a valid acme route 24ms
+     × allows restricted data on the deterministic local provider 19ms
+ ❯ tests/component/data_proxy.test.ts (2 tests | 1 failed) 15607ms
+     × executes aggregate metric path and redacts PII 13437ms
+ ❯ tests/failure/llm_outage.test.ts (3 tests | 3 failed) 104155ms
+     × does not treat LiteLLM stopped on localhost as delegated success 13277ms
+     × times out a hanging LiteLLM proxy as llm_unavailable without success audit 90005ms
+     × keeps routing_decision and machine-readable reason when fallback chain is exhausted 871ms
+
+===== NOTE =====
+Previous npm test run was interrupted after sandbox-localhost EPERM failures caused a hang; A0-04 policy/spec checks continue below.
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_clean.json 'data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_clean_without_issue_proof.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_other_issue_evidence.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_missing_regression.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_failed_regression.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_duplicate_regression_ids.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_extra_failed_regression.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_extra_passed_regression.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_remaining_rescan.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_missing_impact.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_failed_impact.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_duplicate_impact_ids.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_extra_failed_impact.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_extra_passed_impact.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_one_candidate.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_duplicate_candidates.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_split_candidates.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_unverified_hypothesis.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_missing_hypothesis_evidence.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_duplicate_hypothesis_ids.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_missing_field.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_unknown_field.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"; "$OPA_BIN" eval --fail --format=values --data policy/closure.rego --input tests/fixtures/policy/closure_wrong_type.json 'not data.eap.closure.closed' =====
+[
+  true
+]
+===== EXIT CODE: 0 =====
+
+===== COMMAND: ./node_modules/node/bin/node --input-type=module <<'NODE'
+import { readFileSync } from "node:fs";
+import Ajv2020 from "ajv/dist/2020.js";
+const validate = new Ajv2020({ strict: true }).compile(JSON.parse(readFileSync("schemas/remediation-closure.schema.json", "utf8")));
+const positive = ["tests/fixtures/policy/closure_clean.json"];
+const negativeSchema = [
+  "tests/fixtures/policy/closure_clean_without_issue_proof.json",
+  "tests/fixtures/policy/closure_missing_field.json",
+  "tests/fixtures/policy/closure_missing_hypothesis_evidence.json",
+  "tests/fixtures/policy/closure_missing_impact.json",
+  "tests/fixtures/policy/closure_unknown_field.json",
+  "tests/fixtures/policy/closure_wrong_type.json",
+];
+for (const path of positive) {
+  const ok = validate(JSON.parse(readFileSync(path, "utf8")));
+  console.log(`${path}: schema=${ok}`);
+  if (!ok) throw new Error(JSON.stringify(validate.errors));
+}
+for (const path of negativeSchema) {
+  const ok = validate(JSON.parse(readFileSync(path, "utf8")));
+  console.log(`${path}: schema=${ok}`);
+  if (ok) throw new Error(`${path} unexpectedly matched schema`);
+}
+NODE =====
+tests/fixtures/policy/closure_clean.json: schema=true
+tests/fixtures/policy/closure_clean_without_issue_proof.json: schema=false
+tests/fixtures/policy/closure_missing_field.json: schema=false
+tests/fixtures/policy/closure_missing_hypothesis_evidence.json: schema=false
+tests/fixtures/policy/closure_missing_impact.json: schema=false
+tests/fixtures/policy/closure_unknown_field.json: schema=false
+tests/fixtures/policy/closure_wrong_type.json: schema=false
+===== EXIT CODE: 0 =====
+
+===== COMMAND: set -euo pipefail
+before="$(shasum -a 256 policy/closure.rego | awk '{print $1}')"
+backup="$(mktemp)"
+cp policy/closure.rego "$backup"
+restore() { cp "$backup" policy/closure.rego; rm -f "$backup"; }
+trap restore EXIT
+perl -0pi -e 's/remediation_success if \{/# drift-probe: policy body changed\nremediation_success if {/' policy/closure.rego
+set +e
+./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-06,SPEC-07,SPEC-09
+rc=$?
+set -e
+restore
+trap - EXIT
+after="$(shasum -a 256 policy/closure.rego | awk '{print $1}')"
+echo "digest drift spec-check exit=$rc"
+echo "policy hash before=$before"
+echo "policy hash after=$after"
+test "$rc" -ne 0
+test "$before" = "$after" =====
+file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:176
+      if (!document.includes(required)) throw new Error(`${path} missing closure binding: ${required}`);
+                                              ^
+
+Error: docs/SPECIFICATION.md missing closure binding: sha256:c1f9322662954a0cda67a8826510b41aa48191d257be2689ae41fc880435c16b
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/spec-check.mjs:176:47
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.19.0
+digest drift spec-check exit=1
+policy hash before=e0a31dd9503685e7ff55d05abf6532426494c3746de60ebcf9232de305e65907
+policy hash after=e0a31dd9503685e7ff55d05abf6532426494c3746de60ebcf9232de305e65907
+===== EXIT CODE: 0 =====
+
+===== COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-06,SPEC-07,SPEC-09 =====
+spec-check:passed
+===== EXIT CODE: 0 =====
+
+===== A0-04 DIRECT VALIDATION SUMMARY: failures=0 =====

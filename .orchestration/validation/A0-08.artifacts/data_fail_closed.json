@@ -1,0 +1,13 @@
+{
+  "contract_version": "spec20-capability-artifact-v1",
+  "producer": "test-vector:local-machine",
+  "run_id": "run-spec20-test-vector-007",
+  "requirement_id": "REQ-DATA-001",
+  "test_id": "data_fail_closed",
+  "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "command": "MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k test_accepts_safe_aggregate_sql_and_parser_failure",
+  "outcome": "passed",
+  "exit_code": 0,
+  "machine_output": ".                                                                        [100%]"
+}

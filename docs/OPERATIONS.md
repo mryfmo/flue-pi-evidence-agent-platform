@@ -29,6 +29,8 @@ If the git remote cannot be reached from an offline host, the check prints `warn
 
 ## Evidence inspection
 
+Persistent artifact shape and lifecycle are governed by `schemas/persistent-artifact.schema.json` and `docs/DATA_GOVERNANCE.md`. The only normative governed-term glossary and resource catalog are the “Canonical glossary (normative)” and “Canonical controlled-resource catalog (normative)” sections in `docs/INTEGRATION_BOUNDARY.md`.
+
 - Ledger: `artifacts/demo/hypothesis-ledger.json`
 - Audit: `artifacts/audit/remediation.jsonl`
 - Trace: `artifacts/telemetry/traces.jsonl`

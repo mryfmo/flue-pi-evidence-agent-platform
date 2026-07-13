@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "canonicalization": "UTF-8 JSON.stringify(id-sorted [{id,text,severity},...]) followed by LF; no Unicode or whitespace normalization",
+  "baselineDigest": "sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a",
+  "expectedPostDigest": "sha256:dd32ce18c5fd3310823b462e88a568d7f9b5defd3364b478db9ade1d2585b593",
+  "allowedCatalogChanges": {
+    "FR-001": {
+      "text": "Accept a closed versioned remediation payload containing workspace and optional issue, and obtain user and tenant only from the gateway/PEP-owned verified identity context.",
+      "severity": null
+    }
+  },
+  "markdownProjectionOnly": [
+    "PR-005",
+    "PR-008",
+    "REQ-DATA-001",
+    "REQ-PI-001",
+    "SPEC-04",
+    "SPEC-05",
+    "SPEC-06",
+    "SPEC-07",
+    "SPEC-09",
+    "SPEC-12",
+    "SPEC-15",
+    "SPEC-16",
+    "SPEC-20"
+  ],
+  "requirements": [
+    {
+      "id": "FR-001",
+      "text": "Accept a remediation payload with workspace, user, tenant, and issue.",
+      "severity": null
+    },
+    {
+      "id": "FR-002",
+      "text": "Prepare an isolated run workspace copy instead of editing the source fixture.",
+      "severity": null
+    },
+    {
+      "id": "FR-003",
+      "text": "Localize zero-divisor, invalid integer parsing, and unguarded dictionary key-access hypotheses.",
+      "severity": null
+    },
+    {
+      "id": "FR-004",
+      "text": "Generate more than one patch candidate per hypothesis.",
+      "severity": null
+    },
+    {
+      "id": "FR-005",
+      "text": "Apply only selected minimal candidates and leave alternatives recorded.",
+      "severity": null
+    },
+    {
+      "id": "FR-006",
+      "text": "Run pytest verification after patching.",
+      "severity": null
+    },
+    {
+      "id": "FR-007",
+      "text": "Rescan after verification and refuse closure if issues remain.",
+      "severity": null
+    },
+    {
+      "id": "FR-008",
+      "text": "Route patch authorization through real OPA/Rego.",
+      "severity": null
+    },
+    {
+      "id": "FR-009",
+      "text": "Fail closed if OPA is unavailable.",
+      "severity": null
+    },
+    {
+      "id": "FR-010",
+      "text": "Return aggregate-only governed data without raw PII; reject unsafe or unauthorized requests and fail closed when controls cannot be verified.",
+      "severity": null
+    },
+    {
+      "id": "FR-011",
+      "text": "Emit OpenTelemetry spans to a JSONL trace artifact.",
+      "severity": null
+    },
+    {
+      "id": "FR-012",
+      "text": "Provide governed agent execution behavior; reject unauthorized or invalid execution and fail closed when capability evidence cannot be verified.",
+      "severity": null
+    },
+    {
+      "id": "FR-013",
+      "text": "Decide remediation closure from one schema-bound, issue-scoped, fail-closed predicate.",
+      "severity": null
+    },
+    {
+      "id": "NFR-001",
+      "text": "Verification failures must keep the ledger open.",
+      "severity": null
+    },
+    {
+      "id": "NFR-002",
+      "text": "Policy unavailability must fail closed.",
+      "severity": null
+    },
+    {
+      "id": "NFR-003",
+      "text": "Repeated runs must use unique workspaces to avoid concurrent test races.",
+      "severity": null
+    },
+    {
+      "id": "NFR-004",
+      "text": "Shell tools are not authorized by policy.",
+      "severity": null
+    },
+    {
+      "id": "NFR-005",
+      "text": "Raw SQL is not available as an agent tool.",
+      "severity": null
+    },
+    {
+      "id": "NFR-006",
+      "text": "PII is redacted before data is returned to the agent layer.",
+      "severity": null
+    },
+    {
+      "id": "NFR-007",
+      "text": "`npm run validate-release` must generate machine-readable validation artifacts.",
+      "severity": null
+    },
+    {
+      "id": "NFR-008",
+      "text": "`npm sbom` must emit a CycloneDX SBOM for Node dependencies.",
+      "severity": null
+    },
+    {
+      "id": "NFR-009",
+      "text": "Python and TypeScript quality gates must run in separate commands and write logs.",
+      "severity": null
+    },
+    {
+      "id": "NFR-010",
+      "text": "Types are strict TypeScript contracts.",
+      "severity": null
+    },
+    {
+      "id": "NFR-011",
+      "text": "Python code is checked by ruff, mypy, bandit, and pytest coverage.",
+      "severity": null
+    },
+    {
+      "id": "PR-001",
+      "text": "Remediation execution provides a governed agent capability whose observable behavior is validated end to end.",
+      "severity": null
+    },
+    {
+      "id": "PR-002",
+      "text": "Every remediation run creates a hypothesis ledger and evidence graph.",
+      "severity": null
+    },
+    {
+      "id": "PR-003",
+      "text": "No patch is applied until OPA authorizes the tool request.",
+      "severity": null
+    },
+    {
+      "id": "PR-004",
+      "text": "A run does not close while unresolved hypotheses remain.",
+      "severity": null
+    },
+    {
+      "id": "PR-005",
+      "text": "Data analysis enforces aggregate-only queries, rejects unsafe SQL and raw PII, and fails closed when validation or anonymization cannot be verified.",
+      "severity": null
+    },
+    {
+      "id": "PR-006",
+      "text": "Unsafe SQL, raw PII projection, mutation SQL, and multi-statement SQL are rejected.",
+      "severity": null
+    },
+    {
+      "id": "PR-007",
+      "text": "OpenTelemetry spans and JSONL audit records are emitted.",
+      "severity": null
+    },
+    {
+      "id": "PR-008",
+      "text": "Release creation is blocked unless all quality gates pass.",
+      "severity": null
+    },
+    {
+      "id": "REQ-AUDIT-002",
+      "text": "Every gateway call shall record audit ID, trace ID, provider, model ID, routing decision, token counts, latency, content digests, and estimated cost.",
+      "severity": null
+    },
+    {
+      "id": "REQ-DATA-001",
+      "text": "Governed data analysis shall provide aggregate-only results without raw PII, reject unsafe or unauthorized requests, and fail closed when query safety, isolation, or anonymization outcomes cannot be verified.",
+      "severity": null
+    },
+    {
+      "id": "REQ-EVIDENCE-001",
+      "text": "Defects shall be represented as hypotheses. Remediation closure is governed exclusively by the `remediation-closure-v1` contract in `schemas/remediation-closure.schema.json` and `data.eap.closure.remediation_success`; `data.eap.closure.closed` is an alias of that predicate. The combined schema and canonical policy-source contract digest is `sha256:b54388e5bf8f17ef14ca4a5facf4103c48502ae52be35f70142a9d2cf9391b00`.",
+      "severity": null
+    },
+    {
+      "id": "REQ-FAILCLOSED-002",
+      "text": "Routing policy, redaction, secret, or OPA failures shall prevent external provider calls.",
+      "severity": null
+    },
+    {
+      "id": "REQ-FLUE-001",
+      "text": "The system shall use Flue as the agent harness runtime and shall build a Node target through the Flue CLI.",
+      "severity": null
+    },
+    {
+      "id": "REQ-GATEWAY-001",
+      "text": "The system shall support a production LLM gateway as an additional provider behind the existing typed provider boundary.",
+      "severity": null
+    },
+    {
+      "id": "REQ-HTTP-REQUEST-001",
+      "text": "`POST /v1/remediations` is the runtime remediation trust boundary. It accepts only a valid, unambiguous `Content-Type` with `application/json` media-type essence; comma-joined values and case-insensitively duplicate parameter names are rejected. The raw body is capped at 65,536 bytes. It decodes strict UTF-8 and accepts exactly one closed JSON object conforming to `schemas/remediation-request.schema.json`: integer `version` equal to `1`, required `workspace` of 1..4,096 Unicode code points, and optional `issue` of 0..8,192 Unicode code points. Unknown fields, lone surrogates, coercion, defaults, and caller identity or provenance fields are rejected before workflow or other side effects.",
+      "severity": null
+    },
+    {
+      "id": "REQ-MEASURE-001",
+      "text": "Gateway calls shall emit latency, token, and cost telemetry for G12 measurement.",
+      "severity": null
+    },
+    {
+      "id": "REQ-OBS-001",
+      "text": "The system shall emit OpenTelemetry spans and JSONL audit records during the E2E workflow. The release gate shall assert that required spans and audit events exist.",
+      "severity": null
+    },
+    {
+      "id": "REQ-OPA-001",
+      "text": "Patch operations shall be authorized by real OPA/Rego before execution. OPA unavailability shall fail closed.",
+      "severity": null
+    },
+    {
+      "id": "REQ-PATCH-001",
+      "text": "The system shall generate more than one distinct patch candidate per localized patchable hypothesis and record both selected and unselected alternatives in the ledger. Candidate sufficiency for closure is evaluated by the canonical predicate referenced by REQ-EVIDENCE-001, never by aggregate candidate count.",
+      "severity": null
+    },
+    {
+      "id": "REQ-PI-001",
+      "text": "Remediation execution shall provide externally observable governed-agent behavior, reject unauthorized or invalid execution, and fail closed when the execution capability or its evidence cannot be verified.",
+      "severity": null
+    },
+    {
+      "id": "REQ-REDACTION-002",
+      "text": "The gateway shall redact outbound prompts before any external provider call.",
+      "severity": null
+    },
+    {
+      "id": "REQ-RELEASE-001",
+      "text": "No artifact may be labeled releasable unless `npm run validate-release` passes and writes a passing `artifacts/validation/final_verification_report.json`.",
+      "severity": null
+    },
+    {
+      "id": "REQ-ROUTING-001",
+      "text": "Model routing shall be a deterministic policy function over tenant, data classification, task kind, cost budget, and latency target.",
+      "severity": null
+    },
+    {
+      "id": "REQ-SANDBOX-001",
+      "text": "The product shall support OpenSandbox as the required execution-isolation layer for remediation workspace operations.",
+      "severity": null
+    },
+    {
+      "id": "REQ-SANDBOX-002",
+      "text": "OpenSandbox runtime failures shall fail closed with no silent fallback to local execution.",
+      "severity": null
+    },
+    {
+      "id": "REQ-SANDBOX-003",
+      "text": "Sandboxes shall isolate credentials and deny network egress by default.",
+      "severity": null
+    },
+    {
+      "id": "REQ-SANDBOX-004",
+      "text": "Sandbox lifecycle operations shall emit audit evidence.",
+      "severity": null
+    },
+    {
+      "id": "REQ-VALIDATION-001",
+      "text": "The release shall include executable gates for documentation traceability, format, lint, typecheck, OPA, Python compile/lint/type/security/tests, Vitest unit/component/system/E2E/failure/security/regression tests, Flue build, E2E artifact assertion, production npm audit, and CycloneDX SBOM generation.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-01",
+      "text": "Routing authorization shall consume only gateway/PEP-constructed classification input produced by flue-pi-data-guard; provenance strings do not independently prove authenticity.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-02",
+      "text": "Routing authorization shall deny missing, malformed, unknown, or untrusted classification values under REQ-FAILCLOSED-002.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-03",
+      "text": "Routing authorization shall validate route id, provider, model, and classification against the explicit routing catalog; route_id=default has no magic authorization meaning.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-04",
+      "text": "Agent authorization shall consume only gateway/PEP-owned verified identity and request contexts, deny missing or mismatched identity, tenant, role, verification, and request-binding claims, reject body identity fields, and preserve tool and high-risk approval controls.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-05",
+      "text": "The canonical production rule is production_fallback_prohibited. Exhausted provider chains return ok:false with reason=llm_unavailable and workflow outcome typed_failure_no_summary; production cannot reach the local gateway, and synthetic output is local-validation-only explicitly marked non-evidence.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-06",
+      "text": "Remediation success shall be decided by one issue-scoped schema-bound data.eap.closure.remediation_success predicate, with closed as its alias.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-07",
+      "text": "Every required regression and impact result shall have a unique ID, belong to the issue, be present, and pass; contradictory duplicates fail closed.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-08",
+      "text": "Production routing shall use one flat schema-validated policy document consumed directly by routing authorization; wrapped or malformed policy documents shall not authorize.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-09",
+      "text": "Every uniquely identified hypothesis shall have its own passing evidence, and each patchable hypothesis shall have at least two distinct candidate IDs without cross-hypothesis counting.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-10",
+      "text": "Production gateway SLI evidence shall use only gateway.call spans correlated to audit records by exact equality of emitted audit_id and trace_id fields.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-11",
+      "text": "Governed workflow run outcomes shall use the closed passed, needs_review, or failed enum, and missing, unknown, or malformed values shall be rejected.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-12",
+      "text": "Acceptance tiers shall be derived from one closed schema-bound risk-input contract; only the exact low-risk predicate may auto-accept and every missing, unknown, malformed, or contradictory input shall fail closed to review.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-13",
+      "text": "Audit sink, telemetry emission, sandbox lifecycle, and sandbox evidence failures shall produce explicit typed failed outcomes and shall never be represented as success.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-14",
+      "text": "Every persistent ledger, audit, and evidence artifact shall satisfy the closed tenant-bound artifact schema, use a tenant-scoped path, and bind lifecycle, PII, retention, deletion, legal-hold, DSAR, access-isolation, source, and integrity metadata; retention target values remain user-owned by F1-05.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-15",
+      "text": "The versioned HTTP contract shall define every supported operation, request and response schema, success and negative status, a closed error envelope, and only resolvable references; the remediation runtime boundary shall enforce the closed version-1 request, raw-byte and Unicode limits, strict media type and UTF-8, and gateway-owned verified identity before side effects.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-16",
+      "text": "A pending approval shall be persisted before needs_review and bind tenant, task/run, source, evidence, action, immutable identities, expiry, decision, and exactly-once idempotent resume state; every authorization, replay, and conflict path shall revalidate the complete stored identity and chronology tuple.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-17",
+      "text": "Sandbox egress shall default deny and authorize only a gateway-bound verified same-tenant request matching one complete enabled catalog row, with any required unexpired persisted approval bound to the same tenant, task, run, source, evidence, action, request, and destination tuple.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-18",
+      "text": "The production policy inventory shall list every caller-facing entry point, including cc_guard as the orchestrator command/path boundary without claiming tenant authorization semantics.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-19",
+      "text": "Governed terms and controlled resources shall have exactly one normative glossary and one canonical controlled-resource catalog, referenced rather than reproduced by other documents.",
+      "severity": null
+    },
+    {
+      "id": "SPEC-20",
+      "text": "REQ-PI-001 and REQ-DATA-001 shall remain capability-level requirements whose conformance is established only by the exact canonical-manifest content identifier of all current capability implementations, tests, configs/helpers, package and Python manifests/locks, dependency declarations, and environment-bootstrap inputs, backed by re-hashable machine artifacts, cryptographically verified against active non-caller OPA trust data containing the exact six-row artifact catalog, evaluated against OPA runtime time, bound per row to immutable artifact and signed execution-attestation tuples, and bound as one exact six-attestation bundle to the trusted current run/source; Git-HEAD-only, omitted-source, absent, malformed, inactive, expired, test-only, wrong-environment, unknown-key, source/run-rotated, catalog-missing/extra/duplicated/substituted, invalid-signature, payload/body-disagreeing, replayed, arbitrary-bundle, mixed-abstraction, tool-identity, caller-supplied, cross-run, stale, contradictory, synthetic, self-attested, unverified, or unbound evidence shall fail closed. Binding unpinned declarations and an unresolved lock does not establish hermetic dependency resolution.",
+      "severity": null
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/run-outcome.schema.json",
+  "title": "Governed workflow run outcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "outcome", "failure"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "outcome": { "enum": ["passed", "needs_review", "failed"] },
+    "failure": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code"],
+          "properties": {
+            "code": {
+              "enum": [
+                "policy_denied",
+                "llm_unavailable",
+                "audit_sink_failure",
+                "telemetry_emission_failure",
+                "sandbox_lifecycle_failure",
+                "sandbox_evidence_failure"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "const": "failed" } }, "required": ["outcome"] },
+      "then": { "properties": { "failure": { "type": "object" } } },
+      "else": { "properties": { "failure": { "type": "null" } } }
+    }
+  ]
+}

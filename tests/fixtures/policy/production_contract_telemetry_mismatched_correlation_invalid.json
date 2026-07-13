@@ -1,0 +1,9 @@
+{
+  "span_name": "gateway.call",
+  "audit": { "audit_id": "audit-123", "trace_id": "trace-123" },
+  "span": {
+    "audit_id": "audit-other",
+    "trace_id": "trace-other",
+    "attributes": { "gateway.latency_ms": 42 }
+  }
+}

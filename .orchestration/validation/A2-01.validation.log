@@ -1,0 +1,43 @@
+A2-01 validation status: BLOCKED
+revision: A2-01-R3-v1
+blocker: pending-clean-checkpoint-and-A1-full-run
+
+PASS exit=0  ./node_modules/node/bin/node scripts/spec-check.mjs --check-id-bijection
+  spec-check:passed
+PASS exit=0  ./node_modules/node/bin/node scripts/spec-check.mjs
+  spec-check:passed
+PASS exit=0  ./node_modules/.bin/vitest run tests/unit/spec_check.test.ts --no-file-parallelism
+  Test Files 1 passed (1); Tests 18 passed (18).
+  Covers all R2 cases plus six unsupported block starts and fenced/non-normative controls.
+  Covers canonical A1 post-run evidence, authentic empty streams, and all R3 tamper cases.
+PASS exit=0  ./node_modules/.bin/vitest run tests/component/request_contract.test.ts tests/e2e/remediate_e2e.test.ts --no-file-parallelism
+  Test Files 2 passed (2); Tests 12 passed (12).
+  First sandbox run was denied loopback bind with EPERM; targeted rerun with approved loopback access passed.
+EXPECTED NONZERO exit=1  old flat private workflow payload through scripts/run-flue-workflow.mjs
+  Cannot read properties of undefined (reading 'workspace').
+PASS exit=0  npm run typecheck
+  tsc --noEmit
+PASS exit=0  npm run lint
+  Checked 64 files. No fixes applied.
+PASS exit=0  git diff --check
+UNAVAILABLE exit=2  make require-crit-review
+  Repository Makefile has no require-crit-review target. No browser Crit was launched;
+  the blocked result remains at acceptance_tier review for orchestrator inspection.
+
+EXPECTED STAGE-1 NONZERO exit=1  ./node_modules/node/bin/node scripts/spec-check.mjs --check-evidence-links
+  final_report: noncanonical JSON encoding
+  The current repository does not yet contain the required clean-checkpoint A1 canonical full-run evidence.
+  The isolated canonical fixture proves the explicit success path; current-repository success is reserved for Stage 2.
+
+EXPECTED SPEC-20 NONZERO exit=1  ./node_modules/node/bin/node --test tests/unit/spec_check.test.mjs
+  Tests 7; pass 6; fail 1. Only the full-register path reaches the accepted stale SPEC-20 source vector.
+EXPECTED SPEC-20 NONZERO exit=1  ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-20
+  SPEC-20 complete fixture is stale: expected 6fbc258bf274487c4097352fb1dfff27ab79349e7978c2c0389f4c9d8afd5eab sha256:6fbc258bf274487c4097352fb1dfff27ab79349e7978c2c0389f4c9d8afd5eab
+  Signed evidence was not refreshed, resigned, suppressed, or bypassed.
+
+INTEGRITY
+  required/current post digest: sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91
+  FR-001 implementation: schemas/remediation-request.schema.json, src/app.ts, src/workflows/remediate.ts
+  FR-001 test: tests/component/request_contract.test.ts
+  FR-001 gate/evidence retained: vitest_all / artifacts/validation/vitest_all.stdout.log
+  runtime/policy/schema/dependency/signed-evidence files changed by A2-01-R3: none

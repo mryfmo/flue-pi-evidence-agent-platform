@@ -1,0 +1,100 @@
+PHASE-A0-R1-v1 validation
+date: 2026-07-13
+status: passed
+
+COMMAND: OPA test --run test_allow_happy_path
+EXIT: 0
+OUTPUT: PASS: 1/1
+
+COMMAND: OPA test --run test_(shell_denied|raw_sql_denied|unknown_tool_denied)
+EXIT: 0
+OUTPUT: PASS: 3/3
+
+COMMAND: OPA test --run test_(missing_identity_denied|malformed_identity_denied|unverified_denied)
+EXIT: 0
+OUTPUT: PASS: 3/3
+
+COMMAND: MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k 'test_metric_query_redacts_pii_and_rejects_unsafe_classes or test_redact_text_returns_offline_deterministic_redaction'
+EXIT: 0
+OUTPUT: 2 passed selections
+
+COMMAND: MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k 'test_reject_unsafe_sql or test_rejects_non_aggregate_or_out_of_policy_sql'
+EXIT: 0
+OUTPUT: 12 passed selections
+
+COMMAND: MISE_LOG_LEVEL=error UV_CACHE_DIR=/tmp/a008-r6-uv-cache TLDEXTRACT_CACHE=/tmp/a008-r6-tldextract PYTHONPATH=. uv run --offline --frozen python -m pytest -q tests_py/test_data_guard.py -k test_accepts_safe_aggregate_sql_and_parser_failure
+EXIT: 0
+OUTPUT: 1 passed selection
+
+COMMAND: ./node_modules/node/bin/node --test tests/unit/spec_check.test.mjs
+EXIT: 0
+OUTPUT: tests 7; pass 7; fail 0. Includes real-CLI separated/equals positive cases, range/parser negatives, raw duplicate/missing/extra/malformed register and trace cases, and stale SPEC-05 semantic denial.
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec-register SPEC-01..SPEC-20
+EXIT: 0
+OUTPUT: spec-check:passed
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec-register=SPEC-01..SPEC-20
+EXIT: 0
+OUTPUT: spec-check:passed
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-01,SPEC-20
+EXIT: 0
+OUTPUT: spec-check:passed
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs
+EXIT: 0
+OUTPUT: spec-check:passed
+
+COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs
+EXIT: 0
+OUTPUT: PASS: 166/166
+
+COMMAND: independent native-Node source/artifact/signature/catalog/bundle verifier
+EXIT: 0
+OUTPUT:
+source_revision=93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215
+run_id=run-spec20-test-vector-007
+key_id=spec20-test-vector-rs256-v5
+artifact_hashes=6/6
+rs256_payload_body=6/6
+bundle=sha256:45daa38c0dd2d2db823c63117289a286120d90ad9c50c3291597895ba4756753
+source_mutation=DENY
+artifact_mutation=DENY
+
+COMMAND: npm run typecheck
+EXIT: 0
+OUTPUT: tsc --noEmit
+
+COMMAND: npm run lint
+EXIT: 0
+OUTPUT: Checked 63 files. No fixes applied.
+
+COMMAND: ./node_modules/.bin/biome format --diagnostic-level=error scripts/spec-check.mjs tests/unit/spec_check.test.mjs
+EXIT: 0
+OUTPUT: Checked 1 file. No fixes applied.
+
+COMMAND: git diff --check
+EXIT: 0
+OUTPUT: (none)
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec-register SPEC-20..SPEC-01
+EXIT: 1
+OUTPUT: Error: reversed spec register range
+
+COMMAND: rg -n --hidden --glob '!node_modules/**' --glob '!.git/**' -- '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----' .
+EXIT: 1
+OUTPUT: (no private-key match; expected exit 1)
+
+COMMAND: test ! -e /tmp/phase-a0-r1-private.pem
+EXIT: 0
+OUTPUT: temporary private key absent
+
+COMMAND: shasum -a 256 .orchestration/validation/A0-08.source-manifest.json
+EXIT: 0
+OUTPUT: d69ca72f7d34fad9b54ae7d6183f26fa1abddabcd9b99d96f5c69e9eeb7f8880
+
+ADVERSARIAL COVERAGE:
+- Existing SPEC-20 checker mutation matrix passed as part of both register and legacy commands.
+- OPA conformance vectors passed missing/mixed/duplicate/extra/split, provenance/tool-identity, artifact/attestation row binding, internally consistent digest bypass, untrusted re-signing, malformed key/signature/algorithm, bundle mutation, absent/test-key production trust, inactive/dead/expired/wrong environment/unknown key, runtime boundaries, catalog substitutions/missing/extra/duplicates, old-bundle replay, and artifact-content mutation.
+- Independent verifier proved current-source equality, 6/6 exact artifact hashes, 6/6 RS256 payload/body equality, exact six-row catalog, sorted bundle, and source/artifact mutation denial.

@@ -1,0 +1,13 @@
+{
+  "contract_version": "spec20-capability-artifact-v1",
+  "producer": "test-vector:local-machine",
+  "run_id": "run-spec20-test-vector-007",
+  "requirement_id": "REQ-PI-001",
+  "test_id": "pi_behavior",
+  "source_revision": "93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "source_digest": "sha256:93aea20d423c350b343afce37df77967bc5224322868b2ffc7eb7ab484556215",
+  "command": "OPA_BIN=\"$(./node_modules/node/bin/node --input-type=module -e \"import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())\")\" && \"$OPA_BIN\" test policy/agent.rego policy/tenants.json policy/tests/agent_test.rego --run test_allow_happy_path -v",
+  "outcome": "passed",
+  "exit_code": 0,
+  "machine_output": "policy/tests/agent_test.rego:\ndata.eap.agent_test.test_allow_happy_path: PASS (2.674209ms)\n--------------------------------------------------------------------------------\nPASS: 1/1"
+}

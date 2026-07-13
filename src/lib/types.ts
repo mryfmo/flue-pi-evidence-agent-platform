@@ -8,11 +8,38 @@ export type HypothesisStatus =
   | 'rejected'
   | 'accepted_risk';
 
-export interface RemediationPayload {
+export interface RemediationRequest {
+  version: 1;
   workspace: string;
-  user: string;
-  tenant: string;
   issue?: string;
+}
+
+export type IdentityRole =
+  | 'platform_engineer'
+  | 'software_engineer'
+  | 'data_analyst'
+  | 'security_reviewer';
+
+export interface TrustedRequestContext {
+  identity_context: {
+    subject_id: string;
+    principal_type: 'authenticated';
+    tenant_memberships: string[];
+    roles: IdentityRole[];
+    issuer: 'flue-pi-identity-authority';
+    audience: 'flue-pi-agent-policy';
+    verification: {
+      status: 'verified';
+      owner: 'flue-pi-platform-gateway';
+    };
+    request_binding: { id: string };
+  };
+  request_context: { tenant: string; binding_id: string };
+}
+
+export interface RemediationInvocation {
+  request: RemediationRequest;
+  trusted: TrustedRequestContext;
 }
 
 export interface Hypothesis {

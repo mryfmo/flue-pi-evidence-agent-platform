@@ -1,0 +1,32 @@
+{
+  "decision": {
+    "tenant": "acme",
+    "route_id": "acme-internal-summary-main",
+    "provider": "litellm",
+    "model_id": "worker-main",
+    "classification": {
+      "value": "internal",
+      "trust_proof": {
+        "producer": "flue-pi-data-guard",
+        "verified_by": "flue-pi-platform-gateway",
+        "evidence_kind": "presidio-sqlglot-redaction-v1"
+      }
+    },
+    "execution": {"fallback_mode": "none"}
+  },
+  "policy": {
+    "classification": {
+      "producer": "flue-pi-data-guard",
+      "verified_by": "flue-pi-platform-gateway",
+      "evidence_kind": "presidio-sqlglot-redaction-v1",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "providers": {"litellm": {"type": "litellm_proxy"}},
+    "routes": [{
+      "id": "acme-internal-summary-main",
+      "match": {"data_classification": "internal"},
+      "provider": "litellm",
+      "model_id": "worker-main"
+    }]
+  }
+}

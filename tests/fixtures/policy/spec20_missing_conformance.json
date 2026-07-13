@@ -1,0 +1,35 @@
+{
+  "contract_version": "spec20-conformance-v1",
+  "spec_id": "SPEC-20",
+  "decision": {
+    "requirement_abstraction": "capability_level",
+    "conformance_evidence": "machine_verifiable_capability_tests",
+    "tool_inventory_disposition": "non_normative_design_record"
+  },
+  "source": {
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "verification_context": {
+    "owner": "gateway:policy-enforcement-point",
+    "origin": "trusted_verifier",
+    "caller_supplied": false,
+    "environment": "test",
+    "verifier": "gateway:spec20-attestation-verifier",
+    "status": "verified",
+    "run_id": "run-spec20-missing-001",
+    "source_revision": "0123456789abcdef0123456789abcdef01234567",
+    "source_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "attestation_digests": [],
+    "attestation_bundle_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  },
+  "requirements": [
+    {"id":"REQ-PI-001","abstraction":"capability_level","capability_test_ids":["pi_behavior","pi_negative","pi_fail_closed"]},
+    {"id":"REQ-DATA-001","abstraction":"capability_level","capability_test_ids":["data_behavior","data_negative","data_fail_closed"]}
+  ],
+  "results": [],
+  "superseded_clauses": [
+    {"requirement_id":"REQ-PI-001","path":"docs/SPECIFICATION.md","locator":"deterministic local gateway as normative mechanism","disposition":"superseded_non_normative"},
+    {"requirement_id":"REQ-DATA-001","path":"docs/SPECIFICATION.md","locator":"SQLGlot, DuckDB, and Presidio as normative tool identities","disposition":"superseded_non_normative"}
+  ]
+}

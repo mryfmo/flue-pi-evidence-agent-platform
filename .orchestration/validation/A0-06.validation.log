@@ -1,0 +1,326 @@
+# A0-06 revision 1 validation evidence
+
+generated_at: 2026-07-12T23:44:25.530Z
+
+## Required SPEC check
+
+```text
+command: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-12,SPEC-15,SPEC-16
+exit_code: 0
+output:
+spec-check:passed
+
+```
+
+## Required OPA suite
+
+```text
+command: ./node_modules/node/bin/node scripts/opa-test.mjs
+exit_code: 0
+output:
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (269.167µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (194.75µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (149.625µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (107.25µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.220416ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (279.167µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (1.390416ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (1.095042ms)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (1.378542ms)
+data.eap.agent_test.test_missing_identity_denied: PASS (335.375µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (238.5µs)
+data.eap.agent_test.test_anonymous_denied: PASS (497.25µs)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (1.0535ms)
+data.eap.agent_test.test_unverified_denied: PASS (479.416µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (853.875µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (832.625µs)
+data.eap.agent_test.test_missing_role_denied: PASS (964µs)
+data.eap.agent_test.test_absent_role_denied: PASS (314.25µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (1.477375ms)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (2.144625ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (885.292µs)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (729.584µs)
+data.eap.agent_test.test_body_identity_denied: PASS (802.958µs)
+data.eap.agent_test.test_shell_denied: PASS (225.25µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (181.25µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (196.167µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (848.041µs)
+
+policy/tests/approval_test.rego:
+data.eap.approval_test.test_pending_to_approved: PASS (2.400333ms)
+data.eap.approval_test.test_pending_to_rejected: PASS (1.921083ms)
+data.eap.approval_test.test_pending_to_expired: PASS (1.274ms)
+data.eap.approval_test.test_approved_to_resumed: PASS (1.2915ms)
+data.eap.approval_test.test_anonymous_denied: PASS (777.75µs)
+data.eap.approval_test.test_wrong_issuer_denied: PASS (887.25µs)
+data.eap.approval_test.test_wrong_audience_denied: PASS (1.506083ms)
+data.eap.approval_test.test_unknown_role_denied: PASS (1.864917ms)
+data.eap.approval_test.test_insufficient_role_denied: PASS (1.19625ms)
+data.eap.approval_test.test_foreign_tenant_denied: PASS (1.157708ms)
+data.eap.approval_test.test_unpersisted_denied: PASS (632.292µs)
+data.eap.approval_test.test_expired_denied: PASS (1.912542ms)
+data.eap.approval_test.test_stale_source_revision_denied: PASS (1.262166ms)
+data.eap.approval_test.test_stale_source_digest_denied: PASS (1.647125ms)
+data.eap.approval_test.test_changed_evidence_denied: PASS (1.076208ms)
+data.eap.approval_test.test_action_mismatch_denied: PASS (1.092209ms)
+data.eap.approval_test.test_task_mismatch_denied: PASS (973.125µs)
+data.eap.approval_test.test_run_mismatch_denied: PASS (996.542µs)
+data.eap.approval_test.test_pending_resume_denied_with_reason: PASS (666.292µs)
+data.eap.approval_test.test_rejected_resume_denied_with_reason: PASS (564.583µs)
+data.eap.approval_test.test_expired_state_resume_denied_with_reason: PASS (732.958µs)
+data.eap.approval_test.test_duplicate_resume_is_replay_not_authorization: PASS (3.490792ms)
+data.eap.approval_test.test_duplicate_approve_is_replay: PASS (1.534ms)
+data.eap.approval_test.test_duplicate_reject_is_replay: PASS (1.409667ms)
+data.eap.approval_test.test_reused_key_different_payload_conflicts: PASS (3.283125ms)
+data.eap.approval_test.test_reused_approve_key_different_payload_conflicts: PASS (4.210458ms)
+data.eap.approval_test.test_reused_reject_key_different_payload_conflicts: PASS (2.662292ms)
+data.eap.approval_test.test_invalid_stored_approver_denied: PASS (1.656375ms)
+data.eap.approval_test.test_foreign_requester_denied: PASS (2.704542ms)
+data.eap.approval_test.test_requester_approver_role_not_required: PASS (3.727667ms)
+data.eap.approval_test.test_requester_unknown_role_denied: PASS (1.600583ms)
+data.eap.approval_test.test_precreation_decision_denied_and_not_replayed_or_conflicted: PASS (3.73425ms)
+data.eap.approval_test.test_post_expiry_future_decision_denied: PASS (3.439084ms)
+data.eap.approval_test.test_expiry_transition_before_expiry_denied: PASS (816.084µs)
+data.eap.approval_test.test_incoherent_resume_denied_and_not_replayed_or_conflicted: PASS (3.185125ms)
+data.eap.approval_test.test_future_resume_denied: PASS (1.831166ms)
+
+policy/tests/closure_test.rego:
+data.eap.closure_test.test_complete_record_closes: PASS (10.043542ms)
+data.eap.closure_test.test_clean_without_issue_proof_stays_open: PASS (286.708µs)
+data.eap.closure_test.test_other_issue_evidence_stays_open: PASS (5.649709ms)
+data.eap.closure_test.test_missing_regression_stays_open: PASS (4.483583ms)
+data.eap.closure_test.test_failed_regression_stays_open: PASS (4.87575ms)
+data.eap.closure_test.test_contradictory_duplicate_regression_id_fails_closed: PASS (808.917µs)
+data.eap.closure_test.test_extra_failed_regression_stays_open: PASS (4.41625ms)
+data.eap.closure_test.test_extra_passed_regression_stays_open: PASS (5.97925ms)
+data.eap.closure_test.test_remaining_rescan_finding_stays_open: PASS (6.048667ms)
+data.eap.closure_test.test_missing_impact_stays_open: PASS (291.209µs)
+data.eap.closure_test.test_failed_impact_stays_open: PASS (4.424958ms)
+data.eap.closure_test.test_contradictory_duplicate_impact_id_fails_closed: PASS (4.981667ms)
+data.eap.closure_test.test_extra_failed_impact_stays_open: PASS (4.672125ms)
+data.eap.closure_test.test_extra_passed_impact_stays_open: PASS (6.58975ms)
+data.eap.closure_test.test_one_candidate_stays_open: PASS (4.147917ms)
+data.eap.closure_test.test_duplicate_candidates_stay_open: PASS (5.791792ms)
+data.eap.closure_test.test_candidates_are_not_counted_across_hypotheses: PASS (5.319541ms)
+data.eap.closure_test.test_unverified_hypothesis_stays_open: PASS (5.8785ms)
+data.eap.closure_test.test_missing_hypothesis_evidence_stays_open: PASS (1.804083ms)
+data.eap.closure_test.test_duplicate_hypothesis_id_fails_closed: PASS (1.606875ms)
+data.eap.closure_test.test_missing_field_fails_closed: PASS (313.208µs)
+data.eap.closure_test.test_unknown_field_fails_closed: PASS (316.25µs)
+data.eap.closure_test.test_wrong_type_fails_closed: PASS (320.042µs)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.021417ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (1.098458ms)
+data.eap.routing_test.test_missing_classification_denied: PASS (467.375µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (620.625µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (880.542µs)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (885.708µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (856.417µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (628.541µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (651.166µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (687.167µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (294.292µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (576.333µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (597.666µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (490.084µs)
+data.eap.routing_test.test_missing_route_denied: PASS (461.292µs)
+data.eap.routing_test.test_malformed_route_denied: PASS (457.333µs)
+data.eap.routing_test.test_missing_provider_denied: PASS (464.417µs)
+data.eap.routing_test.test_unknown_provider_denied: PASS (420.791µs)
+data.eap.routing_test.test_malformed_provider_denied: PASS (445.834µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (662µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (622.875µs)
+data.eap.routing_test.test_missing_model_denied: PASS (633.709µs)
+data.eap.routing_test.test_malformed_model_denied: PASS (1.001791ms)
+data.eap.routing_test.test_old_wrapped_policy_denied: PASS (372.292µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (1.125958ms)
+data.eap.routing_test.test_selected_route_missing_tenant_denied: PASS (805.458µs)
+data.eap.routing_test.test_selected_route_malformed_tenant_denied: PASS (685.875µs)
+data.eap.routing_test.test_selected_route_cross_tenant_denied: PASS (698.292µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (992µs)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.373208ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (1.175417ms)
+data.eap.routing_test.test_production_local_fallback_denied: PASS (1.379333ms)
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS (1.221542ms)
+data.eap.routing_test.test_missing_execution_environment_denied: PASS (1.910208ms)
+data.eap.routing_test.test_malformed_execution_denied: PASS (1.535666ms)
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS (1.1775ms)
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS (1.364292ms)
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS (1.325791ms)
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS (1.449083ms)
+data.eap.routing_test.test_production_local_gateway_denied: PASS (1.396125ms)
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS (1.281ms)
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS (2.244ms)
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS (1.639167ms)
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS (1.411583ms)
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS (1.32775ms)
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS (1.27575ms)
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS (1.423083ms)
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS (1.22725ms)
+data.eap.routing_test.test_synthetic_evidence_denied: PASS (1.152167ms)
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS (3.026417ms)
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS (668.75µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_allow_happy_path: PASS (144.667µs)
+data.eap.sandbox_test.test_tenant_mismatch_denied: PASS (121.958µs)
+data.eap.sandbox_test.test_empty_tenant_allowlist_denied: PASS (146.291µs)
+data.eap.sandbox_test.test_egress_denied: PASS (120.291µs)
+data.eap.sandbox_test.test_env_denied: PASS (124.209µs)
+--------------------------------------------------------------------------------
+PASS: 142/142
+
+```
+
+## Required unapproved resume denial
+
+```text
+command: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && "$OPA_BIN" eval --fail --data policy/approval.rego --input tests/fixtures/policy/approval_unapproved_resume.json 'not data.eap.approval.allow_resume'
+exit_code: 0
+output:
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "not data.eap.approval.allow_resume",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+
+```
+
+## Required diff whitespace check
+
+```text
+command: git diff --check
+exit_code: 0
+output:
+(no output)
+```
+
+## All JSON Schemas compile
+
+```text
+command: ./node_modules/node/bin/node --input-type=module -e 'import {readFileSync,readdirSync} from "node:fs"; import Ajv from "ajv/dist/2020.js"; const ajv=new Ajv({strict:true,formats:{"date-time":true}}); const files=readdirSync("schemas").filter(x=>x.endsWith(".schema.json")); const docs=files.map(f=>JSON.parse(readFileSync("schemas/"+f))); for(const doc of docs) ajv.addSchema(doc); for(const doc of docs) if(!ajv.getSchema(doc["$id"])) throw Error("not compiled"); console.log("schemas:passed "+files.length);'
+exit_code: 0
+output:
+schemas:passed 8
+
+```
+
+## OpenAPI references and A0-06 schema fixtures
+
+```text
+command: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-15,SPEC-16
+exit_code: 0
+output:
+spec-check:passed
+
+```
+
+## Positive low-risk and approved-resume probes
+
+```text
+command: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")" && ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-12 && "$OPA_BIN" eval --fail --data policy/approval.rego --input tests/fixtures/policy/approval_approved_resume.json 'data.eap.approval.allow_resume'
+exit_code: 0
+output:
+spec-check:passed
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": true,
+          "text": "data.eap.approval.allow_resume",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+
+```
+
+## Legacy adversarial direct probes
+
+```text
+command: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"
+materialize() { ./node_modules/node/bin/node -e 'const fs=require("fs"); const row=JSON.parse(fs.readFileSync(process.argv[1])); const base=JSON.parse(fs.readFileSync("tests/fixtures/policy/"+row.fixture_base)); const merge=(a,b)=>Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k])?merge(a[k]||{},b[k]):k in b?b[k]:a[k]])); process.stdout.write(JSON.stringify(merge(base,row.mutation)))' "$1"; }
+printf '%s\n' 'anonymous_resume anonymous_or_unverified_actor' 'foreign_tenant_resume foreign_tenant' 'expired_resume expired' 'stale_source_resume source_revision_mismatch' 'changed_evidence_resume evidence_digest_mismatch' 'duplicate_resume already_resumed' | while read name reason; do materialize "tests/fixtures/policy/approval_$name.json" | "$OPA_BIN" eval --fail --data policy/approval.rego --stdin-input "data.eap.approval.deny_reason[\"$reason\"]" >/dev/null || exit 1; printf '%s: denied reason=%s\n' "$name" "$reason"; done
+exit_code: 0
+output:
+anonymous_resume: denied reason=anonymous_or_unverified_actor
+foreign_tenant_resume: denied reason=foreign_tenant
+expired_resume: denied reason=expired
+stale_source_resume: denied reason=source_revision_mismatch
+changed_evidence_resume: denied reason=evidence_digest_mismatch
+duplicate_resume: denied reason=already_resumed
+
+```
+
+## Revision 1 schema-valid direct denial probes
+
+```text
+command: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"
+printf '%s\n' 'foreign_requester_resume stored_requester_foreign_tenant' 'precreation_decision_resume decision_before_creation' 'postexpiry_future_decision_resume decision_at_or_after_expiry' 'incoherent_resume_time resume_before_decision' | while read name reason; do file="tests/fixtures/policy/approval_$name.json"; "$OPA_BIN" eval --fail --data policy/approval.rego --input "$file" 'not data.eap.approval.allow_resume' >/dev/null || exit 1; "$OPA_BIN" eval --fail --data policy/approval.rego --input "$file" "data.eap.approval.deny_reason[\"$reason\"]" >/dev/null || exit 1; printf '%s: denied reason=%s\n' "$name" "$reason"; done
+"$OPA_BIN" eval --fail --data policy/approval.rego --input tests/fixtures/policy/approval_postexpiry_future_decision_resume.json 'data.eap.approval.deny_reason["decision_in_future"]' >/dev/null
+printf '%s\n' 'postexpiry_future_decision_resume: denied reason=decision_in_future'
+exit_code: 0
+output:
+foreign_requester_resume: denied reason=stored_requester_foreign_tenant
+precreation_decision_resume: denied reason=decision_before_creation
+postexpiry_future_decision_resume: denied reason=decision_at_or_after_expiry
+incoherent_resume_time: denied reason=resume_before_decision
+postexpiry_future_decision_resume: denied reason=decision_in_future
+
+```
+
+## Malformed replay and conflict fail closed
+
+```text
+command: OPA_BIN="$(./node_modules/node/bin/node --input-type=module -e "import { opaBinary } from './src/lib/opa.ts'; process.stdout.write(opaBinary())")"
+"$OPA_BIN" eval --fail --data policy/approval.rego --input tests/fixtures/policy/approval_incoherent_resume_time.json 'not data.eap.approval.idempotent_replay' >/dev/null
+./node_modules/node/bin/node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("tests/fixtures/policy/approval_incoherent_resume_time.json"));x.idempotency.request_digest="sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";process.stdout.write(JSON.stringify(x))' | "$OPA_BIN" eval --fail --data policy/approval.rego --stdin-input 'not data.eap.approval.idempotency_conflict' >/dev/null
+./node_modules/node/bin/node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("tests/fixtures/policy/approval_precreation_decision_resume.json"));x.operation="approve";x.idempotency={key:"approve-key",request_digest:x.approval.decision.request_digest};process.stdout.write(JSON.stringify(x))' | "$OPA_BIN" eval --fail --data policy/approval.rego --stdin-input 'not data.eap.approval.idempotent_replay' >/dev/null
+./node_modules/node/bin/node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("tests/fixtures/policy/approval_precreation_decision_resume.json"));x.operation="approve";x.idempotency={key:"approve-key",request_digest:"sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"};process.stdout.write(JSON.stringify(x))' | "$OPA_BIN" eval --fail --data policy/approval.rego --stdin-input 'not data.eap.approval.idempotency_conflict' >/dev/null
+printf '%s\n' 'incoherent resume replay: denied' 'incoherent resume conflict: denied' 'precreation approve replay: denied' 'precreation approve conflict: denied'
+exit_code: 0
+output:
+incoherent resume replay: denied
+incoherent resume conflict: denied
+precreation approve replay: denied
+precreation approve conflict: denied
+
+```
+
+## Crit review gate availability
+
+```text
+command: make require-crit-review
+exit_code: 2
+output:
+make: *** No rule to make target `require-crit-review'.  Stop.
+
+```
+
+## Validation summary
+
+status: passed
+The unavailable Crit Make target is recorded above; no browser Crit was launched.

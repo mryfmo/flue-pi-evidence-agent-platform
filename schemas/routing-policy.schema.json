@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/routing-policy.schema.json",
+  "title": "Production routing policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "defaults", "classification", "routes", "providers"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fallback_chain"],
+      "properties": {
+        "fallback_chain": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/target" }
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer", "verified_by", "evidence_kind", "enum"],
+      "properties": {
+        "producer": { "const": "flue-pi-data-guard" },
+        "verified_by": { "const": "flue-pi-platform-gateway" },
+        "evidence_kind": { "const": "presidio-sqlglot-redaction-v1" },
+        "enum": {
+          "const": ["public", "internal", "confidential", "restricted"]
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "match", "provider", "model_id", "fallback_chain"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "match": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["tenant", "data_classification", "task_kind", "cost_budget", "latency_target"],
+            "properties": {
+              "tenant": { "type": "string", "minLength": 1 },
+              "data_classification": { "enum": ["public", "internal", "confidential", "restricted"] },
+              "task_kind": { "type": "string", "minLength": 1 },
+              "cost_budget": { "type": "string", "minLength": 1 },
+              "latency_target": { "type": "string", "minLength": 1 }
+            }
+          },
+          "provider": { "type": "string", "minLength": 1 },
+          "model_id": { "type": "string", "minLength": 1 },
+          "fallback_chain": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/target" }
+          }
+        }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": { "const": "litellm_proxy" },
+          "base_url_env": { "type": "string", "minLength": 1 },
+          "api_key_env": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model_id"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model_id": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

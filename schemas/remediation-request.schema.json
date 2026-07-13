@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flue-pi.local/schemas/remediation-request.schema.json",
+  "title": "Versioned remediation request",
+  "type": "object",
+  "required": ["version", "workspace"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "workspace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!.*[\\uD800-\\uDFFF])[\\s\\S]*$"
+    },
+    "issue": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 8192,
+      "pattern": "^(?!.*[\\uD800-\\uDFFF])[\\s\\S]*$"
+    }
+  }
+}
