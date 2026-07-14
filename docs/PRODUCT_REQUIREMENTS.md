@@ -33,7 +33,7 @@ The platform is an evidence-driven remediation system for controlled code repair
 
 The remaining accepted specifications retain their existing canonical catalog text:
 
-- SPEC-01: Routing authorization shall consume only gateway/PEP-constructed classification input produced by flue-pi-data-guard; provenance strings do not independently prove authenticity.
+- SPEC-01: Before redaction, `flue-pi-data-guard` shall classify the complete raw outbound message array; a known secret/credential match is `restricted`, otherwise any Presidio finding is `confidential`, otherwise the result is `internal`. The maximum sensitivity across all messages applies, redaction never downgrades it, and automatic `public` is prohibited. Routing authorization shall consume only the closed, SHA-256-bound guard result verified by the gateway/PEP; provenance strings do not independently prove authenticity.
 - SPEC-02: Routing authorization shall deny missing, malformed, unknown, or untrusted classification values under REQ-FAILCLOSED-002.
 - SPEC-03: Routing authorization shall validate route id, provider, model, and classification against the explicit routing catalog; route_id=default has no magic authorization meaning.
 - SPEC-08: Production routing shall use one flat schema-validated policy document consumed directly by routing authorization; wrapped or malformed policy documents shall not authorize.
@@ -44,6 +44,8 @@ The remaining accepted specifications retain their existing canonical catalog te
 - SPEC-17: Sandbox egress shall default deny and authorize only a gateway-bound verified same-tenant request matching one complete enabled catalog row, with any required unexpired persisted approval bound to the same tenant, task, run, source, evidence, action, request, and destination tuple.
 - SPEC-18: The production policy inventory shall list every caller-facing entry point, including cc_guard as the orchestrator command/path boundary without claiming tenant authorization semantics.
 - SPEC-19: Governed terms and controlled resources shall have exactly one normative glossary and one canonical controlled-resource catalog, referenced rather than reproduced by other documents.
+
+A0-01-R3 closes only runtime classification production and PEP consumption. Production exposure remains blocked until B2-01 supplies verified invocation context, source-bound single-use approval, and a gateway-owned tenant audit sink, and B2-02 establishes the production redaction corpus/recognizer contract. The bounded known-secret patterns complement Presidio and are not exhaustive secret detection.
 
 ## SPEC-20 normative capability requirements
 

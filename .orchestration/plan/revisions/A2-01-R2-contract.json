@@ -3,7 +3,7 @@
   "baselineFile": ".orchestration/plan/revisions/A2-01-R1-baseline.json",
   "baselineFileDigest": "sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392",
   "baselineTupleDigest": "sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a",
-  "expectedPostDigest": "sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91",
+  "expectedPostDigest": "sha256:5abe1e78c1bd19b274285f1e1be2cc8c9ce5cafff471e20e34572ee34f4c556b",
   "allowedCatalogChanges": {
     "FR-001": {
       "text": "Accept a closed versioned remediation payload containing workspace and optional issue, and obtain user and tenant only from the gateway/PEP-owned verified identity context.",
@@ -11,6 +11,10 @@
     },
     "REQ-HTTP-REQUEST-001": {
       "text": "`POST /v1/remediations` is the runtime remediation trust boundary. It accepts only a valid, unambiguous `Content-Type` with `application/json` media-type essence; comma-joined values and case-insensitively duplicate parameter names are rejected. The raw body is capped at 65,536 bytes. It decodes strict UTF-8 and accepts exactly one closed JSON object conforming to `schemas/remediation-request.schema.json`: integer `version` equal to `1`, required `workspace` of 1..4,096 Unicode code points, and optional `issue` of 0..8,192 Unicode code points. Unknown fields, lone surrogates, coercion, defaults, and caller identity or provenance fields are rejected before workflow or other side effects.\n\nIdentity is read only from the gateway/PEP-owned A0-02 trusted request context. Authentication failures use `401`; complete but unauthorized tenant, binding, or remediation-role tuples use `403`. The private Flue workflow app is not mounted on the public app; every unknown public path, including raw workflow path variants under any encoding, uses the canonical `404 not_found` envelope. The stable error mapping is `400 invalid_request`, `401 authentication_required`, `403 authorization_denied`, `404 not_found`, `413 payload_too_large`, `415 unsupported_media_type`, and `500 internal_error`. Every failure is the closed JSON envelope `{version: 1, error: {code, message, request_id}}`; it contains no request body, sensitive identity, stack, or internal path.",
+      "severity": null
+    },
+    "SPEC-01": {
+      "text": "Before redaction, `flue-pi-data-guard` shall classify the complete raw outbound message array; a known secret/credential match is `restricted`, otherwise any Presidio finding is `confidential`, otherwise the result is `internal`. The maximum sensitivity across all messages applies, redaction never downgrades it, and automatic `public` is prohibited. Routing authorization shall consume only the closed, SHA-256-bound guard result verified by the gateway/PEP; provenance strings do not independently prove authenticity.",
       "severity": null
     }
   },

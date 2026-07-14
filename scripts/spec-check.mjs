@@ -216,13 +216,13 @@ const idCandidate = /^(?:PR|FR|NFR|SPEC|REQ)-[A-Z0-9-]+$/;
 const revisionContractPath =
   '.orchestration/plan/revisions/A2-01-R2-contract.json';
 const revisionContractDigest =
-  'sha256:36ce9416e47115eae5b88f1aa44659508c224b745565cc5751173204587c0aa8';
+  'sha256:e607e6984e59666253f141a0ec5806932f2a72178aebc146fce15eff2b29e239';
 const revisionBaselineDigest =
   'sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392';
 const revisionBaselineTupleDigest =
   'sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a';
 const revisionPostDigest =
-  'sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91';
+  'sha256:5abe1e78c1bd19b274285f1e1be2cc8c9ce5cafff471e20e34572ee34f4c556b';
 
 function closedObject(value, keys, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
@@ -415,7 +415,13 @@ function loadRevisionContract() {
 function enforceRevisionContract(requirements) {
   const { contract, baseline } = loadRevisionContract();
   const allowedIds = Object.keys(contract.allowedCatalogChanges).sort();
-  if (!isDeepStrictEqual(allowedIds, ['FR-001', 'REQ-HTTP-REQUEST-001']))
+  if (
+    !isDeepStrictEqual(allowedIds, [
+      'FR-001',
+      'REQ-HTTP-REQUEST-001',
+      'SPEC-01',
+    ])
+  )
     throw new Error('A2-01-R2 allowed catalog change set mismatch');
   if (
     !isDeepStrictEqual(contract.markdownProjectionOnly, [

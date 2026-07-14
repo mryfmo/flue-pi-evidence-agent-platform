@@ -1,0 +1,1625 @@
+A2-01-R5 Stage-1 validation
+started_at: 2026-07-14T10:35:00+09:00
+preconditions: exit_code=0
+pre_sha256:
+3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392  .orchestration/plan/revisions/A2-01-R1-baseline.json
+59125f4bf400f100477389266a9729debdac3e5e1e8be63835f642a999793d15  docs/PRODUCT_REQUIREMENTS.md
+af11d1ad4fdb5bac32c321d8f23bf56cd1ee7c531ad1cadbe5fea957259711c9  docs/traceability.json
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-id-bijection
+spec-check:passed
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs
+spec-check:passed
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 120 ./node_modules/.bin/vitest run tests/unit/spec_check.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  10:38:54
+   Duration  51.56s (transform 32ms, setup 0ms, import 64ms, tests 51.32s, environment 0ms)
+
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 90 ./node_modules/.bin/vitest run tests/component/request_contract.test.ts tests/e2e/remediate_e2e.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at node:net:2274:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:2044:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v26.0.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: ./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload {"request":{"version":1,"workspace":"sample_repos/buggy_multi","issue":"fix all localized defects"},"trusted":{"identity_context":{"subject_id":"engineer","principal_type":"authenticated","tenant_memberships":["acme"],"roles":["software_engineer"],"issuer":"flue-pi-identity-authority","audience":"flue-pi-agent-policy","verification":{"status":"verified","owner":"flue-pi-platform-gateway"},"request_binding":{"id":"e2e-binding"}},"request_context":{"tenant":"acme","binding_id":"e2e-binding"}}}
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at node:net:2274:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:2044:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v26.0.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:915:11)
+    at execFileSync (node:child_process:951:15)
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/run-flue-workflow.mjs:12:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+      '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+      '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+      '[flue] Target: node\n' +
+      '[flue] Custom app entry: src/app.ts\n' +
+      '[flue] Found 1 agent(s): remediator\n' +
+      '[flue] Found 2 workflow(s): remediate, smoke\n' +
+      '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+      '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+      '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+    '[flue] Loaded config: flue.config.ts\n' +
+      '[flue] Running workflow: remediate\n' +
+      '[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2\n' +
+      'node:events:487\n' +
+      "      throw er; // Unhandled 'error' event\n" +
+      '      ^\n' +
+      'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+      '    at Server.setupListenHandle [as _listen2] (node:net:1986:21)\n' +
+      '    at listenInCluster (node:net:2065:12)\n' +
+      '    at node:net:2274:7\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+      "Emitted 'error' event on Server instance at:\n" +
+      '    at emitErrorNT (node:net:2044:8)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+      "  code: 'EPERM',\n" +
+      '  errno: -1,\n' +
+      "  syscall: 'listen',\n" +
+      "  address: '127.0.0.1'\n" +
+      '}\n' +
+      'Node.js v26.0.0\n' +
+      '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+  ],
+  pid: 95520,
+  stdout: '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+    '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+    '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+    '[flue] Target: node\n' +
+    '[flue] Custom app entry: src/app.ts\n' +
+    '[flue] Found 1 agent(s): remediator\n' +
+    '[flue] Found 2 workflow(s): remediate, smoke\n' +
+    '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+    '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+    '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+  stderr: '[flue] Loaded config: flue.config.ts\n' +
+    '[flue] Running workflow: remediate\n' +
+    '[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2\n' +
+    'node:events:487\n' +
+    "      throw er; // Unhandled 'error' event\n" +
+    '      ^\n' +
+    'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1986:21)\n' +
+    '    at listenInCluster (node:net:2065:12)\n' +
+    '    at node:net:2274:7\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+    "Emitted 'error' event on Server instance at:\n" +
+    '    at emitErrorNT (node:net:2044:8)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+    "  code: 'EPERM',\n" +
+    '  errno: -1,\n' +
+    "  syscall: 'listen',\n" +
+    "  address: '127.0.0.1'\n" +
+    '}\n' +
+    'Node.js v26.0.0\n' +
+    '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+}
+
+Node.js v22.19.0
+ ❯ tests/e2e/remediate_e2e.test.ts (1 test | 1 failed) 3058ms
+     × runs the private workflow with gateway-owned trusted context 3057ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e/remediate_e2e.test.ts > Flue remediation E2E workflow > runs the private workflow with gateway-owned trusted context
+Error: Command failed: ./node_modules/node/bin/node scripts/run-flue-workflow.mjs remediate {"request":{"version":1,"workspace":"sample_repos/buggy_multi","issue":"fix all localized defects"},"trusted":{"identity_context":{"subject_id":"engineer","principal_type":"authenticated","tenant_memberships":["acme"],"roles":["software_engineer"],"issuer":"flue-pi-identity-authority","audience":"flue-pi-agent-policy","verification":{"status":"verified","owner":"flue-pi-platform-gateway"},"request_binding":{"id":"e2e-binding"}},"request_context":{"tenant":"acme","binding_id":"e2e-binding"}}} /tmp/eap-e2e.stdout.log /tmp/eap-e2e.stderr.log "status": "passed"
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at node:net:2274:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:2044:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v26.0.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: ./node_modules/node/bin/node ./node_modules/@flue/cli/bin/flue.mjs run remediate --target node --payload {"request":{"version":1,"workspace":"sample_repos/buggy_multi","issue":"fix all localized defects"},"trusted":{"identity_context":{"subject_id":"engineer","principal_type":"authenticated","tenant_memberships":["acme"],"roles":["software_engineer"],"issuer":"flue-pi-identity-authority","audience":"flue-pi-agent-policy","verification":{"status":"verified","owner":"flue-pi-platform-gateway"},"request_binding":{"id":"e2e-binding"}},"request_context":{"tenant":"acme","binding_id":"e2e-binding"}}}
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at node:net:2274:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:2044:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+Node.js v26.0.0
+[flue] Workflow error: Local execution process exited before returning a result (code 1).
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:915:11)
+    at execFileSync (node:child_process:951:15)
+    at file:///Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/run-flue-workflow.mjs:12:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:651:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+      '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+      '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+      '[flue] Target: node\n' +
+      '[flue] Custom app entry: src/app.ts\n' +
+      '[flue] Found 1 agent(s): remediator\n' +
+      '[flue] Found 2 workflow(s): remediate, smoke\n' +
+      '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+      '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+      '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+    '[flue] Loaded config: flue.config.ts\n' +
+      '[flue] Running workflow: remediate\n' +
+      '[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2\n' +
+      'node:events:487\n' +
+      "      throw er; // Unhandled 'error' event\n" +
+      '      ^\n' +
+      'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+      '    at Server.setupListenHandle [as _listen2] (node:net:1986:21)\n' +
+      '    at listenInCluster (node:net:2065:12)\n' +
+      '    at node:net:2274:7\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+      "Emitted 'error' event on Server instance at:\n" +
+      '    at emitErrorNT (node:net:2044:8)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+      "  code: 'EPERM',\n" +
+      '  errno: -1,\n' +
+      "  syscall: 'listen',\n" +
+      "  address: '127.0.0.1'\n" +
+      '}\n' +
+      'Node.js v26.0.0\n' +
+      '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+  ],
+  pid: 95520,
+  stdout: '[flue] Building: /Users/mryfmo/Workspace/flue_pi_ai_agent\n' +
+    '[flue] Source root: /Users/mryfmo/Workspace/flue_pi_ai_agent/src\n' +
+    '[flue] Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n' +
+    '[flue] Target: node\n' +
+    '[flue] Custom app entry: src/app.ts\n' +
+    '[flue] Found 1 agent(s): remediator\n' +
+    '[flue] Found 2 workflow(s): remediate, smoke\n' +
+    '[flue] AGENTS.md and workspace .agents/skills/ will be discovered at runtime; imported SKILL.md directories are packaged by Vite\n' +
+    '[flue] Built: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist/server.mjs\n' +
+    '[flue] Build complete. Output: /Users/mryfmo/Workspace/flue_pi_ai_agent/dist\n',
+  stderr: '[flue] Loaded config: flue.config.ts\n' +
+    '[flue] Running workflow: remediate\n' +
+    '[flue] Run ID: workflow:remediate:01KXF4FHZ4A9HHJ7AQXJ2EQCJ2\n' +
+    'node:events:487\n' +
+    "      throw er; // Unhandled 'error' event\n" +
+    '      ^\n' +
+    'Error: listen EPERM: operation not permitted 127.0.0.1\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1986:21)\n' +
+    '    at listenInCluster (node:net:2065:12)\n' +
+    '    at node:net:2274:7\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+    "Emitted 'error' event on Server instance at:\n" +
+    '    at emitErrorNT (node:net:2044:8)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n' +
+    "  code: 'EPERM',\n" +
+    '  errno: -1,\n' +
+    "  syscall: 'listen',\n" +
+    "  address: '127.0.0.1'\n" +
+    '}\n' +
+    'Node.js v26.0.0\n' +
+    '[flue] Workflow error: Local execution process exited before returning a result (code 1).\n'
+}
+
+Node.js v22.19.0
+
+ ❯ scripts/run-flue-workflow.mjs:12:18
+ ❯ tests/e2e/remediate_e2e.test.ts:29:17
+     27|       },
+     28|     };
+     29|     const out = execFileSync(
+       |                 ^
+     30|       './node_modules/node/bin/node',
+     31|       [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 11 passed (12)
+   Start at  10:39:47
+   Duration  3.27s (transform 43ms, setup 0ms, import 1.45s, tests 3.11s, environment 0ms)
+
+EXIT_CODE: 1
+
+RETRY_REASON: sandbox denied localhost bind with EPERM
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 90 ./node_modules/.bin/vitest run tests/component/request_contract.test.ts tests/e2e/remediate_e2e.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4HWMGQ5269J4NKTTEJ13R
+[flue] info: Hypotheses localized
+  Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.
+[flue] Done.
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  10:41:05
+   Duration  18.00s (transform 37ms, setup 0ms, import 454ms, tests 17.90s, environment 0ms)
+
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/spec-check.mjs --check-spec SPEC-01,SPEC-02,SPEC-03
+spec-check:passed
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 90 .venv/bin/python -m pytest -q tests_py/test_data_guard.py
+FFF.........F.............F.........F.F.F.............                   [100%]
+=================================== FAILURES ===================================
+___________ test_metric_query_redacts_pii_and_rejects_unsafe_classes ___________
+
+self = <filelock._unix.UnixFileLock object at 0x10e9ac250>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+    def test_metric_query_redacts_pii_and_rejects_unsafe_classes() -> None:
+        """Aggregate query runs while PII and unsafe SQL classes are rejected."""
+>       result = metric_query()
+                 ^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:36:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:201: in metric_query
+    findings = offline_findings(raw_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10e9ac250>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+___________ test_redact_text_returns_offline_deterministic_redaction ___________
+
+self = <filelock._unix.UnixFileLock object at 0x10eb9f290>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+    def test_redact_text_returns_offline_deterministic_redaction() -> None:
+        """Free text redaction removes deterministic PII examples."""
+>       result = redact_text("Customer Alice Tanaka uses alice@example.com.")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:50:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:226: in redact_text
+    findings = offline_findings(text)
+               ^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10eb9f290>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+_ test_offline_builtin_entities_are_detected[Contact jane.doe+test@example.com for access.-EMAIL_ADDRESS] _
+
+self = <filelock._unix.UnixFileLock object at 0x10ebc7150>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+text = 'Contact jane.doe+test@example.com for access.', entity = 'EMAIL_ADDRESS'
+
+    @pytest.mark.parametrize(
+        ("text", "entity"),
+        [
+            ("Contact jane.doe+test@example.com for access.", "EMAIL_ADDRESS"),
+            ("Call support at +1 415-555-2671 before deploy.", "PHONE_NUMBER"),
+            ("Use test card 4111 1111 1111 1111 for the dry run.", "CREDIT_CARD"),
+            ("The source IP is 192.168.1.10.", "IP_ADDRESS"),
+            ("Open https://example.com/login for the callback.", "URL"),
+        ],
+    )
+    def test_offline_builtin_entities_are_detected(text: str, entity: str) -> None:
+        """Offline recognizers detect built-in pattern/checksum entities."""
+>       assert entity in detected_entities(text)
+                         ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:68:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests_py/test_data_guard.py:31: in detected_entities
+    return {finding.entity_type for finding in offline_findings(text)}
+                                               ^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10ebc7150>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+___________________ test_redact_text_covers_builtin_entities ___________________
+
+self = <filelock._unix.UnixFileLock object at 0x10eadba90>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+    def test_redact_text_covers_builtin_entities() -> None:
+        """Free text redaction removes built-in deterministic PII entities."""
+>       result = redact_text(
+            "Email jane.doe@example.com, call +1 415-555-2671, "
+            "card 4111 1111 1111 1111, IP 192.168.1.10, "
+            "URL https://example.com/login."
+        )
+
+tests_py/test_data_guard.py:90:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:226: in redact_text
+    findings = offline_findings(text)
+               ^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10eadba90>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+__________________________ test_main_command_dispatch __________________________
+
+self = <filelock._unix.UnixFileLock object at 0x10ee9d550>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+capsys = <_pytest.capture.CaptureFixture object at 0x10e29cb50>
+
+    def test_main_command_dispatch(capsys: pytest.CaptureFixture[str]) -> None:
+        """CLI dispatch emits JSON for metric and rejects unknown commands."""
+        from scripts import data_guard
+
+        old_argv = data_guard.sys.argv[:]
+        try:
+            data_guard.sys.argv = ["data_guard.py", "metric"]
+>           assert data_guard.main() == 0
+                   ^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:160:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:314: in main
+    print(json.dumps(metric_query().__dict__, sort_keys=True))
+                     ^^^^^^^^^^^^^^
+scripts/data_guard.py:201: in metric_query
+    findings = offline_findings(raw_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10ee9d550>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+____________ test_classify_messages_binds_raw_and_redacted_payloads ____________
+
+self = <filelock._unix.UnixFileLock object at 0x10ee03210>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+    def test_classify_messages_binds_raw_and_redacted_payloads() -> None:
+        """The guard classifies raw messages and binds both exact byte sequences."""
+        messages = [
+            {"role": "system", "content": "Use verified evidence only."},
+            {"role": "user", "content": "Contact alice@example.com"},
+        ]
+        request = classification_request(messages)
+
+>       result = classify_messages(request)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:221:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:282: in classify_messages
+    findings = offline_findings(content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10ee03210>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+_ test_classify_messages_aggregates_maximum_raw_sensitivity[contents1-confidential] _
+
+self = <filelock._unix.UnixFileLock object at 0x10ed87590>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+contents = ['Contact alice@example.com'], expected = 'confidential'
+
+    @pytest.mark.parametrize(
+        ("contents", "expected"),
+        [
+            (["Summarize the verified evidence."], "internal"),
+            (["Contact alice@example.com"], "confidential"),
+            (["api_key=12345678secret"], "restricted"),
+            (
+                ["ordinary internal text", "alice@example.com", "sk-12345678901234567890"],
+                "restricted",
+            ),
+        ],
+    )
+    def test_classify_messages_aggregates_maximum_raw_sensitivity(
+        contents: list[str], expected: str
+    ) -> None:
+        """Restricted wins over Presidio and the guard never emits public."""
+        messages = [
+            {"role": "user", "content": content}
+            for content in contents
+        ]
+>       assert classify_messages(classification_request(messages))["classification"] == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:263:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:282: in classify_messages
+    findings = offline_findings(content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10ed87590>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+_ test_classify_messages_aggregates_maximum_raw_sensitivity[contents3-restricted] _
+
+self = <filelock._unix.UnixFileLock object at 0x10ee46390>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+>           fd = os.open(self.lock_file, open_flags, open_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:55: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+contents = ['ordinary internal text', 'alice@example.com', 'sk-12345678901234567890']
+expected = 'restricted'
+
+    @pytest.mark.parametrize(
+        ("contents", "expected"),
+        [
+            (["Summarize the verified evidence."], "internal"),
+            (["Contact alice@example.com"], "confidential"),
+            (["api_key=12345678secret"], "restricted"),
+            (
+                ["ordinary internal text", "alice@example.com", "sk-12345678901234567890"],
+                "restricted",
+            ),
+        ],
+    )
+    def test_classify_messages_aggregates_maximum_raw_sensitivity(
+        contents: list[str], expected: str
+    ) -> None:
+        """Restricted wins over Presidio and the guard never emits public."""
+        messages = [
+            {"role": "user", "content": content}
+            for content in contents
+        ]
+>       assert classify_messages(classification_request(messages))["classification"] == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_py/test_data_guard.py:263:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/data_guard.py:282: in classify_messages
+    findings = offline_findings(content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/data_guard.py:156: in offline_findings
+    recognizer.analyze(
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:116: in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py:236: in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py:52: in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:639: in extract
+    return TLD_EXTRACTOR(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:375: in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:412: in extract_str
+    return self._extract_netloc(
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:476: in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/tldextract/tldextract.py:561: in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+.venv/lib/python3.11/site-packages/tldextract/suffix_list.py:81: in get_suffix_lists
+    return cache.run_and_cache(
+.venv/lib/python3.11/site-packages/tldextract/cache.py:194: in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+.venv/lib/python3.11/site-packages/filelock/_api.py:591: in __enter__
+    self.acquire()
+.venv/lib/python3.11/site-packages/filelock/_api.py:516: in acquire
+    self._poll_until_acquired(
+.venv/lib/python3.11/site-packages/filelock/_api.py:547: in _poll_until_acquired
+    self._acquire()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <filelock._unix.UnixFileLock object at 0x10ee46390>
+
+    def _acquire(self) -> None:  # noqa: C901, PLR0912
+        ensure_directory_exists(self.lock_file)
+        open_flags = os.O_RDWR | os.O_TRUNC
+        o_nofollow = getattr(os, "O_NOFOLLOW", None)
+        if o_nofollow is not None:
+            open_flags |= o_nofollow
+        open_flags |= os.O_CREAT
+        open_mode = self._open_mode()
+        try:
+            fd = os.open(self.lock_file, open_flags, open_mode)
+        except FileNotFoundError:
+            # On FUSE/NFS, os.open(O_CREAT) is not atomic: LOOKUP + CREATE can be split, allowing a concurrent
+            # unlink() to delete the file between them. For valid paths, treat ENOENT as transient contention.
+            # For invalid paths (e.g., empty string), re-raise to avoid infinite retry loops.
+            if self.lock_file and Path(self.lock_file).parent.exists():
+                return
+            raise
+        except PermissionError:
+            # Sticky-bit dirs (e.g. /tmp): O_CREAT fails if the file is owned by another user (#317).
+            # Fall back to opening the existing file without O_CREAT.
+            if not Path(self.lock_file).exists():
+                raise
+            try:
+>               fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+.venv/lib/python3.11/site-packages/filelock/_unix.py:69: PermissionError
+=========================== short test summary info ============================
+FAILED tests_py/test_data_guard.py::test_metric_query_redacts_pii_and_rejects_unsafe_classes
+FAILED tests_py/test_data_guard.py::test_redact_text_returns_offline_deterministic_redaction
+FAILED tests_py/test_data_guard.py::test_offline_builtin_entities_are_detected[Contact jane.doe+test@example.com for access.-EMAIL_ADDRESS]
+FAILED tests_py/test_data_guard.py::test_redact_text_covers_builtin_entities
+FAILED tests_py/test_data_guard.py::test_main_command_dispatch - PermissionEr...
+FAILED tests_py/test_data_guard.py::test_classify_messages_binds_raw_and_redacted_payloads
+FAILED tests_py/test_data_guard.py::test_classify_messages_aggregates_maximum_raw_sensitivity[contents1-confidential]
+FAILED tests_py/test_data_guard.py::test_classify_messages_aggregates_maximum_raw_sensitivity[contents3-restricted]
+EXIT_CODE: 1
+
+RETRY_REASON: sandbox denied tldextract cache lock with EPERM
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 90 .venv/bin/python -m pytest -q tests_py/test_data_guard.py
+......................................................                   [100%]
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 120 ./node_modules/.bin/vitest run tests/component/data_proxy.test.ts tests/component/routing.test.ts tests/contract/llm_contract.test.ts tests/failure/llm_outage.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+ ❯ tests/failure/llm_outage.test.ts (3 tests | 2 failed) 1293ms
+     × times out a hanging provider without a success audit 8ms
+     × does not turn guard unavailability into a provider outage or dispatch 2ms
+ ❯ tests/contract/llm_contract.test.ts (9 tests | 6 failed) 2120ms
+     × uses guard-produced internal classification on the fixed prod route 10ms
+     × denies confidential external data without accepting caller approval 2ms
+     × denies restricted external data before provider dispatch 0ms
+     × ignores caller scalar classification and uses guard output everywhere 0ms
+     × fails guard errors as classification_unavailable with zero dispatch 0ms
+     × fails tenant mismatch and missing provider secrets before dispatch 0ms
+ ❯ tests/component/data_proxy.test.ts (28 tests | 3 failed) 16073ms
+     × executes aggregate metric path and redacts PII 932ms
+     × returns closed, content-bound guard classification evidence 775ms
+     × ignores an EAP_PYTHON executable returning a self-consistent forgery 766ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/component/data_proxy.test.ts > governed data proxy > executes aggregate metric path and redacts PII
+Error: Command failed: .venv/bin/python scripts/data_guard.py metric
+Traceback (most recent call last):
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/filelock/_unix.py", line 55, in _acquire
+    fd = os.open(self.lock_file, open_flags, open_mode)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/data_guard.py", line 340, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/data_guard.py", line 314, in main
+    print(json.dumps(metric_query().__dict__, sort_keys=True))
+                     ^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/data_guard.py", line 201, in metric_query
+    findings = offline_findings(raw_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/scripts/data_guard.py", line 156, in offline_findings
+    recognizer.analyze(
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py", line 116, in analyze
+    pattern_result = self.__analyze_patterns(text, regex_flags)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/presidio_analyzer/pattern_recognizer.py", line 236, in __analyze_patterns
+    validation_result = self.validate_result(current_match)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py", line 52, in validate_result
+    result = tldextract.extract(pattern_text)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/tldextract.py", line 639, in extract
+    return TLD_EXTRACTOR(
+           ^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/tldextract.py", line 375, in __call__
+    return self.extract_str(url, include_psl_private_domains, session=session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/tldextract.py", line 412, in extract_str
+    return self._extract_netloc(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/tldextract.py", line 476, in _extract_netloc
+    maybe_indexes = self._get_tld_extractor(session).suffix_index(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/tldextract.py", line 561, in _get_tld_extractor
+    public_tlds, private_tlds = get_suffix_lists(
+                                ^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/suffix_list.py", line 81, in get_suffix_lists
+    return cache.run_and_cache(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/tldextract/cache.py", line 194, in run_and_cache
+    with FileLock(lock_path, timeout=self.lock_timeout):
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/filelock/_api.py", line 591, in __enter__
+    self.acquire()
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/filelock/_api.py", line 516, in acquire
+    self._poll_until_acquired(
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/filelock/_api.py", line 547, in _poll_until_acquired
+    self._acquire()
+  File "/Users/mryfmo/Workspace/flue_pi_ai_agent/.venv/lib/python3.11/site-packages/filelock/_unix.py", line 69, in _acquire
+    fd = os.open(self.lock_file, open_flags & ~os.O_CREAT, open_mode)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted: '/Users/mryfmo/.cache/python-tldextract/3.11.15.final__.venv__08e240__tldextract-5.3.1/publicsuffix.org-tlds/de84b5ca2167d4c83e38fb162f2e8738.tldextract.json.lock'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/component/data_proxy.test.ts > governed data proxy > returns closed, content-bound guard classification evidence
+Error: classification_unavailable
+ ❯ classifyMessages src/lib/dataProxy.ts:305:11
+    303|     return verified;
+    304|   } catch {
+    305|     throw new Error('classification_unavailable');
+       |           ^
+    306|   }
+    307| }
+ ❯ tests/component/data_proxy.test.ts:132:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/component/data_proxy.test.ts > governed data proxy > ignores an EAP_PYTHON executable returning a self-consistent forgery
+Error: classification_unavailable
+ ❯ classifyMessages src/lib/dataProxy.ts:305:11
+    303|     return verified;
+    304|   } catch {
+    305|     throw new Error('classification_unavailable');
+       |           ^
+    306|   }
+    307| }
+ ❯ tests/component/data_proxy.test.ts:216:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > uses guard-produced internal classification on the fixed prod route
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > denies confidential external data without accepting caller approval
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > denies restricted external data before provider dispatch
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > ignores caller scalar classification and uses guard output everywhere
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > fails guard errors as classification_unavailable with zero dispatch
+ FAIL  tests/contract/llm_contract.test.ts > llm_contract production gateway > fails tenant mismatch and missing provider secrets before dispatch
+ FAIL  tests/failure/llm_outage.test.ts > llm outage fail-closed behavior > times out a hanging provider without a success audit
+ FAIL  tests/failure/llm_outage.test.ts > llm outage fail-closed behavior > does not turn guard unavailability into a provider outage or dispatch
+Error: listen EPERM: operation not permitted 127.0.0.1
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+
+ Test Files  3 failed | 1 passed (4)
+      Tests  11 failed | 37 passed (48)
+   Start at  10:43:07
+   Duration  16.29s (transform 149ms, setup 0ms, import 426ms, tests 20.89s, environment 0ms)
+
+EXIT_CODE: 1
+
+RETRY_REASON: sandbox denied tldextract cache lock and localhost bind with EPERM
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 120 ./node_modules/.bin/vitest run tests/component/data_proxy.test.ts tests/component/routing.test.ts tests/contract/llm_contract.test.ts tests/failure/llm_outage.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  4 passed (4)
+      Tests  48 passed (48)
+   Start at  10:43:38
+   Duration  17.33s (transform 120ms, setup 0ms, import 281ms, tests 31.83s, environment 0ms)
+
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/opa-test.mjs
+policy/cc_guard_test.rego:
+data.eap.cc_guard.test_deny_controlled_policy_path: PASS (292.209µs)
+data.eap.cc_guard.test_deny_active_lease_path: PASS (191.792µs)
+data.eap.cc_guard.test_allow_normal_path: PASS (147.125µs)
+data.eap.cc_guard.test_deny_release_branch_operation: PASS (104.125µs)
+
+policy/routing_test.rego:
+data.eap.routing_root_test.test_valid_trusted_tuple_allows: PASS (1.115125ms)
+data.eap.routing_root_test.test_legacy_caller_classification_denied: PASS (280.958µs)
+data.eap.routing_root_test.test_confidential_external_requires_approval: PASS (2.661666ms)
+data.eap.routing_root_test.test_confidential_external_allows_with_approval: PASS (1.11175ms)
+
+policy/tests/agent_test.rego:
+data.eap.agent_test.test_allow_happy_path: PASS (779.583µs)
+data.eap.agent_test.test_missing_identity_denied: PASS (185.833µs)
+data.eap.agent_test.test_malformed_identity_denied: PASS (227.542µs)
+data.eap.agent_test.test_anonymous_denied: PASS (441.417µs)
+data.eap.agent_test.test_issuer_audience_verifier_denied: PASS (1.005792ms)
+data.eap.agent_test.test_unverified_denied: PASS (433.333µs)
+data.eap.agent_test.test_tenant_mismatch_denied: PASS (941.666µs)
+data.eap.agent_test.test_empty_tenant_allowlist_denied: PASS (866.334µs)
+data.eap.agent_test.test_missing_role_denied: PASS (820.291µs)
+data.eap.agent_test.test_absent_role_denied: PASS (266.167µs)
+data.eap.agent_test.test_unknown_role_denied: PASS (1.52425ms)
+data.eap.agent_test.test_mixed_unknown_role_denied: PASS (1.418167ms)
+data.eap.agent_test.test_insufficient_role_denied: PASS (858.542µs)
+data.eap.agent_test.test_request_binding_mismatch_denied: PASS (770.792µs)
+data.eap.agent_test.test_body_identity_denied: PASS (871.917µs)
+data.eap.agent_test.test_shell_denied: PASS (187.958µs)
+data.eap.agent_test.test_raw_sql_denied: PASS (194.375µs)
+data.eap.agent_test.test_unknown_tool_denied: PASS (224.791µs)
+data.eap.agent_test.test_high_risk_requires_approval: PASS (796.084µs)
+
+policy/tests/approval_test.rego:
+data.eap.approval_test.test_pending_to_approved: PASS (1.684ms)
+data.eap.approval_test.test_pending_to_rejected: PASS (1.340583ms)
+data.eap.approval_test.test_pending_to_expired: PASS (1.97125ms)
+data.eap.approval_test.test_approved_to_resumed: PASS (1.87725ms)
+data.eap.approval_test.test_anonymous_denied: PASS (981.292µs)
+data.eap.approval_test.test_wrong_issuer_denied: PASS (986.625µs)
+data.eap.approval_test.test_wrong_audience_denied: PASS (929.875µs)
+data.eap.approval_test.test_unknown_role_denied: PASS (1.108959ms)
+data.eap.approval_test.test_insufficient_role_denied: PASS (1.224833ms)
+data.eap.approval_test.test_foreign_tenant_denied: PASS (1.101625ms)
+data.eap.approval_test.test_unpersisted_denied: PASS (607.166µs)
+data.eap.approval_test.test_expired_denied: PASS (2.322417ms)
+data.eap.approval_test.test_stale_source_revision_denied: PASS (1.49225ms)
+data.eap.approval_test.test_stale_source_digest_denied: PASS (1.055417ms)
+data.eap.approval_test.test_changed_evidence_denied: PASS (1.049167ms)
+data.eap.approval_test.test_action_mismatch_denied: PASS (1.032041ms)
+data.eap.approval_test.test_task_mismatch_denied: PASS (1.046458ms)
+data.eap.approval_test.test_run_mismatch_denied: PASS (1.018958ms)
+data.eap.approval_test.test_pending_resume_denied_with_reason: PASS (692.292µs)
+data.eap.approval_test.test_rejected_resume_denied_with_reason: PASS (594.5µs)
+data.eap.approval_test.test_expired_state_resume_denied_with_reason: PASS (649.959µs)
+data.eap.approval_test.test_duplicate_resume_is_replay_not_authorization: PASS (1.75175ms)
+data.eap.approval_test.test_duplicate_approve_is_replay: PASS (2.148875ms)
+data.eap.approval_test.test_duplicate_reject_is_replay: PASS (1.839083ms)
+data.eap.approval_test.test_reused_key_different_payload_conflicts: PASS (3.504042ms)
+data.eap.approval_test.test_reused_approve_key_different_payload_conflicts: PASS (2.76375ms)
+data.eap.approval_test.test_reused_reject_key_different_payload_conflicts: PASS (2.580666ms)
+data.eap.approval_test.test_invalid_stored_approver_denied: PASS (2.720333ms)
+data.eap.approval_test.test_foreign_requester_denied: PASS (2.022041ms)
+data.eap.approval_test.test_requester_approver_role_not_required: PASS (1.441167ms)
+data.eap.approval_test.test_requester_unknown_role_denied: PASS (1.655834ms)
+data.eap.approval_test.test_precreation_decision_denied_and_not_replayed_or_conflicted: PASS (3.676417ms)
+data.eap.approval_test.test_post_expiry_future_decision_denied: PASS (2.63325ms)
+data.eap.approval_test.test_expiry_transition_before_expiry_denied: PASS (1.030458ms)
+data.eap.approval_test.test_incoherent_resume_denied_and_not_replayed_or_conflicted: PASS (3.21375ms)
+data.eap.approval_test.test_future_resume_denied: PASS (1.762833ms)
+
+policy/tests/closure_test.rego:
+data.eap.closure_test.test_complete_record_closes: PASS (10.503917ms)
+data.eap.closure_test.test_clean_without_issue_proof_stays_open: PASS (284.083µs)
+data.eap.closure_test.test_other_issue_evidence_stays_open: PASS (4.361459ms)
+data.eap.closure_test.test_missing_regression_stays_open: PASS (5.623792ms)
+data.eap.closure_test.test_failed_regression_stays_open: PASS (4.159417ms)
+data.eap.closure_test.test_contradictory_duplicate_regression_id_fails_closed: PASS (861.792µs)
+data.eap.closure_test.test_extra_failed_regression_stays_open: PASS (4.290208ms)
+data.eap.closure_test.test_extra_passed_regression_stays_open: PASS (5.535625ms)
+data.eap.closure_test.test_remaining_rescan_finding_stays_open: PASS (4.198083ms)
+data.eap.closure_test.test_missing_impact_stays_open: PASS (266.042µs)
+data.eap.closure_test.test_failed_impact_stays_open: PASS (7.068041ms)
+data.eap.closure_test.test_contradictory_duplicate_impact_id_fails_closed: PASS (3.736875ms)
+data.eap.closure_test.test_extra_failed_impact_stays_open: PASS (4.629459ms)
+data.eap.closure_test.test_extra_passed_impact_stays_open: PASS (7.088417ms)
+data.eap.closure_test.test_one_candidate_stays_open: PASS (4.031125ms)
+data.eap.closure_test.test_duplicate_candidates_stay_open: PASS (6.428417ms)
+data.eap.closure_test.test_candidates_are_not_counted_across_hypotheses: PASS (5.209125ms)
+data.eap.closure_test.test_unverified_hypothesis_stays_open: PASS (5.700167ms)
+data.eap.closure_test.test_missing_hypothesis_evidence_stays_open: PASS (1.730292ms)
+data.eap.closure_test.test_duplicate_hypothesis_id_fails_closed: PASS (1.547208ms)
+data.eap.closure_test.test_missing_field_fails_closed: PASS (263.459µs)
+data.eap.closure_test.test_unknown_field_fails_closed: PASS (329.333µs)
+data.eap.closure_test.test_wrong_type_fails_closed: PASS (360.834µs)
+
+policy/tests/conformance_test.rego:
+data.eap.conformance_test.test_complete_capability_evidence_satisfies: PASS (15.648833ms)
+data.eap.conformance_test.test_exact_set_missing_mixed_duplicate_extra_and_split_fail_closed: PASS (19.0305ms)
+data.eap.conformance_test.test_provenance_metadata_and_tool_identity_fail_closed: PASS (15.247541ms)
+data.eap.conformance_test.test_artifact_attestation_row_binding_fails_closed: PASS (16.4305ms)
+data.eap.conformance_test.test_revision1_internally_consistent_digest_bypass_denied: PASS (8.340333ms)
+data.eap.conformance_test.test_untrusted_resigning_malformed_signature_key_and_algorithm_denied: PASS (14.538125ms)
+data.eap.conformance_test.test_bundle_reordering_substitution_duplication_and_arbitrary_digest_denied: PASS (63.868792ms)
+data.eap.conformance_test.test_default_production_absent_trust_and_test_key_production_deny: PASS (1.298125ms)
+data.eap.conformance_test.test_inactive_dead_expired_wrong_environment_and_unknown_key_deny: PASS (4.8525ms)
+data.eap.conformance_test.test_runtime_clock_boundaries_and_immediately_before_expiry: PASS (42.531958ms)
+data.eap.conformance_test.test_trusted_artifact_catalog_path_digest_missing_extra_duplicate_deny: PASS (19.880583ms)
+data.eap.conformance_test.test_whole_old_bundle_replay_denied_after_trusted_anchor_rotation: PASS (2.678583ms)
+data.eap.conformance_test.test_artifact_content_hash_mismatch_denied: PASS (4.688834ms)
+
+policy/tests/routing_test.rego:
+data.eap.routing_test.test_allow_happy_path_uses_verified_classification: PASS (1.042375ms)
+data.eap.routing_test.test_body_classification_is_not_trusted: PASS (2.974417ms)
+data.eap.routing_test.test_missing_classification_denied: PASS (848.125µs)
+data.eap.routing_test.test_forged_trust_denied: PASS (564.292µs)
+data.eap.routing_test.test_forged_verifier_denied: PASS (578.334µs)
+data.eap.routing_test.test_forged_evidence_kind_denied: PASS (605.375µs)
+data.eap.routing_test.test_missing_proof_denied: PASS (503.291µs)
+data.eap.routing_test.test_missing_catalog_classification_denied: PASS (740.333µs)
+data.eap.routing_test.test_catalog_enum_mismatch_denied_with_reason: PASS (704.125µs)
+data.eap.routing_test.test_catalog_enum_missing_denied_with_reason: PASS (661.75µs)
+data.eap.routing_test.test_legacy_body_classification_denied: PASS (326.667µs)
+data.eap.routing_test.test_unknown_classification_denied: PASS (601.667µs)
+data.eap.routing_test.test_malformed_classification_denied: PASS (557.959µs)
+data.eap.routing_test.test_unknown_route_denied: PASS (463.792µs)
+data.eap.routing_test.test_missing_route_denied: PASS (435.166µs)
+data.eap.routing_test.test_malformed_route_denied: PASS (431.75µs)
+data.eap.routing_test.test_missing_provider_denied: PASS (424.666µs)
+data.eap.routing_test.test_unknown_provider_denied: PASS (419.875µs)
+data.eap.routing_test.test_malformed_provider_denied: PASS (422.458µs)
+data.eap.routing_test.test_provider_mismatch_denied: PASS (622.667µs)
+data.eap.routing_test.test_model_mismatch_denied: PASS (691.583µs)
+data.eap.routing_test.test_missing_model_denied: PASS (612.708µs)
+data.eap.routing_test.test_malformed_model_denied: PASS (619.375µs)
+data.eap.routing_test.test_old_wrapped_policy_denied: PASS (892.208µs)
+data.eap.routing_test.test_classification_mismatch_denied: PASS (2.515083ms)
+data.eap.routing_test.test_selected_route_missing_tenant_denied: PASS (740.042µs)
+data.eap.routing_test.test_selected_route_malformed_tenant_denied: PASS (732.333µs)
+data.eap.routing_test.test_selected_route_cross_tenant_denied: PASS (705.166µs)
+data.eap.routing_test.test_split_route_witnesses_denied: PASS (1.041209ms)
+data.eap.routing_test.test_confidential_external_requires_approval: PASS (1.287ms)
+data.eap.routing_test.test_confidential_external_allows_with_approval: PASS (1.08325ms)
+data.eap.routing_test.test_production_local_fallback_denied: PASS (1.380917ms)
+data.eap.routing_test.test_unknown_execution_environment_denied: PASS (1.236375ms)
+data.eap.routing_test.test_missing_execution_environment_denied: PASS (1.226709ms)
+data.eap.routing_test.test_malformed_execution_denied: PASS (1.522583ms)
+data.eap.routing_test.test_malformed_execution_environment_denied: PASS (1.94675ms)
+data.eap.routing_test.test_unknown_fallback_mode_denied: PASS (1.745625ms)
+data.eap.routing_test.test_malformed_fallback_mode_denied: PASS (1.255375ms)
+data.eap.routing_test.test_production_deterministic_local_fallback_denied: PASS (1.376542ms)
+data.eap.routing_test.test_production_local_gateway_denied: PASS (1.348625ms)
+data.eap.routing_test.test_exact_production_exhaustion_allowed_for_external_route: PASS (1.3335ms)
+data.eap.routing_test.test_production_exhaustion_success_denied: PASS (1.315875ms)
+data.eap.routing_test.test_production_result_with_false_exhaustion_denied: PASS (1.321417ms)
+data.eap.routing_test.test_production_result_with_missing_exhaustion_denied: PASS (1.378291ms)
+data.eap.routing_test.test_production_result_with_malformed_exhaustion_denied: PASS (1.406291ms)
+data.eap.routing_test.test_production_exhaustion_without_result_denied: PASS (2.349ms)
+data.eap.routing_test.test_production_exhaustion_summary_denied: PASS (3.065833ms)
+data.eap.routing_test.test_unmarked_synthetic_denied: PASS (1.161792ms)
+data.eap.routing_test.test_synthetic_evidence_denied: PASS (1.207ms)
+data.eap.routing_test.test_explicit_local_validation_synthetic_non_evidence_allowed: PASS (1.166667ms)
+data.eap.routing_test.test_local_validation_synthetic_still_requires_normal_route_tuple: PASS (661.75µs)
+
+policy/tests/sandbox_test.rego:
+data.eap.sandbox_test.test_no_egress_legacy_allow: PASS (140.416µs)
+data.eap.sandbox_test.test_valid_nonapproval_egress_allows: PASS (2.237167ms)
+data.eap.sandbox_test.test_valid_approval_egress_allows: PASS (11.448875ms)
+data.eap.sandbox_test.test_identity_failures_deny: PASS (488.041µs)
+data.eap.sandbox_test.test_missing_identity_denies: PASS (241.5µs)
+data.eap.sandbox_test.test_body_forged_identity_denies: PASS (913.459µs)
+data.eap.sandbox_test.test_destination_tuple_failures_deny: PASS (4.170625ms)
+data.eap.sandbox_test.test_split_witness_catalog_denies: PASS (1.066625ms)
+data.eap.sandbox_test.test_catalog_rows_are_closed_and_typed: PASS (1.714709ms)
+data.eap.sandbox_test.test_duplicate_matching_catalog_rows_deny: PASS (2.45575ms)
+data.eap.sandbox_test.test_request_binding_denies: PASS (739.458µs)
+data.eap.sandbox_test.test_approval_failures_deny: PASS (12.740125ms)
+data.eap.sandbox_test.test_approval_identities_fail_closed: PASS (6.622416ms)
+data.eap.sandbox_test.test_egress_authorization_context_is_closed_and_bound: PASS (10.303708ms)
+data.eap.sandbox_test.test_malformed_request_context_denies: PASS (529.416µs)
+data.eap.sandbox_test.test_missing_approval_denies: PASS (3.681375ms)
+--------------------------------------------------------------------------------
+PASS: 166/166
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/opa-check.mjs
+opa:ok
+EXIT_CODE: 0
+
+COMMAND: npm run typecheck
+
+> flue-pi-evidence-agent-platform@1.2.0 typecheck
+> tsc --noEmit
+
+EXIT_CODE: 0
+
+COMMAND: npm run lint
+
+> flue-pi-evidence-agent-platform@1.2.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 68 files in 55ms. No fixes applied.
+EXIT_CODE: 0
+
+COMMAND: npm run format:check
+
+> flue-pi-evidence-agent-platform@1.2.0 format:check
+> biome format --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 68 files in 18ms. No fixes applied.
+EXIT_CODE: 0
+
+COMMAND: git diff --check -- .orchestration/plan/revisions/A2-01-R2-contract.json docs/requirements.json docs/TRACEABILITY_MATRIX.md scripts/spec-check.mjs tests/unit/spec_check.test.ts
+EXIT_CODE: 0
+
+COMMAND: ./node_modules/node/bin/node scripts/run-with-timeout.mjs 180 ./node_modules/.bin/vitest run --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+warning: in the working copy of 'src/eol.txt', LF will be replaced by CRLF the next time Git touches it
+[flue] Loaded config: flue.config.ts
+[flue] Loaded config: flue.config.ts
+[flue] Running workflow: remediate
+[flue] Run ID: workflow:remediate:01KXF4SJGQDFGS4JYDM4NEH6SQ
+[flue] info: Hypotheses localized
+  Verified remediation: all localized hypotheses were patched, tests passed, data path enforced SQL and PII policy.
+[flue] Done.
+
+ Test Files  24 passed | 1 skipped (25)
+      Tests  162 passed | 4 skipped (166)
+   Start at  10:45:08
+   Duration  50.15s (transform 412ms, setup 0ms, import 1.45s, tests 137.26s, environment 2ms)
+
+EXIT_CODE: 0
+
+LITERAL_ORACLES
+{
+  "contractBytes": 3027,
+  "digests": {
+    "baselineFile": "sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392",
+    "baselineTuple": "sha256:920779c8d43363a82401f0750de9d0a543934eedbed7276e971183b763a27f9a",
+    "postTuple": "sha256:5abe1e78c1bd19b274285f1e1be2cc8c9ce5cafff471e20e34572ee34f4c556b",
+    "contract": "sha256:e607e6984e59666253f141a0ec5806932f2a72178aebc146fce15eff2b29e239"
+  },
+  "tupleDeltas": [
+    "FR-001",
+    "REQ-HTTP-REQUEST-001",
+    "SPEC-01"
+  ],
+  "tupleDeltaCount": 3,
+  "baselineIds": 72,
+  "affectedIds": 16,
+  "unchangedIds": 56,
+  "fullObjectChangesFromPreTask": [
+    "SPEC-01"
+  ],
+  "matrixChangedRows": [
+    "SPEC-01"
+  ],
+  "matrixChangedLines": [
+    59
+  ],
+  "immutableHashes": {
+    "baseline": "sha256:3480e8f8b5b8d0b65b193df52c1589b3a201fb307f4a18b4a46f1afd64f33392",
+    "product": "sha256:59125f4bf400f100477389266a9729debdac3e5e1e8be63835f642a999793d15",
+    "traceability": "sha256:af11d1ad4fdb5bac32c321d8f23bf56cd1ee7c531ad1cadbe5fea957259711c9"
+  }
+}
+EXIT_CODE: 0
+SCOPE_ORACLES
+EXIT_CODE: 0
+{
+  "preTaskTargetDiff": [],
+  "workerProductChanges": [
+    ".orchestration/plan/revisions/A2-01-R2-contract.json",
+    "docs/TRACEABILITY_MATRIX.md",
+    "docs/requirements.json",
+    "scripts/spec-check.mjs",
+    "tests/unit/spec_check.test.ts"
+  ],
+  "trackedChangesSubsetOfFiveAllowedProductPaths": true,
+  "newUntrackedProductPaths": [],
+  "checkEvidenceLinksStage1Claimed": false,
+  "preR5A1EvidenceStatus": "stale"
+}
+EXIT_CODE: 0

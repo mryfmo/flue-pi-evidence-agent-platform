@@ -1,15 +1,29 @@
 """Python OSS data guard tests for SQLGlot, DuckDB, and Presidio."""
 from __future__ import annotations
 
+import hashlib
+import json
+
 import pytest
 import sqlglot
 
 from scripts.data_guard import (
+    classify_messages,
+    contains_restricted_secret,
     metric_query,
     offline_findings,
     redact_text,
     reject_unsafe_sql,
 )
+
+
+def classification_request(messages: list[dict[str, str]]) -> bytes:
+    """Return the canonical IPC request bytes used by the gateway."""
+    return json.dumps(
+        {"schema_version": 1, "messages": messages},
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode()
 
 
 def detected_entities(text: str) -> set[str]:
@@ -162,3 +176,123 @@ def test_main_command_dispatch(capsys: pytest.CaptureFixture[str]) -> None:
             data_guard.main()
     finally:
         data_guard.sys.argv = old_argv
+
+
+@pytest.mark.parametrize(
+    ("valid", "short", "lookalike"),
+    [
+        (
+            "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+            "-----BEGIN ENCRYPTED PRIVATE KEY----",
+            "-----BEGIN ENCRYPTED PUBLIC KEY-----",
+        ),
+        ("AKIA1234567890ABCDEF", "AKIA1234567890ABCDE", "AOIA1234567890ABCDEF"),
+        ("ghp_12345678901234567890", "ghp_1234567890123456789", "ghx_12345678901234567890"),
+        (
+            "github_pat_12345678901234567890",
+            "github_pat_1234567890123456789",
+            "github_pot_12345678901234567890",
+        ),
+        ("sk-12345678901234567890", "sk-1234567890123456789", "sx-12345678901234567890"),
+        ("xoxb-1234567890", "xoxb-123456789", "xoxo-1234567890"),
+        ("xapp-1234567890", "xapp-123456789", "xapps-1234567890"),
+        ("xwfp-1234567890", "xwfp-123456789", "xwfx-1234567890"),
+        ("api_key=12345678", "api_key=1234567", "api_keq=12345678"),
+    ],
+)
+def test_restricted_patterns_have_exact_boundaries(
+    valid: str, short: str, lookalike: str
+) -> None:
+    """Each approved family matches its lower bound and no close look-alike."""
+    assert contains_restricted_secret(valid)
+    assert contains_restricted_secret(f"({valid}),")
+    assert not contains_restricted_secret(short)
+    assert not contains_restricted_secret(lookalike)
+
+
+def test_classify_messages_binds_raw_and_redacted_payloads() -> None:
+    """The guard classifies raw messages and binds both exact byte sequences."""
+    messages = [
+        {"role": "system", "content": "Use verified evidence only."},
+        {"role": "user", "content": "Contact alice@example.com"},
+    ]
+    request = classification_request(messages)
+
+    result = classify_messages(request)
+
+    assert list(result) == [
+        "schema_version",
+        "producer",
+        "evidence_kind",
+        "request_sha256",
+        "redacted_sha256",
+        "classification",
+        "entities_found",
+        "messages",
+    ]
+    assert result["classification"] == "confidential"
+    assert result["request_sha256"] == hashlib.sha256(request).hexdigest()
+    redacted_bytes = json.dumps(
+        result["messages"], ensure_ascii=False, separators=(",", ":")
+    ).encode()
+    assert result["redacted_sha256"] == hashlib.sha256(redacted_bytes).hexdigest()
+    assert [message["role"] for message in result["messages"]] == ["system", "user"]
+    assert "alice@example.com" not in str(result["messages"])
+
+
+@pytest.mark.parametrize(
+    ("contents", "expected"),
+    [
+        (["Summarize the verified evidence."], "internal"),
+        (["Contact alice@example.com"], "confidential"),
+        (["api_key=12345678secret"], "restricted"),
+        (
+            ["ordinary internal text", "alice@example.com", "sk-12345678901234567890"],
+            "restricted",
+        ),
+    ],
+)
+def test_classify_messages_aggregates_maximum_raw_sensitivity(
+    contents: list[str], expected: str
+) -> None:
+    """Restricted wins over Presidio and the guard never emits public."""
+    messages = [
+        {"role": "user", "content": content}
+        for content in contents
+    ]
+    assert classify_messages(classification_request(messages))["classification"] == expected
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b'{"schema_version":1,"schema_version":1,"messages":[]}',
+        b'{"schema_version":1,"messages":[],"extra":true}',
+        b'{"schema_version":1}',
+        b'{"messages":[],"schema_version":1}',
+        b'{"schema_version":2,"messages":[]}',
+        b'{"schema_version":1,"messages":[]}',
+        b'{"schema_version":1,"messages":[{"role":"user","content":"x","extra":1}]}',
+        b'{"schema_version":1,"messages":[{"role":"user","role":"system","content":"x"}]}',
+        b'{"schema_version":1,"messages":[{"content":"x","role":"user"}]}',
+        b'{"schema_version":1,"messages":[{"role":"tool","content":"x"}]}',
+        b'{"schema_version":1,"messages":[{"role":"user","content":1}]}',
+        b'\xff',
+    ],
+)
+def test_classify_messages_rejects_noncanonical_or_malformed_requests(raw: bytes) -> None:
+    """Every malformed request shape fails closed before classification."""
+    with pytest.raises((TypeError, ValueError, UnicodeDecodeError, json.JSONDecodeError)):
+        classify_messages(raw)
+
+
+def test_classify_messages_enforces_count_and_byte_bounds() -> None:
+    """The guard enforces the 1..128 message and one MiB IPC limits."""
+    too_many = [{"role": "user", "content": "x"}] * 129
+    with pytest.raises(ValueError):
+        classify_messages(classification_request(too_many))
+    oversized = classification_request(
+        [{"role": "user", "content": "x" * (1024 * 1024)}]
+    )
+    with pytest.raises(ValueError):
+        classify_messages(oversized)

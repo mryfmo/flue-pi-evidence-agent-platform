@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { appendAudit } from './audit.ts';
-import { redactText } from './dataProxy.ts';
+import { classifyMessages } from './dataProxy.ts';
 import {
   authorizeRoute,
   type RouteDecision,
@@ -19,16 +19,18 @@ export interface GatewayMessage {
   content: string;
 }
 
-export interface ProductionGatewayRequest extends RoutingInput {
+export interface ProductionGatewayRequest {
+  tenant: string;
   user: string;
+  task_kind: string;
+  cost_budget: string;
+  latency_target: string;
   messages: GatewayMessage[];
   audit_id: string;
   trace_id: string;
   audit_log_path: string;
-  routing_policy_path?: string;
   task_id?: string;
   agent_profile?: string;
-  approval_ref?: string;
 }
 
 export interface ProductionGatewaySuccess {
@@ -80,11 +82,14 @@ function defaultRoutingPolicyPath(): string {
     : defaultPolicyPath;
 }
 
-async function loadRoutingPolicy(path = defaultRoutingPolicyPath()) {
-  const document = JSON.parse(await readFile(path, 'utf8')) as
-    | RoutingPolicyDocument
-    | { routing_prod: RoutingPolicyDocument };
-  return 'routing_prod' in document ? document.routing_prod : document;
+async function loadRoutingPolicy(): Promise<RoutingPolicyDocument> {
+  const document: unknown = JSON.parse(
+    await readFile(defaultRoutingPolicyPath(), 'utf8'),
+  );
+  if (!document || typeof document !== 'object' || 'routing_prod' in document) {
+    throw new Error('invalid_routing_policy_document');
+  }
+  return document as RoutingPolicyDocument;
 }
 
 function providerSecret(
@@ -116,10 +121,13 @@ function attempts(decision: RouteDecision): RouteTarget[] {
   return [first, ...decision.fallback_chain];
 }
 
-function routingInput(request: ProductionGatewayRequest): RoutingInput {
+function routingInput(
+  request: ProductionGatewayRequest,
+  classification: string,
+): RoutingInput {
   return {
     tenant: request.tenant,
-    data_classification: request.data_classification,
+    data_classification: classification,
     task_kind: request.task_kind,
     cost_budget: request.cost_budget,
     latency_target: request.latency_target,
@@ -130,7 +138,7 @@ async function dispatchOpenAiCompatible(
   baseUrl: string,
   apiKey: string,
   model: string,
-  messages: GatewayMessage[],
+  messages: readonly GatewayMessage[],
   metadata: Record<string, string | undefined>,
 ): Promise<OpenAiCompatibleResponse> {
   const response = await fetch(
@@ -184,7 +192,7 @@ function recordGatewaySpan(
         'gateway.input_tokens': usage.input_tokens,
         'gateway.output_tokens': usage.output_tokens,
         'gateway.estimated_cost': estimatedCost,
-        'gateway.data_classification': request.data_classification,
+        'gateway.data_classification': decision.data_classification,
         'gateway.task_kind': request.task_kind,
         'gateway.task_id': request.task_id ?? '',
         'gateway.agent_profile': request.agent_profile ?? '',
@@ -204,7 +212,7 @@ async function auditGatewayCall(
   latencyMs: number,
   usage: ProductionGatewaySuccess['usage'],
   estimatedCost: number,
-  redactedMessages: GatewayMessage[],
+  redactedMessages: readonly GatewayMessage[],
   responseContent: string,
 ): Promise<void> {
   await appendAudit(path, {
@@ -223,6 +231,7 @@ async function auditGatewayCall(
     estimated_cost: estimatedCost,
     task_id: request.task_id,
     agent_profile: request.agent_profile,
+    data_classification: decision.data_classification,
     request_digest: digest(redactedMessages),
     response_digest: digest(responseContent),
   });
@@ -232,19 +241,14 @@ export async function callProductionGateway(
   request: ProductionGatewayRequest,
 ): Promise<ProductionGatewayResult> {
   try {
-    const policy = await loadRoutingPolicy(request.routing_policy_path);
-    const selectedDecision = selectRoute(routingInput(request), policy);
-    const decision: RouteDecision & { approval_ref?: string } = {
-      ...selectedDecision,
-      ...(request.approval_ref ? { approval_ref: request.approval_ref } : {}),
-    };
-    const redactedMessages = await Promise.all(
-      request.messages.map(async (message) => ({
-        ...message,
-        content: (await redactText(message.content)).redacted_text,
-      })),
+    const policy = await loadRoutingPolicy();
+    const guard = await classifyMessages(request.messages);
+    const decision = selectRoute(
+      routingInput(request, guard.classification),
+      policy,
     );
-    const authorization = await authorizeRoute(decision, policy);
+    const redactedMessages = guard.messages;
+    const authorization = await authorizeRoute(decision, policy, guard);
     if (!authorization.allow) {
       return {
         ok: false,
@@ -318,7 +322,7 @@ export async function callProductionGateway(
             task_id: request.task_id,
             agent_profile: request.agent_profile,
             tenant: request.tenant,
-            data_class: request.data_classification,
+            data_class: guard.classification,
           },
         );
         const content = response.choices?.[0]?.message?.content ?? '';
@@ -366,6 +370,12 @@ export async function callProductionGateway(
       routing_decision: decision,
     };
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === 'classification_unavailable'
+    ) {
+      return { ok: false, reason: 'classification_unavailable' };
+    }
     return { ok: false, reason: String(error) };
   }
 }

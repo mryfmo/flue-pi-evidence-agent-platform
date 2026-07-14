@@ -1,4 +1,8 @@
 import { evaluatePolicy } from './opa.ts';
+import {
+  isVerifiedClassification,
+  type VerifiedClassification,
+} from './dataProxy.ts';
 import type { PolicyDecision } from './types.ts';
 
 export interface RoutingInput {
@@ -29,6 +33,12 @@ export interface RoutingProvider {
 
 export interface RoutingPolicyDocument {
   version: string;
+  classification: {
+    producer: string;
+    verified_by: string;
+    evidence_kind: string;
+    enum: string[];
+  };
   defaults: {
     fallback_chain: RouteTarget[];
   };
@@ -69,9 +79,33 @@ export function selectRoute(
 export function authorizeRoute(
   decision: RouteDecision,
   policy: RoutingPolicyDocument,
+  evidence: VerifiedClassification,
 ): Promise<PolicyDecision> {
+  if (
+    !isVerifiedClassification(evidence) ||
+    decision.data_classification !== evidence.classification
+  ) {
+    return Promise.resolve({
+      allow: false,
+      requires_approval: false,
+      reasons: ['classification_evidence_mismatch'],
+    });
+  }
   return evaluatePolicy(
-    { decision, policy },
+    {
+      decision: {
+        ...decision,
+        classification: {
+          value: evidence.classification,
+          trust_proof: {
+            producer: evidence.producer,
+            verified_by: evidence.verified_by,
+            evidence_kind: evidence.evidence_kind,
+          },
+        },
+      },
+      policy,
+    },
     'policy/routing.rego',
     'data.eap.routing',
   );

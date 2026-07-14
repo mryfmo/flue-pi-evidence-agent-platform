@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  classifyMessages,
+  type VerifiedClassification,
+} from '../../src/lib/dataProxy.ts';
 import { evaluatePolicy } from '../../src/lib/opa.ts';
 import {
   authorizeRoute,
@@ -22,6 +26,14 @@ const internalFast: RoutingInput = {
   cost_budget: 'standard',
   latency_target: 'interactive',
 };
+
+let evidence: VerifiedClassification;
+
+beforeAll(async () => {
+  evidence = await classifyMessages([
+    { role: 'user', content: 'ordinary internal text' },
+  ]);
+});
 
 describe('routing policy selection', () => {
   it('selects the exact matching route', () => {
@@ -54,7 +66,7 @@ describe('routing policy selection', () => {
 describe('routing OPA authorization', () => {
   it('allows a valid acme route', async () => {
     await expect(
-      authorizeRoute(selectRoute(internalFast, policyDoc), policyDoc),
+      authorizeRoute(selectRoute(internalFast, policyDoc), policyDoc, evidence),
     ).resolves.toMatchObject({ allow: true, requires_approval: false });
   });
 
@@ -63,6 +75,7 @@ describe('routing OPA authorization', () => {
       authorizeRoute(
         selectRoute({ ...internalFast, tenant: 'other' }, policyDoc),
         policyDoc,
+        evidence,
       ),
     ).resolves.toMatchObject({
       allow: false,
@@ -80,7 +93,20 @@ describe('routing OPA authorization', () => {
     );
 
     const decision = await evaluatePolicy(
-      { decision: selectRoute(internalFast, policyDoc), policy: policyDoc },
+      {
+        decision: {
+          ...selectRoute(internalFast, policyDoc),
+          classification: {
+            value: 'internal',
+            trust_proof: {
+              producer: 'flue-pi-data-guard',
+              verified_by: 'flue-pi-platform-gateway',
+              evidence_kind: 'presidio-sqlglot-redaction-v1',
+            },
+          },
+        },
+        policy: policyDoc,
+      },
       'policy/routing.rego',
       'data.eap.routing',
       tenantsPath,
@@ -90,7 +116,7 @@ describe('routing OPA authorization', () => {
     expect(decision.reasons).toContain('tenant_mismatch');
   });
 
-  it('allows restricted data on the deterministic local provider', async () => {
+  it('rejects a scalar classification that disagrees with guard evidence', async () => {
     await expect(
       authorizeRoute(
         {
@@ -98,8 +124,12 @@ describe('routing OPA authorization', () => {
           data_classification: 'restricted',
         },
         policyDoc,
+        evidence,
       ),
-    ).resolves.toMatchObject({ allow: true });
+    ).resolves.toMatchObject({
+      allow: false,
+      reasons: ['classification_evidence_mismatch'],
+    });
   });
 
   it('fails closed when the OPA binary is unavailable', async () => {
@@ -107,6 +137,7 @@ describe('routing OPA authorization', () => {
     const decision = await authorizeRoute(
       selectRoute(internalFast, policyDoc),
       policyDoc,
+      evidence,
     );
     expect(decision.allow).toBe(false);
     expect(decision.requires_approval).toBe(true);

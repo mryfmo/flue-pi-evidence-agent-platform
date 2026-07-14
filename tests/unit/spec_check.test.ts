@@ -677,8 +677,8 @@ describe('authoritative requirement catalog CLI', () => {
     }
   });
 
-  it('rejects one-byte Markdown drift for every R2-affected projection', () => {
-    expect(affectedIds).toHaveLength(15);
+  it('rejects one-byte Markdown drift for every R5-affected projection', () => {
+    expect(affectedIds).toHaveLength(16);
     for (const id of affectedIds) {
       const root = fixture();
       const { item } = catalogItem(root, id);
@@ -687,7 +687,7 @@ describe('authoritative requirement catalog CLI', () => {
     }
   });
 
-  it('rejects rollback of either allowed change even when Markdown and JSON agree', () => {
+  it('rejects rollback of every allowed change even when Markdown and JSON agree', () => {
     for (const id of Object.keys(contract.allowedCatalogChanges)) {
       const root = fixture();
       const oldText = baseline.requirements.find(
@@ -700,7 +700,7 @@ describe('authoritative requirement catalog CLI', () => {
   });
 
   it('rejects lockstep Markdown and JSON mutation for every other tuple', () => {
-    expect(unchangedIds).toHaveLength(57);
+    expect(unchangedIds).toHaveLength(56);
     for (const id of unchangedIds) {
       const root = fixture();
       const { item } = catalogItem(root, id);
@@ -767,8 +767,8 @@ describe('authoritative requirement catalog CLI', () => {
         file: 'A2-01-R2-contract.json',
         mutate: (text: string) =>
           text.replace(
-            'sha256:5ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91',
-            'sha256:0ee6afb60940ebd8eff1ffb85c4a01f3653d7e0bdbfc051ba0d23caba92c7b91',
+            'sha256:5abe1e78c1bd19b274285f1e1be2cc8c9ce5cafff471e20e34572ee34f4c556b',
+            'sha256:0abe1e78c1bd19b274285f1e1be2cc8c9ce5cafff471e20e34572ee34f4c556b',
           ),
         pattern: /revision contract digest mismatch/,
       },
@@ -806,7 +806,47 @@ describe('authoritative requirement catalog CLI', () => {
     }
   });
 
-  it('has exactly two catalog deltas and no unauthorized baseline text delta', () => {
+  it('binds the exact SPEC-01 runtime trace and three catalog deltas', () => {
+    const { item } = catalogItem(repo, 'SPEC-01');
+    expect(item.source).toEqual({ path: 'docs/PRODUCT_REQUIREMENTS.md' });
+    expect(item.implementation).toEqual([
+      'scripts/data_guard.py',
+      'src/lib/dataProxy.ts',
+      'src/lib/productionGateway.ts',
+      'src/lib/router.ts',
+      'schemas/routing-input.schema.json',
+      'policy/routing.rego',
+      'policy/routing.json',
+      'policy/routing.prod.json',
+    ]);
+    expect(item.tests).toEqual([
+      'tests_py/test_data_guard.py',
+      'tests/component/data_proxy.test.ts',
+      'tests/component/routing.test.ts',
+      'tests/contract/llm_contract.test.ts',
+      'tests/failure/llm_outage.test.ts',
+      'policy/routing_test.rego',
+      'policy/tests/routing_test.rego',
+    ]);
+    expect(item.gates).toEqual([
+      { name: 'vitest_all', path: 'scripts/validation-manifest.mjs' },
+      { name: 'python_tests', path: 'scripts/validation-manifest.mjs' },
+      { name: 'opa_test', path: 'scripts/validation-manifest.mjs' },
+    ]);
+    expect(item.evidence).toEqual([
+      {
+        path: 'artifacts/validation/vitest_all.stdout.log',
+        gate: 'vitest_all',
+      },
+      {
+        path: 'artifacts/validation/python_tests.stdout.log',
+        gate: 'python_tests',
+      },
+      {
+        path: 'artifacts/validation/opa_test.stdout.log',
+        gate: 'opa_test',
+      },
+    ]);
     const current = JSON.parse(
       readFileSync(join(repo, 'docs/requirements.json'), 'utf8'),
     ) as { requirements: Array<{ id: string; text: string; severity: null }> };
@@ -820,7 +860,7 @@ describe('authoritative requirement catalog CLI', () => {
       })
       .map(({ id }) => id)
       .sort();
-    expect(deltas).toEqual(['FR-001', 'REQ-HTTP-REQUEST-001']);
+    expect(deltas).toEqual(['FR-001', 'REQ-HTTP-REQUEST-001', 'SPEC-01']);
     expect(run(fixture()).status).toBe(0);
   });
 });

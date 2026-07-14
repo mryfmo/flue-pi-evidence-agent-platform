@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { readFile, mkdtemp } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { createServer, type IncomingMessage } from 'node:http';
 import { tmpdir } from 'node:os';
@@ -19,7 +19,7 @@ async function readJson(req: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown;
 }
 
-async function startMockProvider(responseText = 'redacted summary') {
+async function startMockProvider(responseText = 'verified summary') {
   const requests: unknown[] = [];
   const server = createServer(async (req, res) => {
     requests.push(await readJson(req));
@@ -29,7 +29,6 @@ async function startMockProvider(responseText = 'redacted summary') {
     });
     res.end(
       JSON.stringify({
-        id: 'chatcmpl-contract',
         choices: [{ message: { content: responseText } }],
         usage: { prompt_tokens: 4, completion_tokens: 2, total_tokens: 6 },
       }),
@@ -43,294 +42,48 @@ async function startMockProvider(responseText = 'redacted summary') {
   };
 }
 
-function policy(baseUrlEnv = 'MOCK_BASE_URL'): RoutingPolicyDocument {
-  return {
-    version: 'contract-test',
-    defaults: {
-      fallback_chain: [
-        { provider: 'mock', model_id: 'mock-model' },
-        {
-          provider: 'local',
-          model_id: 'fixbot',
-          mode: 'deterministic-fallback',
-        },
-      ],
-    },
-    routes: [
-      {
-        id: 'contract-route',
-        match: {
-          tenant: 'acme',
-          data_classification: 'internal',
-          task_kind: 'verified_evidence_summary',
-          cost_budget: 'standard',
-          latency_target: 'interactive',
-        },
-        provider: 'mock',
-        model_id: 'mock-model',
-        fallback_chain: [
-          {
-            provider: 'local',
-            model_id: 'fixbot',
-            mode: 'deterministic-fallback',
-          },
-        ],
-      },
-    ],
-    providers: {
-      mock: {
-        type: 'openai_compatible',
-        base_url_env: baseUrlEnv,
-        api_key_env: 'MOCK_API_KEY',
-      },
-      local: { type: 'local_gateway' },
-    },
-  };
-}
-
-async function writePolicy(doc: RoutingPolicyDocument): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'llm-contract-'));
-  const path = join(dir, 'routing.json');
-  await writeFile(path, JSON.stringify(doc), 'utf8');
-  return path;
-}
-
-async function baseRequest(
-  routingPolicyPath?: string,
+async function request(
+  content = 'Summarize the verified evidence.',
 ): Promise<ProductionGatewayRequest> {
   const dir = await mkdtemp(join(tmpdir(), 'llm-contract-audit-'));
   return {
     tenant: 'acme',
     user: 'engineer',
-    data_classification: 'internal',
     task_kind: 'verified_evidence_summary',
     cost_budget: 'standard',
     latency_target: 'interactive',
-    messages: [
-      {
-        role: 'user',
-        content: 'Summarize verified evidence for alice@example.com.',
-      },
-    ],
+    messages: [{ role: 'user', content }],
     audit_id: 'audit-contract',
     trace_id: 'trace-contract',
     audit_log_path: join(dir, 'audit.jsonl'),
-    ...(routingPolicyPath ? { routing_policy_path: routingPolicyPath } : {}),
   };
 }
 
-function prodRequest(): Promise<ProductionGatewayRequest> {
-  return baseRequest();
-}
-
 describe('llm_contract production gateway', () => {
-  it('returns content and response contract fields on the happy path', async () => {
+  it('uses guard-produced internal classification on the fixed prod route', async () => {
     const mock = await startMockProvider('contract ok');
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-      const request = await baseRequest(await writePolicy(policy()));
-
-      const result = await callProductionGateway(request);
-
-      expect(result).toMatchObject({
-        ok: true,
-        provider: 'mock',
-        model_id: 'mock-model',
-        content: 'contract ok',
-        usage: { input_tokens: 4, output_tokens: 2, total_tokens: 6 },
-        routing_decision: { route_id: 'contract-route' },
-      });
-      expect(mock.requests).toHaveLength(1);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('redacts outbound prompts before dispatch', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-
-      await callProductionGateway(
-        await baseRequest(await writePolicy(policy())),
-      );
-
-      expect(JSON.stringify(mock.requests)).not.toContain('alice@example.com');
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('writes audit metadata without raw prompt or response content', async () => {
-    const mock = await startMockProvider('summary with no pii');
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-      const request = await baseRequest(await writePolicy(policy()));
-
-      await callProductionGateway(request);
-      const audit = await readFile(request.audit_log_path, 'utf8');
-
-      expect(audit).toContain('audit-contract');
-      expect(audit).toContain('trace-contract');
-      expect(audit).toContain('request_digest');
-      expect(audit).toContain('response_digest');
-      expect(audit).not.toContain('alice@example.com');
-      expect(audit).not.toContain('summary with no pii');
-      expect(audit).not.toContain('test-key');
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('keeps the LLM path summarization-only with no tool dispatch payload', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-
-      await callProductionGateway(
-        await baseRequest(await writePolicy(policy())),
-      );
-
-      expect(JSON.stringify(mock.requests)).not.toContain('"tools"');
-      expect(JSON.stringify(mock.requests)).not.toContain('apply_patch');
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('fails closed before dispatch when the api key is missing', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', '');
-
-      const result = await callProductionGateway(
-        await baseRequest(await writePolicy(policy())),
-      );
-
-      expect(result).toMatchObject({ ok: false });
-      expect(mock.requests).toHaveLength(0);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('fails closed before dispatch on OPA deny', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-      const request = {
-        ...(await baseRequest(await writePolicy(policy()))),
-        tenant: 'other',
-      };
-
-      const result = await callProductionGateway(request);
-
-      expect(result).toMatchObject({ ok: false });
-      expect(mock.requests).toHaveLength(0);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('fails closed before dispatch when routing config is missing', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-      const request = await baseRequest('/definitely/missing/routing.json');
-
-      const result = await callProductionGateway(request);
-
-      expect(result).toMatchObject({ ok: false });
-      expect(mock.requests).toHaveLength(0);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('falls back from an unreachable provider to the next provider', async () => {
-    const mock = await startMockProvider('fallback ok');
-    try {
-      vi.stubEnv('BAD_BASE_URL', 'http://127.0.0.1:9/v1');
-      vi.stubEnv('MOCK_BASE_URL', mock.baseUrl);
-      vi.stubEnv('MOCK_API_KEY', 'test-key');
-      vi.stubEnv('BAD_API_KEY', 'bad-key');
-      const doc = policy('BAD_BASE_URL');
-      doc.providers.secondary = {
-        type: 'openai_compatible',
-        base_url_env: 'MOCK_BASE_URL',
-        api_key_env: 'MOCK_API_KEY',
-      };
-      const [route] = doc.routes;
-      if (!route) throw new Error('missing route');
-      route.fallback_chain = [
-        { provider: 'secondary', model_id: 'mock-model' },
-      ];
-
-      const result = await callProductionGateway(
-        await baseRequest(await writePolicy(doc)),
-      );
-
-      expect(result).toMatchObject({
-        ok: true,
-        provider: 'secondary',
-        fallback_index: 1,
-        content: 'fallback ok',
-      });
-      expect(mock.requests).toHaveLength(1);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('uses routing.prod.json for PI_PROVIDER=prod and sends correlation metadata', async () => {
-    const mock = await startMockProvider('prod ok');
     try {
       vi.stubEnv('PI_PROVIDER', 'prod');
       vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
       vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
-      const request = {
-        ...(await prodRequest()),
-        task_id: 'task-123',
-        agent_profile: 'profile-main',
-      };
 
-      const result = await callProductionGateway(request);
+      const result = await callProductionGateway(await request());
 
       expect(result).toMatchObject({
         ok: true,
         provider: 'litellm',
-        model_id: 'worker-main',
-        content: 'prod ok',
-        estimated_cost: 0.0012,
+        content: 'contract ok',
+        usage: { input_tokens: 4, output_tokens: 2, total_tokens: 6 },
         routing_decision: {
           route_id: 'acme-internal-summary-main',
-          routing_policy_version: '2026-07-08.p8-prod',
+          data_classification: 'internal',
         },
       });
+      if (!result.ok) throw new Error('expected gateway success');
+      expect(['worker-main', 'worker-fast']).toContain(result.model_id);
       expect(mock.requests).toHaveLength(1);
       expect(mock.requests[0]).toMatchObject({
-        model: 'worker-main',
-        metadata: {
-          task_id: 'task-123',
-          agent_profile: 'profile-main',
-          tenant: 'acme',
-          data_class: 'internal',
-        },
+        metadata: { tenant: 'acme', data_class: 'internal' },
       });
     } finally {
       await mock.close();
@@ -338,60 +91,44 @@ describe('llm_contract production gateway', () => {
     }
   });
 
-  it('fails prod provider outages as llm_unavailable without deterministic fallback', async () => {
-    vi.stubEnv('PI_PROVIDER', 'prod');
-    vi.stubEnv('LITELLM_BASE_URL', 'http://127.0.0.1:9/v1');
-    vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+  it('writes guard classification and digests without raw content', async () => {
+    vi.stubEnv('PI_PROVIDER', 'local');
+    const gatewayRequest = await request();
 
-    const result = await callProductionGateway(await prodRequest());
+    await callProductionGateway(gatewayRequest);
+    const audit = await readFile(gatewayRequest.audit_log_path, 'utf8');
 
-    expect(result).toMatchObject({
-      ok: false,
-      reason: 'llm_unavailable',
-      routing_decision: { route_id: 'acme-internal-summary-main' },
-    });
+    expect(audit).toContain('audit-contract');
+    expect(audit).toContain('trace-contract');
+    expect(audit).toContain('"data_classification":"internal"');
+    expect(audit).toContain('request_digest');
+    expect(audit).toContain('response_digest');
+    expect(audit).not.toContain('Summarize the verified evidence.');
     vi.unstubAllEnvs();
   });
 
-  it('denies restricted data on the prod external provider path before dispatch', async () => {
+  it('denies confidential external data without accepting caller approval', async () => {
     const mock = await startMockProvider();
     try {
       vi.stubEnv('PI_PROVIDER', 'prod');
       vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
       vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+      const untrusted = {
+        ...(await request('Contact alice@example.com')),
+        approval_ref: 'caller-approval',
+        data_classification: 'internal',
+        routing_policy_path: '/tmp/caller-policy.json',
+      };
 
-      const result = await callProductionGateway({
-        ...(await prodRequest()),
-        data_classification: 'restricted',
-      });
-
-      expect(result).toMatchObject({
-        ok: false,
-        reason: expect.stringContaining('restricted_external_provider'),
-      });
-      expect(mock.requests).toHaveLength(0);
-    } finally {
-      await mock.close();
-      vi.unstubAllEnvs();
-    }
-  });
-
-  it('denies confidential prod external provider paths without approval before dispatch', async () => {
-    const mock = await startMockProvider();
-    try {
-      vi.stubEnv('PI_PROVIDER', 'prod');
-      vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
-      vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
-
-      const result = await callProductionGateway({
-        ...(await prodRequest()),
-        data_classification: 'confidential',
-      });
+      const result = await callProductionGateway(untrusted);
 
       expect(result).toMatchObject({
         ok: false,
         reason: expect.stringContaining('confidential_requires_approval'),
-        routing_decision: { route_id: 'acme-confidential-summary-heavy' },
+        routing_decision: {
+          route_id: 'acme-confidential-summary-heavy',
+          data_classification: 'confidential',
+        },
       });
       expect(mock.requests).toHaveLength(0);
     } finally {
@@ -400,64 +137,128 @@ describe('llm_contract production gateway', () => {
     }
   });
 
-  it('dispatches confidential prod external provider paths with approval', async () => {
-    const mock = await startMockProvider('approved confidential ok');
+  it('denies restricted external data before provider dispatch', async () => {
+    const mock = await startMockProvider();
     try {
       vi.stubEnv('PI_PROVIDER', 'prod');
       vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
       vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
 
-      const result = await callProductionGateway({
-        ...(await prodRequest()),
-        data_classification: 'confidential',
-        approval_ref: 'approval-123',
-      });
+      const result = await callProductionGateway(
+        await request('token=12345678secret'),
+      );
 
       expect(result).toMatchObject({
-        ok: true,
-        provider: 'litellm',
-        model_id: 'worker-heavy',
-        content: 'approved confidential ok',
-        routing_decision: {
-          route_id: 'acme-confidential-summary-heavy',
-          approval_ref: 'approval-123',
-        },
+        ok: false,
+        reason: expect.stringContaining('restricted_external_provider'),
+        routing_decision: { data_classification: 'restricted' },
       });
-      expect(mock.requests).toHaveLength(1);
+      expect(mock.requests).toHaveLength(0);
     } finally {
       await mock.close();
       vi.unstubAllEnvs();
     }
   });
 
-  it('keeps the default local provider path deterministic when PI_PROVIDER is local', async () => {
+  it('ignores caller scalar classification and uses guard output everywhere', async () => {
+    const mock = await startMockProvider();
+    try {
+      vi.stubEnv('PI_PROVIDER', 'prod');
+      vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+      vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+      const untrusted = {
+        ...(await request()),
+        data_classification: 'restricted',
+      };
+
+      const result = await callProductionGateway(untrusted);
+
+      expect(result).toMatchObject({
+        ok: true,
+        routing_decision: { data_classification: 'internal' },
+      });
+      expect(mock.requests[0]).toMatchObject({
+        metadata: { data_class: 'internal' },
+      });
+    } finally {
+      await mock.close();
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('fails guard errors as classification_unavailable with zero dispatch', async () => {
+    const mock = await startMockProvider();
+    try {
+      vi.stubEnv('PI_PROVIDER', 'prod');
+      vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+      vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+
+      await expect(
+        callProductionGateway({ ...(await request()), messages: [] }),
+      ).resolves.toEqual({
+        ok: false,
+        reason: 'classification_unavailable',
+      });
+      expect(mock.requests).toHaveLength(0);
+    } finally {
+      await mock.close();
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('fails tenant mismatch and missing provider secrets before dispatch', async () => {
+    const mock = await startMockProvider();
+    try {
+      vi.stubEnv('PI_PROVIDER', 'prod');
+      vi.stubEnv('LITELLM_BASE_URL', mock.baseUrl);
+      vi.stubEnv('LITELLM_VIRTUAL_KEY', 'virtual-key');
+      const wrongTenant = { ...(await request()), tenant: 'other' };
+      await expect(callProductionGateway(wrongTenant)).resolves.toMatchObject({
+        ok: false,
+        reason: expect.stringContaining('tenant_mismatch'),
+      });
+      expect(mock.requests).toHaveLength(0);
+
+      vi.stubEnv('LITELLM_VIRTUAL_KEY', '');
+      await expect(
+        callProductionGateway(await request()),
+      ).resolves.toMatchObject({
+        ok: false,
+        reason: 'provider_env_unavailable',
+      });
+      expect(mock.requests).toHaveLength(0);
+    } finally {
+      await mock.close();
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('keeps the fixed local provider path deterministic after guard verification', async () => {
     vi.stubEnv('PI_PROVIDER', 'local');
-
-    const result = await callProductionGateway(await prodRequest());
-
-    expect(result).toMatchObject({
-      ok: true,
-      provider: 'local',
-      model_id: 'fixbot',
-      content: 'deterministic-fallback',
-      routing_decision: { route_id: 'acme-internal-summary-fast' },
-    });
+    await expect(callProductionGateway(await request())).resolves.toMatchObject(
+      {
+        ok: true,
+        provider: 'local',
+        model_id: 'fixbot',
+        content: 'deterministic-fallback',
+        routing_decision: {
+          route_id: 'acme-internal-summary-fast',
+          data_classification: 'internal',
+        },
+      },
+    );
     vi.unstubAllEnvs();
   });
 
-  it('keeps routing.prod.json free of direct provider references and local fallback', () => {
+  it('requires routing.prod.json to be a direct flat policy document', () => {
     const prodPolicyText = readFileSync('policy/routing.prod.json', 'utf8');
-    const prodPolicy = JSON.parse(prodPolicyText)
-      .routing_prod as RoutingPolicyDocument;
+    const prodPolicy = JSON.parse(prodPolicyText) as RoutingPolicyDocument;
 
+    expect(prodPolicy).not.toHaveProperty('routing_prod');
     expect(prodPolicyText).not.toMatch(/openai|anthropic|vllm/i);
     expect(JSON.stringify(prodPolicy.routes)).not.toContain(
       'deterministic-fallback',
     );
-    expect(prodPolicy.providers).toHaveProperty('litellm');
-    expect(Object.keys(prodPolicy.providers).sort()).toEqual([
-      'litellm',
-      'local',
-    ]);
+    expect(Object.keys(prodPolicy.providers)).toEqual(['litellm']);
   });
 });

@@ -60,7 +60,7 @@ equal(
     between('## Decision records', 'Workers are forbidden')
       .match(/\.orchestration\/decisions\/[A-Z0-9-]+\.yaml/g) ?? [],
   ).size,
-  16,
+  17,
   'decision record count',
 );
 for (const id of ['B1-01', 'B2-02', 'C1-01', 'D1-01']) {

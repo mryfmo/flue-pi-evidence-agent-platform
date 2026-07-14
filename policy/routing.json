@@ -1,5 +1,11 @@
 {
   "version": "2026-07-05.p1",
+  "classification": {
+    "producer": "flue-pi-data-guard",
+    "verified_by": "flue-pi-platform-gateway",
+    "evidence_kind": "presidio-sqlglot-redaction-v1",
+    "enum": ["public", "internal", "confidential", "restricted"]
+  },
   "defaults": {
     "fallback_chain": [
       {

@@ -1,0 +1,107 @@
+A0-01-R3-R1 final validation
+
+$ ./node_modules/node/bin/node scripts/run-with-timeout.mjs 30 ./node_modules/.bin/vitest run tests/component/data_proxy.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  1 passed (1)
+      Tests  28 passed (28)
+   Start at  10:11:29
+   Duration  15.19s (transform 20ms, setup 0ms, import 34ms, tests 15.08s, environment 0ms)
+
+EXIT_CODE=0
+
+$ ./node_modules/node/bin/node scripts/run-with-timeout.mjs 120 ./node_modules/.bin/vitest run tests/component/data_proxy.test.ts tests/component/routing.test.ts tests/contract/llm_contract.test.ts tests/failure/llm_outage.test.ts --pool=forks
+
+ RUN  v4.1.9 /Users/mryfmo/Workspace/flue_pi_ai_agent
+
+
+ Test Files  4 passed (4)
+      Tests  48 passed (48)
+   Start at  10:10:57
+   Duration  16.24s (transform 150ms, setup 0ms, import 287ms, tests 31.33s, environment 0ms)
+
+EXIT_CODE=0
+
+$ ./node_modules/node/bin/node scripts/run-with-timeout.mjs 90 .venv/bin/python -m pytest -q tests_py/test_data_guard.py
+......................................................                   [100%]
+EXIT_CODE=0
+
+$ npm run typecheck
+
+> flue-pi-evidence-agent-platform@1.2.0 typecheck
+> tsc --noEmit
+
+EXIT_CODE=0
+
+$ npm run lint
+
+> flue-pi-evidence-agent-platform@1.2.0 lint
+> biome lint --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 68 files in 68ms. No fixes applied.
+EXIT_CODE=0
+
+$ npm run format:check
+
+> flue-pi-evidence-agent-platform@1.2.0 format:check
+> biome format --diagnostic-level=error src tests scripts flue.config.ts
+
+Checked 68 files in 21ms. No fixes applied.
+EXIT_CODE=0
+
+$ R1_PATHS=(src/lib/dataProxy.ts tests/component/data_proxy.test.ts tests/contract/llm_contract.test.ts tests/failure/llm_outage.test.ts)
+$ git diff --check -- "${R1_PATHS[@]}"
+EXIT_CODE=0
+
+$ git diff --name-only -- "${R1_PATHS[@]}"
+src/lib/dataProxy.ts
+tests/component/data_proxy.test.ts
+tests/contract/llm_contract.test.ts
+tests/failure/llm_outage.test.ts
+EXIT_CODE=0
+
+$ git ls-files --others --exclude-standard -- "${R1_PATHS[@]}"
+EXIT_CODE=0
+
+$ ./node_modules/node/bin/node -e <fixed classification call-graph oracle>
+fixed-classification-call-graph: ok
+EXIT_CODE=0
+
+Oracle details: the source slice from `runClassificationGuard` through `classifyMessages` contains none of `EAP_PYTHON`, `process.env.PATH`, or `pythonBinary()`. It contains `CLASSIFICATION_PYTHON`, `CLASSIFICATION_SCRIPT`, and literal `classify_messages`. Both paths are `resolve(DEPLOYMENT_ROOT, ...)`, where `DEPLOYMENT_ROOT = resolve(process.cwd())` is fixed at module initialization.
+
+$ ./node_modules/node/bin/node -e <untrusted process/parser seam oracle>
+untrusted-seams-have-no-verifier-access: ok
+EXIT_CODE=0
+
+Oracle details: the exported arbitrary-command runner and untrusted parser source slices contain neither `verifiedClassifications` nor `verified_by`. Runtime regression confirms their parsed self-consistent object has no `verified_by` and `isVerifiedClassification(...) === false`.
+
+$ pwd -P
+/Users/mryfmo/Workspace/flue_pi_ai_agent
+EXIT_CODE=0
+
+$ rg -n "WORKDIR /app|node dist/server\.mjs" Dockerfile scripts/deploy-smoke.sh
+Dockerfile:8:WORKDIR /app
+scripts/deploy-smoke.sh:40:  PORT=3000 ./node_modules/node/bin/node dist/server.mjs >/tmp/flue-server.log 2>&1 &
+EXIT_CODE=0
+
+Deployment-root oracle: source Vitest runs from the repository root above. The bundled deployment starts `dist/server.mjs` from Docker `WORKDIR /app`; therefore cwd-based absolute resolution is invariant across source and bundle placement and does not use `import.meta.url`.
+
+$ rg -n -C 4 "fails guard errors|does not turn guard unavailability|messages: \[\]|EAP_PYTHON" tests/contract/llm_contract.test.ts tests/failure/llm_outage.test.ts
+tests/failure/llm_outage.test.ts:76:  it('does not turn guard unavailability into a provider outage or dispatch', async () => {
+tests/failure/llm_outage.test.ts:89:        callProductionGateway({ ...request(), messages: [] }),
+tests/contract/llm_contract.test.ts:189:  it('fails guard errors as classification_unavailable with zero dispatch', async () => {
+tests/contract/llm_contract.test.ts:197:        callProductionGateway({ ...(await request()), messages: [] }),
+EXIT_CODE=0
+
+Integration-path oracle: no `EAP_PYTHON` occurrence remains in either integration/failure test; each authorized case still asserts exact `classification_unavailable` and zero provider requests.
+
+$ git status --porcelain=v1 -- "${R1_PATHS[@]}"
+ M src/lib/dataProxy.ts
+ M tests/component/data_proxy.test.ts
+ M tests/contract/llm_contract.test.ts
+ M tests/failure/llm_outage.test.ts
+EXIT_CODE=0
+
+Runtime oracle: the `ignore_sigterm` fixture installs a SIGTERM handler and a persistent interval, writes its PID, and is run under the production 5,000 ms runner deadline. The focused suite completed inside the outer 30-second runner; after rejection `process.kill(pid, 0)` raised and the SIGTERM marker did not exist, proving direct SIGKILL, observed close, and no residual fixture process/timer.

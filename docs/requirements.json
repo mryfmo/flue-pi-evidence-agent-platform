@@ -1625,30 +1625,53 @@
     },
     {
       "id": "SPEC-01",
-      "text": "Routing authorization shall consume only gateway/PEP-constructed classification input produced by flue-pi-data-guard; provenance strings do not independently prove authenticity.",
+      "text": "Before redaction, `flue-pi-data-guard` shall classify the complete raw outbound message array; a known secret/credential match is `restricted`, otherwise any Presidio finding is `confidential`, otherwise the result is `internal`. The maximum sensitivity across all messages applies, redaction never downgrades it, and automatic `public` is prohibited. Routing authorization shall consume only the closed, SHA-256-bound guard result verified by the gateway/PEP; provenance strings do not independently prove authenticity.",
       "severity": null,
       "source": {
         "path": "docs/PRODUCT_REQUIREMENTS.md"
       },
       "implementation": [
-        "policy/routing.rego",
-        "policy/routing.prod.json",
+        "scripts/data_guard.py",
+        "src/lib/dataProxy.ts",
+        "src/lib/productionGateway.ts",
+        "src/lib/router.ts",
         "schemas/routing-input.schema.json",
-        "docs/POLICY_MODEL.md",
-        "docs/INTEGRATION_BOUNDARY.md"
+        "policy/routing.rego",
+        "policy/routing.json",
+        "policy/routing.prod.json"
       ],
       "tests": [
-        "policy/tests/routing_test.rego",
-        "tests/fixtures/policy/routing_happy.json",
-        "tests/fixtures/policy/routing_forged_trust.json"
+        "tests_py/test_data_guard.py",
+        "tests/component/data_proxy.test.ts",
+        "tests/component/routing.test.ts",
+        "tests/contract/llm_contract.test.ts",
+        "tests/failure/llm_outage.test.ts",
+        "policy/routing_test.rego",
+        "policy/tests/routing_test.rego"
       ],
       "gates": [
+        {
+          "name": "vitest_all",
+          "path": "scripts/validation-manifest.mjs"
+        },
+        {
+          "name": "python_tests",
+          "path": "scripts/validation-manifest.mjs"
+        },
         {
           "name": "opa_test",
           "path": "scripts/validation-manifest.mjs"
         }
       ],
       "evidence": [
+        {
+          "path": "artifacts/validation/vitest_all.stdout.log",
+          "gate": "vitest_all"
+        },
+        {
+          "path": "artifacts/validation/python_tests.stdout.log",
+          "gate": "python_tests"
+        },
         {
           "path": "artifacts/validation/opa_test.stdout.log",
           "gate": "opa_test"

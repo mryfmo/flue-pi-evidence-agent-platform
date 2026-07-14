@@ -60,8 +60,10 @@ The classification producer is `flue-pi-data-guard`. `input.decision.classificat
 - `verified_by=flue-pi-platform-gateway`
 - `evidence_kind=presidio-sqlglot-redaction-v1`
 
-`input.decision.data_classification` is caller-origin request metadata and is never used as a trusted authorization classification. The catalog's `classification` object uses the same `producer`, `verified_by`, and `evidence_kind` proof fields plus the closed `enum`. Missing catalog or decision classification, malformed or unknown values, and missing or mismatched proof fields deny under `REQ-FAILCLOSED-002`.
+`ProductionGatewayRequest` has no classification, proof, routing-policy-path, or approval field. The guard classifies the complete raw message array before redaction and the gateway privately uses the verified result for route selection. The internal scalar `data_classification` and `input.decision.classification.value` are derived from that same result; callers cannot supply either. The catalog's `classification` object uses the same `producer`, `verified_by`, and `evidence_kind` fields plus the closed `enum`. Missing catalog or decision classification, malformed or unknown values, and missing or mismatched evidence deny under `REQ-FAILCLOSED-002`.
 
 These three constant strings are not a cryptographic signature and do not establish authenticity by themselves. The gateway/PEP integration must construct the OPA document after classification, prevent callers from supplying or overwriting authorization fields, and keep direct OPA access outside the caller trust boundary.
+
+The gateway loads only the deployment-selected fixed flat catalog (`policy/routing.json` or `policy/routing.prod.json`). A caller cannot select a catalog or submit `approval_ref`; therefore confidential external routes remain denied with `confidential_requires_approval` until B2-01 integrates source-bound approval. Restricted external routes always deny. Automatic `public` and post-redaction downgrade are prohibited.
 
 `route_id=default` has no authorization meaning. A route is authorized only when its `route_id`, `provider`, `model_id`, and trusted classification match an explicit route in the supplied routing catalog.

@@ -104,12 +104,13 @@ Request contract:
 | `tenant` | workflow payload | Required for routing and OPA authorization. |
 | `user` | workflow payload | Used for audit and policy context. |
 | `task_kind` | workflow or agent call site | Example: `verified_evidence_summary`. |
-| `data_classification` | data guard / workflow classification | Example: `public`, `internal`, `restricted`. |
 | `cost_budget` | tenant or run config | Upper bound used by deterministic routing policy. |
 | `latency_target` | tenant or run config | Target class, not a runtime learned signal. |
 | `messages` | Flue/Pi request | Redacted before external provider call. |
 | `audit_id` | workflow audit context | Propagated to audit and telemetry. |
 | `trace_id` | OpenTelemetry active span | Propagated to audit and provider metadata where supported. |
+
+The public request has no `data_classification`, classification/proof, `routing_policy_path`, or `approval_ref` field. Before route selection, the fixed local data guard classifies the complete raw ordered message array and returns closed, canonical, SHA-256-bound evidence plus redacted messages. The gateway accepts only a result it validated in-process, never emits automatic `public`, and never downgrades after redaction.
 
 Successful response contract:
 
@@ -145,7 +146,7 @@ Routing is a pure function:
   -> {provider, model_id, fallback_chain}
 ```
 
-The policy lives in the versioned JSON document `policy/routing.prod.json`. Its only valid schema is `schemas/routing-policy.schema.json`; copied examples are deliberately avoided so the production contract cannot drift. OPA authorizes the selected route through `eap.routing` using the same fail-closed adapter posture as `src/lib/opa.ts`.
+The policy lives in the fixed deployment-selected JSON document: `policy/routing.json` for local validation or `policy/routing.prod.json` for production. A request cannot choose the path. Its only valid shape is the direct flat `schemas/routing-policy.schema.json` document; the former `routing_prod` wrapper is rejected. OPA authorizes the selected route through `eap.routing` using the same fail-closed adapter posture as `src/lib/opa.ts`.
 
 Learned routers are a recorded non-goal. Revisit only if a future requirement proves static policy cannot express tenant, classification, cost, and latency constraints.
 
@@ -153,7 +154,7 @@ Learned routers are a recorded non-goal. Revisit only if a future requirement pr
 
 | # | Invariant | Enforcement point | Evidence / test idea |
 | --- | --- | --- | --- |
-| 1 | Outbound prompt redaction runs before any external call. | Production gateway request path before provider dispatch; reuse offline deterministic Presidio/data_guard recognizer patterns. | Mock provider contract test asserts sensitive input is absent from captured outbound request and redaction failure prevents dispatch. |
+| 1 | Raw outbound messages are classified before redaction, and redaction runs before any external call without downgrading the class. | Fixed data-guard IPC and production gateway before route selection/provider dispatch. | Guard tests bind raw/redacted digests and maximum sensitivity; contract tests assert confidential/restricted or guard failure dispatches nothing. |
 | 2 | Audit ID and OpenTelemetry trace ID are propagated on every call. | Gateway call context; audit append through `src/lib/audit.ts`; span through `src/lib/telemetry.ts`. | Contract test asserts audit JSONL has `audit_id`, `trace_id`, provider, model_id, routing decision, token counts, latency, and content digests. |
 | 3 | Request and response content are recorded as hashes, not raw content. | Audit event builder after redaction and after response normalization. | Unit test asserts audit records contain request/response digest fields and do not contain raw prompt or raw completion text. |
 | 4 | Fail closed on routing policy unavailable, redaction unavailable, or OPA deny. | Gateway preflight: load routing config, run redaction, call `eap.routing`; any failure returns no external call. | Mock provider receives zero calls when config load, redaction, or OPA authorization fails. |
@@ -166,7 +167,7 @@ API keys are never logged, never sent in agmsg messages, and never written to au
 
 - Routing config missing, malformed, or policy version unauthorized: fail closed, no external call.
 - `eap.routing` unavailable or OPA deny: fail closed, no external call.
-- Redaction unavailable or redaction check fails: fail closed, no external call.
+- Classification/redaction unavailable, malformed, forged, stale, mismatched, timed out, or oversized: return `classification_unavailable`, fail closed, and make no provider call.
 - Provider API key missing: fail closed, no external call.
 - Primary provider timeout or provider error: try only the configured approved production provider chain.
 - All approved production providers fail: return exactly `ok:false, reason=llm_unavailable`; the workflow records `typed_failure_no_summary` and no summary content.

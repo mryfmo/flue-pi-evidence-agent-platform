@@ -7,7 +7,9 @@ recognition and anonymization without downloading external NLP models.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import sys
 from dataclasses import dataclass
 from typing import Any, cast
@@ -43,6 +45,22 @@ ALLOWED_AGGREGATES = (
     expressions.Max,
     expressions.Min,
     expressions.Sum,
+)
+MAX_IPC_BYTES = 1024 * 1024
+MESSAGE_ROLES = {"system", "user", "assistant"}
+RESTRICTED_PATTERNS = tuple(
+    re.compile(pattern, re.ASCII)
+    for pattern in (
+        r"-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----",
+        r"\bA[KS]IA[A-Z0-9]{16}\b",
+        r"\bgh[pousr]_[A-Za-z0-9_.-]{20,}\b",
+        r"\bgithub_pat_[A-Za-z0-9_]{20,}\b",
+        r"\bsk-[A-Za-z0-9_-]{20,}\b",
+        r"\bxox[bpars]-[A-Za-z0-9-]{10,}\b",
+        r"\bxapp-[A-Za-z0-9-]{10,}\b",
+        r"\bxwfp-[A-Za-z0-9-]{10,}\b",
+        r"(?i)\b(?:api[_-]?key|access[_-]?token|client[_-]?secret|aws[_-]?secret[_-]?access[_-]?key|aws[_-]?session[_-]?token|private[_-]?key|password|passwd|secret|token)\b\s*[:=]\s*[\"']?[^\s\"']{8,}[\"']?",
+    )
 )
 
 
@@ -211,6 +229,84 @@ def redact_text(text: str) -> dict[str, object]:
     return {"redacted_text": redacted, "entities_found": len(findings)}
 
 
+def contains_restricted_secret(text: str) -> bool:
+    """Return whether text matches the approved bounded credential patterns."""
+    return any(pattern.search(text) for pattern in RESTRICTED_PATTERNS)
+
+
+def _closed_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """Reject duplicate JSON object keys while preserving their wire order."""
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate key: {key}")
+        result[key] = value
+    return result
+
+
+def classify_messages(raw_request: bytes) -> dict[str, object]:
+    """Classify and redact a canonical, content-bound message-array request."""
+    if len(raw_request) > MAX_IPC_BYTES:
+        raise ValueError("classification request exceeds one MiB")
+    payload = json.loads(
+        raw_request.decode("utf-8"), object_pairs_hook=_closed_object
+    )
+    if not isinstance(payload, dict) or list(payload) != ["schema_version", "messages"]:
+        raise ValueError("invalid classification request keys")
+    if type(payload["schema_version"]) is not int or payload["schema_version"] != 1:
+        raise ValueError("unsupported classification schema version")
+    messages = payload["messages"]
+    if not isinstance(messages, list) or not 1 <= len(messages) <= 128:
+        raise ValueError("classification messages must contain 1..128 entries")
+    for message in messages:
+        if not isinstance(message, dict) or list(message) != ["role", "content"]:
+            raise ValueError("invalid classification message keys")
+        if message["role"] not in MESSAGE_ROLES or not isinstance(
+            message["content"], str
+        ):
+            raise ValueError("invalid classification message")
+    canonical_request = json.dumps(
+        payload, ensure_ascii=False, separators=(",", ":")
+    ).encode()
+    if raw_request != canonical_request:
+        raise ValueError("classification request is not canonical JSON")
+
+    anonymizer = AnonymizerEngine()  # type: ignore[no-untyped-call]
+    redacted_messages: list[dict[str, str]] = []
+    entities_found = 0
+    restricted = False
+    for message in messages:
+        role = cast(str, message["role"])
+        content = cast(str, message["content"])
+        restricted = restricted or contains_restricted_secret(content)
+        findings = offline_findings(content)
+        entities_found += len(findings)
+        redacted_messages.append(
+            {
+                "role": role,
+                "content": anonymizer.anonymize(
+                    text=content, analyzer_results=findings
+                ).text,
+            }
+        )
+    classification = (
+        "restricted" if restricted else "confidential" if entities_found else "internal"
+    )
+    redacted_bytes = json.dumps(
+        redacted_messages, ensure_ascii=False, separators=(",", ":")
+    ).encode()
+    return {
+        "schema_version": 1,
+        "producer": "flue-pi-data-guard",
+        "evidence_kind": "presidio-sqlglot-redaction-v1",
+        "request_sha256": hashlib.sha256(raw_request).hexdigest(),
+        "redacted_sha256": hashlib.sha256(redacted_bytes).hexdigest(),
+        "classification": classification,
+        "entities_found": entities_found,
+        "messages": redacted_messages,
+    }
+
+
 def main() -> int:
     """Execute the requested bounded data command."""
     command = sys.argv[1] if len(sys.argv) > 1 else "metric"
@@ -220,6 +316,13 @@ def main() -> int:
     if command == "redact_text":
         payload = json.loads(sys.stdin.read() or "{}")
         print(json.dumps(redact_text(str(payload.get("text", ""))), sort_keys=True))
+        return 0
+    if command == "classify_messages":
+        raw_request = sys.stdin.buffer.read(MAX_IPC_BYTES + 1)
+        result = classify_messages(raw_request)
+        sys.stdout.write(
+            json.dumps(result, ensure_ascii=False, separators=(",", ":")) + "\n"
+        )
         return 0
     if command == "unsafe":
         reject_unsafe_sql("select name, email from customers")

@@ -1,0 +1,63 @@
+# User-owned high-level decision record. Exact regex and IPC mechanics are
+# orchestrator-owned implementation design in the R3 plan, not user assertions.
+decision_id: "A0-01-R3"
+status: accepted
+accepted_by: user
+accepted_at: "2026-07-14T08:17:39+09:00"
+
+classification_contract:
+  subject: raw_outbound_messages
+  order: [public, internal, confidential, restricted]
+  aggregation: maximum_sensitivity_across_all_system_user_assistant_messages
+  downgrade_after_redaction: prohibited
+  route_selection_source: guard_classification
+  caller_scalar_authority: none
+  unclassifiable_result: "classification_unavailable"
+  dispatch_on_unclassifiable: false
+
+mapping:
+  restricted:
+    precedence: 1
+    when: deterministic_secret_or_credential_detection_matches
+  confidential:
+    precedence: 2
+    when: presidio_returns_any_entity_and_no_restricted_match
+  internal:
+    precedence: 3
+    when: no_restricted_match_and_no_presidio_entity
+  public:
+    precedence: reserved
+    when: separately_verified_public_origin_proof
+    implemented_in_this_revision: false
+    automatic_guard_emission: prohibited
+
+evidence_contract:
+  schema_version: 1
+  producer: flue-pi-data-guard
+  verified_by: flue-pi-platform-gateway
+  evidence_kind: presidio-sqlglot-redaction-v1
+  content_binding: sha256_of_exact_guard_request_and_redacted_payload
+  closed_runtime_validation: required
+  caller_supplied_producer_or_proof: prohibited
+
+examples:
+  - input: "Summarize the verified evidence."
+    expected: internal
+  - input: "Contact alice@example.com"
+    expected: confidential
+  - input: "api_key=12345678secret"
+    expected: restricted
+  - input: ["ordinary internal text", "alice@example.com", "sk-12345678901234567890"]
+    expected: restricted
+  - input: guard_failure_or_malformed_result
+    expected: classification_unavailable
+
+official_basis:
+  accessed_at: "2026-07-14"
+  sources:
+    - https://microsoft.github.io/presidio/
+    - https://microsoft.github.io/presidio/analyzer/
+    - https://microsoft.github.io/presidio/text_anonymization/
+    - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github
+    - https://docs.aws.amazon.com/botocore/latest/reference/services/sts/client/get_access_key_info.html
+    - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
